@@ -7,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
-import json, random, time
+import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
 from selenium_stealth import stealth
 import requests, m3u8, m3u8_To_MP4
@@ -19,12 +19,25 @@ class scrapping_bot():
     def __init__(self,brazzers_bot = False):
         with open('configrations.json', 'r') as json_file:    
             self.config_data = json.load(json_file)
+
         if brazzers_bot == True:
+            self.videos_collection = []
+            self.videos_collection = pd.read_csv('videos_details.csv')
+            self.videos_collection = self.videos_collection.to_dict(orient='records')
+
+            self.videos_data = []
+            self.videos_data = pd.read_csv('videos.csv')
+            self.videos_data = self.videos_data.to_dict(orient='records')
+
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
             self.category = str(self.config_data['brazzers']['category'])
             old_days = str(self.config_data['brazzers']['old_days'])
             self.download_videos_count = int(self.config_data['brazzers']['download_videos'])
+            self.username = str(self.config_data['brazzers']['username'])
+            self.password = str(self.config_data['brazzers']['password'])
+            self.password = str(self.config_data['brazzers']['password'])
+            self.delete_old_days = str(self.config_data['brazzers']['delete_old_days'])
             self.calculate_old_date(int(old_days))
         
     def get_driver(self,add_cybeghost=False):
@@ -148,8 +161,7 @@ class scrapping_bot():
         connect_btn = self.driver.find_element(By.XPATH, '//div[@class="dark disconnected outer-circle"]')
         connect_btn.click()
         time.sleep(4)
-
-        
+      
     def delete_cache_folder(self,folder_path):
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
@@ -304,8 +316,19 @@ class scrapping_bot():
                 if not "disconnected" in connected_btn.get_attribute('class') : 
                     return
 
+    def find_and_delete_video(self,folder_path, video_title):
+        files = os.listdir(folder_path)
 
-    def brazzers_login(self,username='love4porn',password = 'Skjcv9sdflj27'):
+        for file in files:
+            if file.lower().endswith((".mp4", ".avi", ".mkv")):
+                if video_title.lower() in file.lower():
+                    file_path = os.path.join(folder_path, file)
+
+                    os.remove(file_path)
+                    print(f"Deleted: {file_path}")
+                    return
+
+    def brazzers_login(self):
         for _ in range(3):
             self.driver.get('https://site-ma.brazzers.com/login')
             self.driver.get('https://site-ma.brazzers.com/login')
@@ -313,8 +336,8 @@ class scrapping_bot():
             self.random_sleep(a=5)
             if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     
-                self.input_text(username,'Username','username',By.NAME)
-                self.input_text(password,'password','password',By.NAME)
+                self.input_text(self.username,'Username','username',By.NAME)
+                self.input_text(self.password,'password','password',By.NAME)
                 self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
                 self.random_sleep(15,20)
                 if not 'https://site-ma.brazzers.com' in self.driver.current_url.lower() : continue
@@ -327,7 +350,7 @@ class scrapping_bot():
                 else: self.random_sleep()
         else : return False
 
-    def get_categories(self):
+    def brazzers_get_categories(self):
         
 
         if not self.driver.current_url.lower() == self.brazzers_category_url :
@@ -360,10 +383,11 @@ class scrapping_bot():
         else: 
             return False
         
-    def get_videos_url(self):
+    def brazzers_get_videos_url(self):
         page_number = 2
         driver_url = self.driver.current_url
         tags = driver_url.split('tags=')[-1]
+        d1 = 1
         found_max_videos = self.download_videos_count * 1.5
         for _ in range(10) :
             try :
@@ -373,10 +397,14 @@ class scrapping_bot():
                     if video_date :
                         if self.date_older_or_not(video_date.text) :
                             video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
-                            if video_ele :
+                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[2]/div/div[1]/a/div[1]/div/picture/img',timeout=3)
+                            if video_ele and post_url:
+                                if d1 == 1:breakpoint()
                                 video_url = video_ele.get_attribute('href')
-                                if video_url :
-                                    self.videos_urls.append(video_url)
+                                post_url = post_url.get_attribute('src')
+                                if video_url and post_url:
+                                    self.videos_urls.append({"video_url":video_url,'post_url':post_url})
+
             except Exception as e :
                 print(e) 
             if len(self.videos_urls) < found_max_videos :
@@ -386,11 +414,12 @@ class scrapping_bot():
         # breakpoint()
 
 
-    def brazzers_download_video(self,video_url=''):
+    def brazzers_download_video(self):
+        d1 = 1
         for idx,videoss_urll in enumerate(self.videos_urls) :
             master_url = []
             for _ in range(3):
-                self.driver.get(videoss_urll)
+                self.driver.get(videoss_urll['video_url'])
                 self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
                 self.random_sleep(10,15)
                 networks_list = self.driver.execute_script(" var network = performance.getEntries() || {}; return network;")
@@ -402,7 +431,74 @@ class scrapping_bot():
                 if len(master_url) > 0: break
                 else: continue
             if len(master_url) > 0 :
-                m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name)
+                if d1 == 1 :
+                    breakpoint()
+                tmp = {
+                    "Likes" : "",
+                    "Disclike" :"",
+                    "Url" : videoss_urll['video_url'],
+                    "Title" : '',
+                    "Discription" : "",
+                    "Release-Date" : "",
+                    "Poster-Image_uri" : videoss_urll['video_url'],
+                    "Video-name" : f'{video_name}.mp4',
+                    "Pornstarts" : ''
+                }
+                try:
+                    likes_count = self.find_element('Likes count','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[7]/span[1]/strong')
+                    if likes_count :
+                        tmp['Likes'] = likes_count.text
+
+                    likes_count = self.find_element('Likes count','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[7]/span[1]/strong')
+                    if likes_count :
+                        tmp['Likes'] = likes_count.text
+                    
+                    self.getvalue_byscript('document.querySelector("#root > div.sc-yo7o1v-0.hlvViO > div.sc-yo7o1v-0.hlvViO > div.sc-1fep8qc-0.ekNhDD > div.sc-1deoyo3-0.iejyDN > div:nth-child(1) > div > section > div.sc-1wa37oa-0.irrdH > div.sc-bfcq3s-0.ePiyNl > div.sc-k44n71-0.gbGmcO > span:nth-child(1) > strong").textContent')
+                    Disclike_count = self.find_element('Disclike count','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[7]/span[2]/strong')
+                    if Disclike_count :
+                        tmp['Disclike'] = Disclike_count.text
+
+                    Title = self.find_element('Title','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[2]')
+                    if Title :
+                        tmp['Title'] = Title.text
+
+                    Release = self.find_element('Release','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
+                    if Release :
+                        tmp['Release-Date'] = Release.text
+
+                    Discription = self.find_element('Discription','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
+                    if Discription :
+                        tmp['Discription'] = Release.text
+
+                    Release = self.find_element('Release','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
+                    if Release :
+                        tmp['Release-Date'] = Release.text
+
+                    Release = self.find_element('Release','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
+                    if Release :
+                        tmp['Release-Date'] = Release.text
+
+                    port_starts = self.find_element('pornstars','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/div[2]/h2')
+                    if port_starts :
+                        tmp['Pornstarts'] = port_starts.text
+
+
+                    # m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir='videos')
+                    self.videos_collection.append(tmp)
+                    self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
+
+                    pd.DataFrame(self.videos_collection).to_csv('videos_details.csv')
+                    pd.DataFrame(self.videos_data).to_csv('videos.csv.csv')
+                except Exception as e :
+                    print('Error :', e)
             
-            
-    
+    def brazzers_delete_old_videos(self):
+        breakpoint()
+        df = pd.read_csv('videos.csv')
+
+        df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
+        temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
+        
+        for idx,row in temp_df.iterrows() : 
+            print(row['Video-title'])
+            self.find_and_delete_video('videos',row['Video-title'])
