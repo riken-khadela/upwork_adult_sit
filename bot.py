@@ -310,7 +310,8 @@ class scrapping_bot():
                     break
             time.sleep(1)
             # Checking is the VPN connected or not
-            # self.click_element('Connecting vpn circle','//div[@class="dark disconnected outer-circle"]')
+            self.click_element('Connecting vpn circle','//div[@class="dark disconnected outer-circle"]')
+            self.random_sleep()
             connected_btn = self.find_element('connected vpn circle','/html/body/app-root/main/app-home/div/div[2]/app-switch/div')
             if connected_btn :
                 if not "disconnected" in connected_btn.get_attribute('class') : 
@@ -387,7 +388,6 @@ class scrapping_bot():
         page_number = 2
         driver_url = self.driver.current_url
         tags = driver_url.split('tags=')[-1]
-        d1 = 1
         found_max_videos = self.download_videos_count * 1.5
         for _ in range(10) :
             try :
@@ -399,7 +399,6 @@ class scrapping_bot():
                             video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
                             post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[2]/div/div[1]/a/div[1]/div/picture/img',timeout=3)
                             if video_ele and post_url:
-                                if d1 == 1:breakpoint()
                                 video_url = video_ele.get_attribute('href')
                                 post_url = post_url.get_attribute('src')
                                 if video_url and post_url:
@@ -415,7 +414,6 @@ class scrapping_bot():
 
 
     def brazzers_download_video(self):
-        d1 = 1
         for idx,videoss_urll in enumerate(self.videos_urls) :
             master_url = []
             for _ in range(3):
@@ -431,8 +429,6 @@ class scrapping_bot():
                 if len(master_url) > 0: break
                 else: continue
             if len(master_url) > 0 :
-                if d1 == 1 :
-                    breakpoint()
                 tmp = {
                     "Likes" : "",
                     "Disclike" :"",
@@ -483,17 +479,16 @@ class scrapping_bot():
                         tmp['Pornstarts'] = port_starts.text
 
 
-                    # m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir='videos')
+                    m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir='videos')
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
 
-                    pd.DataFrame(self.videos_collection).to_csv('videos_details.csv')
-                    pd.DataFrame(self.videos_data).to_csv('videos.csv.csv')
+                    pd.DataFrame(self.videos_collection).to_csv('videos_details.csv',index=False)
+                    pd.DataFrame(self.videos_data).to_csv('videos.csv.csv',index=False)
                 except Exception as e :
                     print('Error :', e)
             
     def brazzers_delete_old_videos(self):
-        breakpoint()
         df = pd.read_csv('videos.csv')
 
         df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
