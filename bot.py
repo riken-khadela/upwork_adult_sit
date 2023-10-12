@@ -63,7 +63,7 @@ class scrapping_bot():
         options.add_argument("--enable-webgl-draft-extensions")
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
-        options.add_argument('--headless')
+        # options.add_argument('--headless')
         options.add_argument("--user-data-dir=./chromeprofile/profiles/profile")
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
@@ -101,8 +101,16 @@ class scrapping_bot():
             "safebrowsing-disable-auto-update",
             "disable-client-side-phishing-detection"])
         options.add_argument("disable-infobars")
-        
-        driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver1',options=options)
+        for _ in range(30):
+            try:
+                # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
+                driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
+                driver.get('https://site-ma.brazzers.com/login')
+                print(driver.current_url,'------------------')
+                break
+            except Exception as e:
+                print(e)
+        # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver1',options=options)
         stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",
@@ -327,7 +335,7 @@ class scrapping_bot():
                     return
 
     def brazzers_login(self):
-        for _ in range(3):
+        for _ in range(500):
             self.driver.get('https://site-ma.brazzers.com/login')
             self.driver.get('https://site-ma.brazzers.com/login')
             self.driver.get('https://site-ma.brazzers.com/login')
@@ -337,15 +345,19 @@ class scrapping_bot():
                 self.input_text(self.username,'Username','username',By.NAME)
                 self.input_text(self.password,'password','password',By.NAME)
                 self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
-                self.random_sleep(15,20)
-                if not 'https://site-ma.brazzers.com' in self.driver.current_url.lower() : continue
-                else : self.driver.get('https://site-ma.brazzers.com')
+                self.random_sleep(8,10)
+                if 'login' in self.driver.current_url.lower() : continue
+                else : 
+                    self.driver.get('https://site-ma.brazzers.com')
+                    return True
                 
-                account_ele = self.find_element('Accouunt','/html/body/div/div[1]/div[1]/div/div/section/div/nav/div/div/div[2]/div[2]/div[1]/a')
-                if account_ele:
-                    if account_ele.text.upper() == 'ACCOUNT' :
-                        return True
-                else: self.random_sleep()
+                # account_ele = self.find_element('Accouunt','/html/body/div/div[1]/div[1]/div/div/section/div/nav/div/div/div[2]/div[2]/div[1]/a')
+                # if account_ele:
+                #     breakpoint()
+                #     if account_ele.text.upper() == 'ACCOUNT' :
+                # else: 
+                #     breakpoint()
+                #     self.random_sleep()
         else : return False
 
     def brazzers_get_categories(self):
