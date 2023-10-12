@@ -63,7 +63,8 @@ class scrapping_bot():
         options.add_argument("--enable-webgl-draft-extensions")
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
-        options.add_argument('--headless')
+        options.add_argument('--disable-dev-shm-usage')
+        # options.add_argument('--headless')
         options.add_argument("--user-data-dir=./chromeprofile/profile")
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",

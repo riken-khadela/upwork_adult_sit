@@ -7,7 +7,7 @@ for _ in range(500):
         bot = scrapping_bot(brazzers_bot=True)
         bot.brazzers_delete_old_videos()
         bot.starting_brazzers_bots()
-        bot.connect_cyberghost_vpn()
+        # bot.connect_cyberghost_vpn()
         if bot.brazzers_login() :
             logggg = True
             bot.brazzers_get_categories()
