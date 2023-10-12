@@ -1,12 +1,23 @@
 from bot import scrapping_bot
+from utils import close_every_chrome
+logggg = False
+for _ in range(500):
+    # try:
+        # close_every_chrome()
+        bot = scrapping_bot(brazzers_bot=True)
+        bot.brazzers_delete_old_videos()
+        bot.starting_brazzers_bots()
+        bot.connect_cyberghost_vpn()
+        if bot.brazzers_login() :
+            logggg = True
+            bot.brazzers_get_categories()
+            bot.brazzers_get_videos_url()
+            bot.brazzers_download_video()
+            break
 
-bot = scrapping_bot(brazzers_bot=True)
-bot.brazzers_delete_old_videos()
-bot.starting_brazzers_bots()
-# bot.connect_cyberghost_vpn()
-if bot.brazzers_login() :
-    bot.brazzers_get_categories()
-    bot.brazzers_get_videos_url()
-    bot.brazzers_download_video()
-
-bot.CloseDriver()
+        bot.CloseDriver()
+        if logggg == True:break
+    # except : 
+    #     try:bot.CloseDriver()
+    #     except : ...
+    #     ...

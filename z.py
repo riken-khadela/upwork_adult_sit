@@ -9,11 +9,7 @@ options = Options()
 options.add_argument("start-maximized")
 options.add_argument('--headless')
 
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-# Enable error logging
-caps = DesiredCapabilities.CHROME
-caps['loggingPrefs'] = {'driver': 'INFO'}
 for _ in range(30):
     try:
         # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
@@ -23,5 +19,7 @@ for _ in range(30):
         break
     except Exception as e:
         print(e)
+                
+print(driver.execute_script(" var network = performance.getEntries() || {}; return network;"))
 breakpoint()
 driver.quit()

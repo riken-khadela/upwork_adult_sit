@@ -63,8 +63,8 @@ class scrapping_bot():
         options.add_argument("--enable-webgl-draft-extensions")
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
-        # options.add_argument('--headless')
-        options.add_argument("--user-data-dir=./chromeprofile/profiles/profile")
+        options.add_argument('--headless')
+        options.add_argument("--user-data-dir=./chromeprofile/profile")
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
                  'download.default_directory': downloads_directory,
@@ -106,7 +106,6 @@ class scrapping_bot():
                 # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
                 driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
                 driver.get('https://site-ma.brazzers.com/login')
-                print(driver.current_url,'------------------')
                 break
             except Exception as e:
                 print(e)
@@ -335,21 +334,33 @@ class scrapping_bot():
                     return
 
     def brazzers_login(self):
-        for _ in range(500):
-            self.driver.get('https://site-ma.brazzers.com/login')
-            self.driver.get('https://site-ma.brazzers.com/login')
-            self.driver.get('https://site-ma.brazzers.com/login')
-            self.random_sleep(a=5)
+        for _ in range(5):
+            for _ in range(3):
+                if self.find_element('load login page','username',By.NAME) : break
+                else:self.driver.get('https://site-ma.brazzers.com/login')
+            else:return False
             if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
-                    
+                time.sleep(1.5)
                 self.input_text(self.username,'Username','username',By.NAME)
                 self.input_text(self.password,'password','password',By.NAME)
                 self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
-                self.random_sleep(8,10)
-                if 'login' in self.driver.current_url.lower() : continue
-                else : 
-                    self.driver.get('https://site-ma.brazzers.com')
-                    return True
+                captcha = self.find_element('captcha','//div[@class="sc-1uy8azl-1 eGFidT"]')
+                if captcha :
+                    if captcha.text.lower() == "Captcha Verification. Failed Please try again.".lower():
+                        continue
+                
+                for _ in range(4):
+                    if 'store' in self.driver.current_url.lower() : 
+                        return True
+                    else: self.random_sleep()
+                  
+                # self.random_sleep(16,20)
+                # if 'login' in self.driver.current_url.lower() : 
+                #     self.driver.get('https://site-ma.brazzers.com/login')
+                #     continue
+                # else : 
+                #     self.driver.get('https://site-ma.brazzers.com')
+                #     return True
                 
                 # account_ele = self.find_element('Accouunt','/html/body/div/div[1]/div[1]/div/div/section/div/nav/div/div/div[2]/div[2]/div[1]/a')
                 # if account_ele:
@@ -402,11 +413,11 @@ class scrapping_bot():
             try :
                 for url_idx in range(1,24):
                     print(url_idx,'------------')
-                    video_date = self.find_element(f'video : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[{url_idx}]/div/div[2]/div[2]',timeout=3)
+                    video_date = self.find_element(f'video : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[2]/div[2]',timeout=3)
                     if video_date :
                         if self.date_older_or_not(video_date.text) :
-                            video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
-                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[2]/div/section/div/div[2]/div/div[2]/div/div[1]/a/div[1]/div/picture/img',timeout=3)
+                            video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
+                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a/div[1]/div/picture/img',timeout=3)
                             if video_ele and post_url:
                                 video_url = video_ele.get_attribute('href')
                                 post_url = post_url.get_attribute('src')
