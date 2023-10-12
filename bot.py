@@ -1,5 +1,4 @@
 import os,shutil, pandas as pd
-import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,9 +9,8 @@ from selenium import webdriver
 import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
 from selenium_stealth import stealth
-import requests, m3u8, m3u8_To_MP4
-
-# Open the JSON file
+import m3u8_To_MP4
+from webdriver_manager.chrome import ChromeDriverManager
 
 class scrapping_bot():
     
@@ -42,7 +40,6 @@ class scrapping_bot():
         
     def get_driver(self,add_cybeghost=False):
         # option = uc.ChromeOptions()
-        option = webdriver.ChromeOptions()
 
         # user_dir = f'{os.getcwd()}/chrome_profile'
         # option.add_argument(f'--user-data-dir={user_dir}')
@@ -64,7 +61,7 @@ class scrapping_bot():
         options.add_argument('log-level=3')  # No logs is printed.
         options.add_argument('--mute-audio')  # Audio is muted.
         options.add_argument("--enable-webgl-draft-extensions")
-        option.add_argument('--mute-audio')
+        options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         # options.add_argument('--headless')
         options.add_argument("--user-data-dir=./chromeprofile/profiles/profile")
@@ -105,7 +102,7 @@ class scrapping_bot():
             "disable-client-side-phishing-detection"])
         options.add_argument("disable-infobars")
         
-        driver = webdriver.Chrome( options=options)
+        driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
         stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",

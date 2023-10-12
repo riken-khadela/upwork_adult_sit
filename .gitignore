@@ -1,4 +1,7 @@
 env
+env2
 chrome_profile/*
 profiles/*
 chromeprofile/*
+z.py
+__pycache__
