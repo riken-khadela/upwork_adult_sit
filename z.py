@@ -1,7 +1,23 @@
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
-browser = webdriver.Chrome(ChromeDriverManager().install())
-browser.get('http://www.google.com')
+options = Options()
+options.add_argument("start-maximized")
+options.add_argument('--headless')
+
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+# Enable error logging
+caps = DesiredCapabilities.CHROME
+caps['loggingPrefs'] = {'driver': 'INFO'}
+# driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
+driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
+driver.get('https://site-ma.brazzers.com/login')
+driver.current_url
+
 breakpoint()
-browser.quit()
+driver.quit()

@@ -63,7 +63,7 @@ class scrapping_bot():
         options.add_argument("--enable-webgl-draft-extensions")
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         options.add_argument("--user-data-dir=./chromeprofile/profiles/profile")
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
@@ -102,7 +102,7 @@ class scrapping_bot():
             "disable-client-side-phishing-detection"])
         options.add_argument("disable-infobars")
         
-        driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
+        driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver1',options=options)
         stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",
