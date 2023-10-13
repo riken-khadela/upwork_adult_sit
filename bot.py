@@ -54,8 +54,9 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')
-        options.add_argument("--user-data-dir=./chromeprofile/profile")
+        # options.add_argument('--headless')
+        options.add_argument("--user-data-dir=/home/sajal/.config/google-chrome")
+        options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
                  'download.default_directory': downloads_directory,
