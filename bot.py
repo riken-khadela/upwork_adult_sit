@@ -309,7 +309,9 @@ class scrapping_bot():
         first_time = False
         for _ in range(5):
             for _ in range(3):
-                if self.find_element('load login page','username',By.NAME) : break
+                if first_time == False :
+                    first_time = True
+                    if self.find_element('load login page','username',By.NAME) : break
                 
                 self.driver.get('https://site-ma.brazzers.com/login')
             else:return False
