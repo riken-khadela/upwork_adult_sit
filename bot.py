@@ -318,8 +318,10 @@ class scrapping_bot():
                 self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
                 captcha = self.find_element('captcha','//div[@class="sc-1uy8azl-1 eGFidT"]')
                 if captcha :
-                    if captcha.text.lower() == "Captcha Verification. Failed Please try again.".lower():
+                    # if captcha.text.lower() == "Captcha Verification. Failed Please try again.".lower():
+                        
                         continue
+
                 
                 for _ in range(4):
                     if 'store' in self.driver.current_url.lower() : 
