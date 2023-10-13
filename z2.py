@@ -1,15 +1,14 @@
-import undetected_chromedriver as uc
-options = uc.ChromeOptions()
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
-# setting profile
+options = Options()
 options.add_argument("start-maximized")
-options.add_argument('--headless')
 options.add_argument('--disable-dev-shm-usage')
-# use specific (older) version
-driver = uc.Chrome(
-    options = options , version_main = 116
-    )  # version_main allows to specify your chrome version instead of following chrome global version
-driver.set_page_load_timeout(30)
-driver.get( 'https://nowsecure.nl' ) 
+options.add_argument('--user-data-dir=/home/dell/.config/google-chrome')
+options.add_argument('--profile-directory=Default')
+driver = webdriver.Chrome(options=options)
+driver.implicitly_wait(10)
+driver.get( 'https://www.google.com' ) 
 print(driver.current_url)
 breakpoint()
