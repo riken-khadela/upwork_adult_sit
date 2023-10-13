@@ -308,13 +308,15 @@ class scrapping_bot():
     def brazzers_login(self):
         first_time = False
         for _ in range(5):
-            for _ in range(3):
-                if first_time == False :
-                    first_time = True
-                    if self.find_element('load login page','username',By.NAME) : break
+            # for _ in range(3):
+            #     if first_time == False :
+            #         first_time = True
+            #         if self.find_element('load login page','username',By.NAME) : break
                 
-                self.driver.get('https://site-ma.brazzers.com/login')
-            else:return False
+            # else:return False
+            self.driver.get('https://site-ma.brazzers.com/login')
+            self.driver.get('https://site-ma.brazzers.com/login')
+            self.driver.get('https://site-ma.brazzers.com/login')
             if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                 time.sleep(1.5)
                 self.input_text(self.username,'Username','username',By.NAME)
