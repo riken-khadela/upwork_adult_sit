@@ -43,6 +43,9 @@ class scrapping_bot():
         
         downloads_directory = '/home/dell/Desktop/upwork/brazzers/downloads'
         """Start webdriver and return state of it."""
+        from selenium.webdriver.chrome.options import Options
+        options = Options()
+
         options = uc.ChromeOptions()
         options.add_argument('--lang=en')  # Set webdriver language to English.
         options.add_argument('log-level=3')  # No logs is printed.
@@ -51,7 +54,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')
+        # options.add_argument('--headless')
         options.add_argument("--user-data-dir=./chromeprofile/profile")
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
@@ -72,11 +75,12 @@ class scrapping_bot():
         for _ in range(30):
             try:
                 # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
-                driver = uc.Chrome(
-                    options = options , version_main = 118
-                    )  # version_main allows to specify your chrome version instead of following chrome global version
-                driver.set_page_load_timeout(30)
+                # driver = uc.Chrome(
+                #     options = options , version_main = 116
+                #     )  # version_main allows to specify your chrome version instead of following chrome global version
+                # driver.set_page_load_timeout(30)
                 # driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
+                driver = webdriver.Chrome(options=options)
                 driver.get('https://site-ma.brazzers.com/login')
                 break
             except Exception as e:
@@ -421,14 +425,14 @@ class scrapping_bot():
             master_url = []
             for _ in range(3):
                 self.driver.get(videoss_urll['video_url'])
-                self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
+                # self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
                 self.random_sleep(10,15)
                 networks_list = self.driver.execute_script(" var network = performance.getEntries() || {}; return network;")
                 for i in networks_list : 
                     if "mp4.urlset/master.m3u8" in i['name']:
                         master_url.append(i['name'])
                 video_name = f"{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
-                self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
+                # self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
                 if len(master_url) > 0: break
                 else: continue
             if len(master_url) > 0 :
