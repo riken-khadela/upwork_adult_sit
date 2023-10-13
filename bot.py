@@ -311,9 +311,7 @@ class scrapping_bot():
             for _ in range(3):
                 if self.find_element('load login page','username',By.NAME) : break
                 
-                if first_time == False :
-                    first_time = True
-                    self.driver.get('https://site-ma.brazzers.com/login')
+                self.driver.get('https://site-ma.brazzers.com/login')
             else:return False
             if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                 time.sleep(1.5)
