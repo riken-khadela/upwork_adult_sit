@@ -397,6 +397,7 @@ class scrapping_bot():
         driver_url = self.driver.current_url
         tags = driver_url.split('tags=')[-1]
         found_max_videos = self.download_videos_count * 1.5
+        self.random_sleep(6,10)
         for _ in range(10) :
             try :
                 for url_idx in range(1,24):
