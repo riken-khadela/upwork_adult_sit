@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from selenium_stealth import stealth
 import m3u8_To_MP4
 from webdriver_manager.chrome import ChromeDriverManager
+import undetected_chromedriver as uc
 
 class scrapping_bot():
     
@@ -39,24 +40,10 @@ class scrapping_bot():
             self.calculate_old_date(int(old_days))
         
     def get_driver(self,add_cybeghost=False):
-        # option = uc.ChromeOptions()
-
-        # user_dir = f'{os.getcwd()}/chrome_profile'
-        # option.add_argument(f'--user-data-dir={user_dir}')
-        # # option.add_argument('--user-data-dir=' + user_data_directory)
-        # option.add_argument('--no-sandbox')
-        # option.add_argument(f'--profile=main')
-        # option.add_argument('--disable-popup-blocking')
-        # option.add_argument('--disable-notifications')
-        # option.add_argument('--disable-infobars')
-        # option.add_argument('--disable-extensions')
-        # option.add_argument('start-maximized')
-        # option.add_argument('--mute-audio')
-        # if add_cybeghost :
-        #     option.add_extension('/home/dell/Desktop/upwork/brazzers/Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx')
+        
         downloads_directory = '/home/dell/Desktop/upwork/brazzers/downloads'
         """Start webdriver and return state of it."""
-        options = webdriver.ChromeOptions()  # Configure options for Chrome.
+        options = uc.ChromeOptions()
         options.add_argument('--lang=en')  # Set webdriver language to English.
         options.add_argument('log-level=3')  # No logs is printed.
         options.add_argument('--mute-audio')  # Audio is muted.
@@ -64,7 +51,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         options.add_argument("--user-data-dir=./chromeprofile/profile")
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
@@ -73,39 +60,23 @@ class scrapping_bot():
             'download.directory_upgrade': True,
             'safebrowsing.enabled': True , # Optional, enable safe browsing,
             "profile.password_manager_enabled": True}
-        # options.add_experimental_option('prefs', {
-        #     'download.default_directory': downloads_directory,
-        #     'download.prompt_for_download': False,  # Optional, suppress download prompt
-        #     'download.directory_upgrade': True,
-        #     'safebrowsing.enabled': True  # Optional, enable safe browsing
-        # })
         options.add_experimental_option("prefs", prefs)
         if add_cybeghost :
             options.add_extension('./Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx')#crx file path
         options.add_argument('--no-sandbox')
-        options.add_argument('--autoplay-policy=no-user-gesture-required')
         options.add_argument('--start-maximized')    
-        options.add_argument('--single-process')
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument("--disable-blink-features")
         options.add_argument("--ignore-certificate-errors")
         options.add_argument("--enable-javascript")
-        options.add_argument("--disable-notifications")
-        options.add_argument('--disable-blink-features=AutomationControlled')
         options.add_argument("--enable-popup-blocking")
-        options.add_experimental_option('useAutomationExtension', False)
-        options.add_experimental_option("excludeSwitches", [
-            "enable-logging",
-            "enable-automation",
-            "ignore-certificate-errors",
-            "safebrowsing-disable-download-protection",
-            "safebrowsing-disable-auto-update",
-            "disable-client-side-phishing-detection"])
-        options.add_argument("disable-infobars")
         for _ in range(30):
             try:
                 # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
-                driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
+                driver = uc.Chrome(
+                    options = options , version_main = 118
+                    )  # version_main allows to specify your chrome version instead of following chrome global version
+                driver.set_page_load_timeout(30)
+                # driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
                 driver.get('https://site-ma.brazzers.com/login')
                 break
             except Exception as e:
@@ -418,7 +389,7 @@ class scrapping_bot():
                     if video_date :
                         if self.date_older_or_not(video_date.text) :
                             video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
-                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a/div[1]/div/picture/img',timeout=3)
+                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a/div[1]/div/picture/img',timeout=0)
                             if video_ele and post_url:
                                 video_url = video_ele.get_attribute('href')
                                 post_url = post_url.get_attribute('src')
