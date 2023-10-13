@@ -73,7 +73,7 @@ class scrapping_bot():
             try:
                 # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
                 driver = uc.Chrome(
-                    options = options , version_main = 116
+                    options = options , version_main = 118
                     )  # version_main allows to specify your chrome version instead of following chrome global version
                 driver.set_page_load_timeout(30)
                 # driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
