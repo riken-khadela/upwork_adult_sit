@@ -329,11 +329,11 @@ class scrapping_bot():
                 self.input_text(self.username,'Username','username',By.NAME)
                 self.input_text(self.password,'password','password',By.NAME)
                 self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
-                captcha = self.find_element('captcha','//div[@class="sc-1uy8azl-1 eGFidT"]')
-                if captcha :
-                    # if captcha.text.lower() == "Captcha Verification. Failed Please try again.".lower():
+                # captcha = self.find_element('captcha','//div[@class="sc-1uy8azl-1 eGFidT"]')
+                # if captcha :
+                #     # if captcha.text.lower() == "Captcha Verification. Failed Please try again.".lower():
                         
-                        continue
+                #         continue
 
                 
                 for _ in range(4):
