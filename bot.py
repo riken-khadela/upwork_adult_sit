@@ -55,7 +55,7 @@ class scrapping_bot():
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
         # options.add_argument('--headless')
-        options.add_argument("--user-data-dir=/home/dell/.config/google-chrome")
+        options.add_argument("--user-data-dir=/home/riken/.config/google-chrome")
         options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
@@ -313,15 +313,20 @@ class scrapping_bot():
     def brazzers_login(self):
         first_time = False
         breakpoint()
+        self.driver.refresh()
         path = f"{os.getcwd()}/cookietest.json"
         if os.path.isfile(path):
             with open('cookietest.json','rb') as f:cookies = json.load(f)
             for item in cookies: self.driver.add_cookie(item)
+            self.random_sleep()
         self.driver.get('https://site-ma.brazzers.com/categories')
         
+        breakpoint()
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
+                if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
+                    self.driver.refresh()
                 self.input_text(self.username,'Username','username',By.NAME)
                 self.input_text(self.password,'password','password',By.NAME)
                 self.click_element('Submit','//button[@type="submit"]')
