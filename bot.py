@@ -29,11 +29,11 @@ class scrapping_bot():
             self.delete_old_days = str(self.config_data['brazzers']['delete_old_days'])
             self.calculate_old_date(int(old_days))
             
-            self.downloaded_videos_list = os.listdir('downloads')
 
 
 
             self.brazzers_delete_old_videos()
+            self.downloaded_videos_list = os.listdir('downloads')
             self.videos_collection = []
             self.videos_collection = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'))
             self.videos_collection = self.videos_collection.to_dict(orient='records')
@@ -524,6 +524,7 @@ class scrapping_bot():
             
     def brazzers_delete_old_videos(self):
         
+        if not os.path.exists(os.path.join(os.getcwd(),'downloads')) : os.makedirs(os.path.join(os.getcwd(),'downloads'))
         if not os.path.exists(os.path.join(os.getcwd(),'brazzers_videos.csv')) :
             column_names = ["Video-title","video_url","downloaded_time"]
             df = pd.DataFrame(columns=column_names)
