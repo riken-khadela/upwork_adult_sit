@@ -495,10 +495,6 @@ class scrapping_bot():
                     import os
                     if not os.path.exists(os.path.join(os.getcwd(),'videos')) : os.makedirs(os.path.join(os.getcwd(),'videos'))
                     # with open(os.path.join(os.getcwd(),f'videos/{video_name}.mp4'), 'w') as fp:  pass
-                    breakpoint()
-
-
-
 
                     self.click_element('download btn','//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]')
                     self.click_element('download 2160p','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[5]/ul/div/button[1]')
