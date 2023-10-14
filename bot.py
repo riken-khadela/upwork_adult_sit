@@ -20,16 +20,6 @@ class scrapping_bot():
             self.config_data = json.load(json_file)
 
         if brazzers_bot == True:
-            self.videos_collection = []
-            self.videos_collection = pd.read_csv('videos_details.csv')
-            self.videos_collection = self.videos_collection.to_dict(orient='records')
-
-            self.videos_data = []
-            self.videos_data = pd.read_csv('videos.csv')
-            self.videos_data = self.videos_data.to_dict(orient='records')
-
-            self.videos_urls = []
-            self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
             self.category = str(self.config_data['brazzers']['category'])
             old_days = str(self.config_data['brazzers']['old_days'])
             self.download_videos_count = int(self.config_data['brazzers']['download_videos'])
@@ -38,6 +28,18 @@ class scrapping_bot():
             self.password = str(self.config_data['brazzers']['password'])
             self.delete_old_days = str(self.config_data['brazzers']['delete_old_days'])
             self.calculate_old_date(int(old_days))
+            
+            self.brazzers_delete_old_videos()
+            self.videos_collection = []
+            self.videos_collection = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'))
+            self.videos_collection = self.videos_collection.to_dict(orient='records')
+
+            self.videos_data = []
+            self.videos_data = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
+            self.videos_data = self.videos_data.to_dict(orient='records')
+
+            self.videos_urls = []
+            self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
         
     def get_driver(self,add_cybeghost=False):
         
@@ -107,7 +109,7 @@ class scrapping_bot():
         # return self.driver
     
     def connect_vpn(self,vpn_country):
-        breakpoint()
+        
         self.driver.switch_to.window(self.driver.window_handles[0])
         self.driver.get('chrome-extension://ffbkglfijbcbgblgflchnbphjdllaogb/index.html')
         time.sleep(3)
@@ -155,7 +157,7 @@ class scrapping_bot():
             condition_func=EC.presence_of_element_located,
             condition_other_args=tuple()):
         """Find an element, then return it or None.
-        If timeout is less than or requal zero, then just find.breakpoint()
+        If timeout is less than or requal zero, then just find.
         If it is more than zero, then wait for the element present.
         """
         try:
@@ -417,7 +419,7 @@ class scrapping_bot():
                 self.driver.get(f'https://site-ma.brazzers.com/scenes?page={page_number}&tags={tags}')
                 page_number +=1
             else : break
-        # breakpoint()
+        # 
 
 
     def brazzers_download_video(self):
@@ -484,24 +486,34 @@ class scrapping_bot():
                     port_starts = self.find_element('pornstars','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/div[2]/h2')
                     if port_starts :
                         tmp['Pornstarts'] = port_starts.text
-                    breakpoint()
+                    
                     import os
                     if not os.path.exists(os.path.join(os.getcwd(),'videos')) : os.makedirs(os.path.join(os.getcwd(),'videos'))
-                    m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir= 'videos')
+                    m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir= os.path.join(os.getcwd(),'videos'))
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
 
-                    pd.DataFrame(self.videos_collection).to_csv('videos_details.csv',index=False)
-                    pd.DataFrame(self.videos_data).to_csv('videos.csv.csv',index=False)
+                    pd.DataFrame(self.videos_collection).to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'),index=False)
+                    pd.DataFrame(self.videos_data).to_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'),index=False)
                 except Exception as e :
                     print('Error :', e)
             
     def brazzers_delete_old_videos(self):
-        df = pd.read_csv('videos.csv')
-
-        df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
-        temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
         
+        if not os.path.exists(os.path.join(os.getcwd(),'brazzers_videos.csv')) :
+            column_names = ["Video-title","video_url","downloaded_time"]
+            df = pd.DataFrame(columns=column_names)
+            df.to_csv('brazzers_videos.csv', index=False)
+
+        if not os.path.exists(os.path.join(os.getcwd(),'brazzers_videos_details.csv')) :
+            column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri","Video-name","Pornstarts"]
+            df = pd.DataFrame(columns=column_names)
+            df.to_csv('brazzers_videos_details.csv', index=False)
+
+        df = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
+        df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
+        
+        temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
         for idx,row in temp_df.iterrows() : 
             print(row['Video-title'])
             self.find_and_delete_video('videos',row['Video-title'])
