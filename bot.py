@@ -29,6 +29,10 @@ class scrapping_bot():
             self.delete_old_days = str(self.config_data['brazzers']['delete_old_days'])
             self.calculate_old_date(int(old_days))
             
+            self.downloaded_videos_list = os.listdir('downloads')
+
+
+
             self.brazzers_delete_old_videos()
             self.videos_collection = []
             self.videos_collection = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'))
@@ -56,7 +60,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')
+        # options.add_argument('--headless')
         options.add_argument("--user-data-dir=/home/sajal/.config/google-chrome")
         options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
@@ -493,7 +497,23 @@ class scrapping_bot():
                     if not os.path.exists(os.path.join(os.getcwd(),'videos')) : os.makedirs(os.path.join(os.getcwd(),'videos'))
                     # with open(os.path.join(os.getcwd(),f'videos/{video_name}.mp4'), 'w') as fp:  pass
                     breakpoint()
-                    m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name='video.mp4',mp4_file_dir= os.path.join(os.getcwd(),'videos'))
+
+
+
+
+                    self.click_element('download btn','//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]')
+                    self.click_element('download 2160p','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[5]/ul/div/button[1]')
+
+                    new_video_download = ''
+
+                    for i_down in os.listdir('downloads') : 
+                        if i_down not in self.downloaded_videos_list :
+                            new_video_download = i_down
+                            break
+
+                    while os.path.exists(os.path.join(os.getcwd(),new_video_download)) : pass
+                        
+                    # m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name='video.mp4',mp4_file_dir= os.path.join(os.getcwd(),'videos'))
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
 
