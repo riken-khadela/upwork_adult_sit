@@ -47,7 +47,7 @@ class scrapping_bot():
         
     def get_driver(self,add_cybeghost=False):
         
-        downloads_directory = '/home/dell/Desktop/upwork/brazzers/downloads'
+        downloads_directory = '/home/sajal/Desktop/upwork/brazzers/downloads'
         """Start webdriver and return state of it."""
         from selenium.webdriver.chrome.options import Options
         options = Options()
@@ -64,8 +64,8 @@ class scrapping_bot():
         # options.add_argument("--user-data-dir=/home/dell/.config/google-chrome")
         # options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
-                 "download.default_directory" : "./downloads",
-                 'download.default_directory': downloads_directory,
+                 "download.default_directory" : f"{os.path.join(os.getcwd(),'downloads')}",
+                 'download.default_directory': f"{os.path.join(os.getcwd(),'downloads')}",
             'download.prompt_for_download': False,  # Optional, suppress download prompt
             'download.directory_upgrade': True,
             'safebrowsing.enabled': True , # Optional, enable safe browsing,
@@ -510,7 +510,7 @@ class scrapping_bot():
                         if i_down not in self.downloaded_videos_list :
                             new_video_download = i_down
                             break
-
+                    print(new_video_download,'-----------------')
                     while True :
                         if os.path.exists(os.path.join(os.getcwd(),new_video_download)) : pass
                         else : break
