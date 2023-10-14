@@ -54,8 +54,8 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')
-        options.add_argument("--user-data-dir=/home/sajal/.config/google-chrome")
+        # options.add_argument('--headless')
+        options.add_argument("--user-data-dir=/home/dell/.config/google-chrome")
         options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : "./downloads",
@@ -312,52 +312,46 @@ class scrapping_bot():
 
     def brazzers_login(self):
         first_time = False
-        for _ in range(5):
-            # for _ in range(3):
-            #     if first_time == False :
-            #         first_time = True
-            #         if self.find_element('load login page','username',By.NAME) : break
-                
-            # else:return False
-            print(1)
-            self.driver.get('https://site-ma.brazzers.com/login')
-            print(2)
-            self.driver.get('https://site-ma.brazzers.com/login')
-            print(3 )
-            self.driver.get('https://site-ma.brazzers.com/login')
-            if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
+        breakpoint()
+        path = f"{os.getcwd()}/cookietest.json"
+        if os.path.isfile(path):
+            with open('cookietest.json','rb') as f:cookies = json.load(f)
+            for item in cookies: self.driver.add_cookie(item)
+        self.driver.get('https://site-ma.brazzers.com/categories')
+        
+        if self.driver.current_url != "https://site-ma.brazzers.com/store":
+            for _ in range(3):
                 time.sleep(1.5)
                 self.input_text(self.username,'Username','username',By.NAME)
                 self.input_text(self.password,'password','password',By.NAME)
-                self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
-                # captcha = self.find_element('captcha','//div[@class="sc-1uy8azl-1 eGFidT"]')
-                # if captcha :
-                #     # if captcha.text.lower() == "Captcha Verification. Failed Please try again.".lower():
-                        
-                #         continue
-
-                
+                self.click_element('Submit','//button[@type="submit"]')
                 for _ in range(4):
-                    if 'store' in self.driver.current_url.lower() : 
+                    if "login" not in self.driver.current_url:
+                        cookies = self.driver.get_cookies()
+                        with open('cookietest.json', 'w', newline='') as outputdata:
+                            json.dump(cookies, outputdata)
                         return True
-                    else: self.random_sleep()
-                  
-                # self.random_sleep(16,20)
-                # if 'login' in self.driver.current_url.lower() : 
-                #     self.driver.get('https://site-ma.brazzers.com/login')
-                #     continue
-                # else : 
-                #     self.driver.get('https://site-ma.brazzers.com')
-                #     return True
-                
-                # account_ele = self.find_element('Accouunt','/html/body/div/div[1]/div[1]/div/div/section/div/nav/div/div/div[2]/div[2]/div[1]/a')
-                # if account_ele:
-                #     breakpoint()
-                #     if account_ele.text.upper() == 'ACCOUNT' :
-                # else: 
-                #     breakpoint()
-                #     self.random_sleep()
-        else : return False
+                    self.random_sleep()
+                self.driver.delete_all_cookies()
+                self.driver.refresh()
+            return False
+        return False
+        # self.driver.get(self.brazzers_category_url)
+        # if 'store' in self.driver.current_url.lower() : return True
+
+        # for _ in range(5):
+        #     self.driver.get('https://site-ma.brazzers.com/login')
+        #     if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
+        #         time.sleep(1.5)
+        #         self.input_text(self.username,'Username','username',By.NAME)
+        #         self.input_text(self.password,'password','password',By.NAME)
+        #         self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
+                                
+        #         for _ in range(4):
+        #             if 'store' in self.driver.current_url.lower() : 
+        #                 return True
+        #             else: self.random_sleep()
+        # else : return False
 
     def brazzers_get_categories(self):
         
@@ -486,9 +480,10 @@ class scrapping_bot():
                     port_starts = self.find_element('pornstars','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/div[2]/h2')
                     if port_starts :
                         tmp['Pornstarts'] = port_starts.text
-
-
-                    m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir='videos')
+                    breakpoint()
+                    import os
+                    if not os.path.exists(os.path.join(os.getcwd(),'videos')) : os.makedirs(os.path.join(os.getcwd(),'videos'))
+                    m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name,mp4_file_dir= 'videos')
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
 
