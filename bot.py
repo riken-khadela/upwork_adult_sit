@@ -491,6 +491,7 @@ class scrapping_bot():
                     
                     import os
                     if not os.path.exists(os.path.join(os.getcwd(),'videos')) : os.makedirs(os.path.join(os.getcwd(),'videos'))
+                    with open(os.path.join(os.getcwd(),f'videos/{video_name}.mp4'), 'w') as fp:  pass
                     m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name=video_name)
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
