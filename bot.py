@@ -512,7 +512,7 @@ class scrapping_bot():
                             break
 
                     while os.path.exists(os.path.join(os.getcwd(),new_video_download)) : pass
-                        
+                    os.rename(os.path.join(os.getcwd(),new_video_download.replace('.crdownload','')),f'{video_name}.mp4')
                     # m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name='video.mp4',mp4_file_dir= os.path.join(os.getcwd(),'videos'))
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
