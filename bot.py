@@ -84,7 +84,7 @@ class scrapping_bot():
                 # driver.set_page_load_timeout(30)
                 # driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
                 driver = webdriver.Chrome(options=options)
-                driver.get('https://site-ma.brazzers.com/login')
+                driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
                 print(e)
@@ -320,7 +320,7 @@ class scrapping_bot():
             with open('cookietest.json','rb') as f:cookies = json.load(f)
             for item in cookies: self.driver.add_cookie(item)
             self.random_sleep()
-        self.driver.get('https://site-ma.brazzers.com/categories')
+        self.driver.get('https://site-ma.brazzers.com/store')
         
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
