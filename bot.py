@@ -54,7 +54,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         options.add_argument("--user-data-dir=/home/riken/.config/google-chrome")
         options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
