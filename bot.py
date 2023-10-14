@@ -322,6 +322,7 @@ class scrapping_bot():
             self.random_sleep()
         self.driver.get('https://site-ma.brazzers.com/store')
         
+
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
@@ -341,7 +342,8 @@ class scrapping_bot():
                 self.driver.delete_all_cookies()
                 self.driver.refresh()
             return False
-        return False
+        else :
+            return True
         # self.driver.get(self.brazzers_category_url)
         # if 'store' in self.driver.current_url.lower() : return True
 
