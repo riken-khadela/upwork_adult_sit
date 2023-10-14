@@ -65,7 +65,6 @@ class scrapping_bot():
         # options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : f"{os.path.join(os.getcwd(),'downloads')}",
-                 'download.default_directory': f"{os.path.join(os.getcwd(),'downloads')}",
             'download.prompt_for_download': False,  # Optional, suppress download prompt
             'download.directory_upgrade': True,
             'safebrowsing.enabled': True , # Optional, enable safe browsing,
