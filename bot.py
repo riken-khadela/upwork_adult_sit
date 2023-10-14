@@ -312,7 +312,6 @@ class scrapping_bot():
 
     def brazzers_login(self):
         first_time = False
-        breakpoint()
         self.driver.refresh()
         path = f"{os.getcwd()}/cookietest.json"
         if os.path.isfile(path):
@@ -321,22 +320,22 @@ class scrapping_bot():
             self.random_sleep()
         self.driver.get('https://site-ma.brazzers.com/categories')
         
-        breakpoint()
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.driver.refresh()
-                self.input_text(self.username,'Username','username',By.NAME)
-                self.input_text(self.password,'password','password',By.NAME)
-                self.click_element('Submit','//button[@type="submit"]')
-                for _ in range(4):
-                    if "login" not in self.driver.current_url:
-                        cookies = self.driver.get_cookies()
-                        with open('cookietest.json', 'w', newline='') as outputdata:
-                            json.dump(cookies, outputdata)
-                        return True
-                    self.random_sleep()
+                if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
+                    self.input_text(self.username,'Username','username',By.NAME)
+                    self.input_text(self.password,'password','password',By.NAME)
+                    self.click_element('Submit','//button[@type="submit"]')
+                    for _ in range(4):
+                        if "login" not in self.driver.current_url:
+                            cookies = self.driver.get_cookies()
+                            with open('cookietest.json', 'w', newline='') as outputdata:
+                                json.dump(cookies, outputdata)
+                            return True
+                        self.random_sleep()
                 self.driver.delete_all_cookies()
                 self.driver.refresh()
             return False
