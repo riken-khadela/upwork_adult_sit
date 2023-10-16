@@ -304,7 +304,7 @@ class scrapping_bot():
         self.driver.get('https://site-ma.brazzers.com/store')
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
         
-        self.random_sleep(3,5)
+        self.random_sleep(5,7)
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
