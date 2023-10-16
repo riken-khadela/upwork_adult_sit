@@ -4,12 +4,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException,ElementNotInteractableException,NoSuchElementException,WebDriverException
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver  
 import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
 from selenium_stealth import stealth
-import m3u8_To_MP4
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 
@@ -61,8 +59,6 @@ class scrapping_bot():
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--headless')
-        # options.add_argument("--user-data-dir=/home/dell/.config/google-chrome")
-        # options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : f"{os.path.join(os.getcwd(),'downloads')}",
             'download.prompt_for_download': False,  # Optional, suppress download prompt
@@ -80,18 +76,11 @@ class scrapping_bot():
         options.add_argument("--enable-popup-blocking")
         for _ in range(30):
             try:
-                # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver',options=options)
-                # driver = uc.Chrome(
-                #     options = options , version_main = 116
-                #     )  # version_main allows to specify your chrome version instead of following chrome global version
-                # driver.set_page_load_timeout(30)
-                # driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
                 driver = webdriver.Chrome(options=options)
                 driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
                 print(e)
-        # driver = webdriver.Chrome(executable_path='/home/dell/Desktop/upwork/brazzers/chromedriver1',options=options)
         stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",
@@ -102,14 +91,6 @@ class scrapping_bot():
             )
         self.driver = driver
         return self.driver
-
-        # # driver = uc.Chrome(options=option)
-        # # driver = uc.Chrome()
-        # driver = webdriver.Chrome(options=option)
-        # self.driver = driver
-        # self.driver.maximize_window()
-        
-        # return self.driver
     
     def connect_vpn(self,vpn_country):
         
@@ -240,12 +221,12 @@ class scrapping_bot():
             self.driver.quit()
             print('Driver is closed !')
         except Exception as e: ...
+        
     def calculate_old_date(self, days = 30) : 
         """ get old date from today's by the accepting date and return datetime object"""
         today = datetime.now()
         self.old_date = today - timedelta(days=days)
         return self.old_date
-        ...
 
     def date_older_or_not(self,date_string=''):
         if date_string :
@@ -270,8 +251,8 @@ class scrapping_bot():
                 if not "disconnected" in connected_btn.get_attribute('class') : 
                     self.click_element('connected vpn circle','/html/body/app-root/main/app-home/div/div[2]/app-switch/div')
                     self.random_sleep()
-                    # return
-                else: self.random_sleep(5,10)
+                else: 
+                    self.random_sleep(5,10)
 
             self.driver.execute_script('document.querySelector("body > app-root > main > app-home > div > div.servers.en > mat-form-field > div > div.mat-form-field-flex.ng-tns-c19-0 > div").click()')
             self.driver.execute_script('document.querySelector("body > div.cdk-overlay-container > div.cdk-overlay-backdrop.cdk-overlay-transparent-backdrop.cdk-overlay-backdrop-showing").click()')
@@ -317,52 +298,40 @@ class scrapping_bot():
 
     def brazzers_login(self):
         first_time = False
-        self.driver.refresh()
         path = f"{os.getcwd()}/cookietest.json"
         if os.path.isfile(path):
             with open('cookietest.json','rb') as f:cookies = json.load(f)
             for item in cookies: self.driver.add_cookie(item)
             self.random_sleep()
         self.driver.get('https://site-ma.brazzers.com/store')
+        while not self.driver.execute_script("return document.readyState === 'complete'"):pass
         
-
+        self.random_sleep(3,5)
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.driver.refresh()
                 if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
+                    self.random_sleep(1,1)
                     self.input_text(self.username,'Username','username',By.NAME)
+                    self.random_sleep(1,1)
                     self.input_text(self.password,'password','password',By.NAME)
+                    self.random_sleep(1,1)
                     self.click_element('Submit','//button[@type="submit"]')
+                    self.random_sleep(2,3)
                     for _ in range(4):
                         if "login" not in self.driver.current_url:
                             cookies = self.driver.get_cookies()
                             with open('cookietest.json', 'w', newline='') as outputdata:
                                 json.dump(cookies, outputdata)
                             return True
-                        self.random_sleep()
+                        self.random_sleep(2,3)
                 self.driver.delete_all_cookies()
                 self.driver.refresh()
             return False
         else :
             return True
-        # self.driver.get(self.brazzers_category_url)
-        # if 'store' in self.driver.current_url.lower() : return True
-
-        # for _ in range(5):
-        #     self.driver.get('https://site-ma.brazzers.com/login')
-        #     if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
-        #         time.sleep(1.5)
-        #         self.input_text(self.username,'Username','username',By.NAME)
-        #         self.input_text(self.password,'password','password',By.NAME)
-        #         self.click_element('Submit','/html/body/div[1]/div[1]/div[1]/div[1]/div/div/div/form/button')
-                                
-        #         for _ in range(4):
-        #             if 'store' in self.driver.current_url.lower() : 
-        #                 return True
-        #             else: self.random_sleep()
-        # else : return False
 
     def brazzers_get_categories(self):
         
@@ -398,12 +367,15 @@ class scrapping_bot():
             return False
         
     def brazzers_get_videos_url(self):
+        df1 = pd.read_csv('brazzers_videos_details.csv')
+        df_url = df1['Url'].values.tolist()
         page_number = 2
         driver_url = self.driver.current_url
         tags = driver_url.split('tags=')[-1]
         found_max_videos = self.download_videos_count * 1.5
         self.random_sleep(6,10)
         for _ in range(10) :
+            while not self.driver.execute_script("return document.readyState === 'complete'"):pass
             try :
                 for url_idx in range(1,24):
                     print(url_idx,'------------')
@@ -415,7 +387,7 @@ class scrapping_bot():
                             if video_ele and post_url:
                                 video_url = video_ele.get_attribute('href')
                                 post_url = post_url.get_attribute('src')
-                                if video_url and post_url:
+                                if video_url and post_url and video_url not in df_url:
                                     self.videos_urls.append({"video_url":video_url,'post_url':post_url})
 
             except Exception as e :
@@ -428,18 +400,16 @@ class scrapping_bot():
 
 
     def brazzers_download_video(self):
-        for idx,videoss_urll in enumerate(self.videos_urls) :
+        for idx,videoss_urll in enumerate(self.videos_urls) :            
             master_url = []
             for _ in range(3):
                 self.driver.get(videoss_urll['video_url'])
-                # self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
                 self.random_sleep(10,15)
                 networks_list = self.driver.execute_script(" var network = performance.getEntries() || {}; return network;")
-                for i in networks_list : 
+                for i in networks_list :
                     if "mp4.urlset/master.m3u8" in i['name']:
                         master_url.append(i['name'])
                 video_name = f"{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
-                # self.click_element('video play button','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[2]/div/section/div/div/button[1]',timeout=30)
                 if len(master_url) > 0: break
                 else: continue
             if len(master_url) > 0 :
@@ -492,28 +462,42 @@ class scrapping_bot():
                     if port_starts :
                         tmp['Pornstarts'] = port_starts.text
                     
-                    import os
-                    if not os.path.exists(os.path.join(os.getcwd(),'videos')) : os.makedirs(os.path.join(os.getcwd(),'videos'))
-                    # with open(os.path.join(os.getcwd(),f'videos/{video_name}.mp4'), 'w') as fp:  pass
-
                     self.click_element('download btn','//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]')
                     self.click_element('download 2160p','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[5]/ul/div/button[1]')
 
                     new_video_download = ''
-
-                    for i_down in os.listdir('downloads') : 
-                        if i_down not in self.downloaded_videos_list :
-                            new_video_download = i_down
+                    self.random_sleep(2,3)
+                    seconds = 0
+                    while seconds < 20 :
+                        time.sleep(1)
+                        new_video_download = next((i_down for i_down in os.listdir('downloads') if i_down not in self.downloaded_videos_list), None)
+                        if new_video_download:
+                            print('New video file name -----------------',new_video_download)
                             break
-                    print(new_video_download,'-----------------')
+                        else:
+                            seconds+=1
+
+                    if len(self.driver.window_handles) == 1:
+                        self.driver.execute_script("window.open()")
+                        self.driver.switch_to.window(self.driver.window_handles[-1])
+                        self.driver.get('chrome://downloads')
+                    else:
+                        self.driver.switch_to.window(self.driver.window_handles[-1])
+                    import sys
                     while True :
-                        if os.path.exists(os.path.join(os.getcwd(),new_video_download)) : pass
-                        else : break
+                        download_progress = self.driver.execute_script('return document.querySelector("body > downloads-manager").shadowRoot.querySelector("#frb0").shadowRoot.querySelector("#description").textContent')
+                        if download_progress == "\n      \n    ":
+                            break
+                        else:
+                            sys.stdout.write("\r" + download_progress.split('-')[-1].strip())
+                            sys.stdout.flush()
+                        time.sleep(0.5)
+                    
+                    self.driver.switch_to.window(self.driver.window_handles[0])
+                    self.random_sleep(2,3)
                     os.rename(os.path.join(os.getcwd(),f'downloads/{new_video_download.replace(".crdownload","")}'),os.path.join(os.getcwd(),f'downloads/{video_name}.mp4'))
-                    # m3u8_To_MP4.multithread_download(master_url[0],mp4_file_name='video.mp4',mp4_file_dir= os.path.join(os.getcwd(),'videos'))
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
-
                     pd.DataFrame(self.videos_collection).to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'),index=False)
                     pd.DataFrame(self.videos_data).to_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'),index=False)
                 except Exception as e :
