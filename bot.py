@@ -5,7 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException,ElementNotInteractableException,NoSuchElementException,WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver  
-import json, random, time, pandas as pd, os
+import requests
+import json, random, time, pandas as pd, os, sys
 from datetime import datetime, timedelta
 from selenium_stealth import stealth
 from webdriver_manager.chrome import ChromeDriverManager
@@ -26,7 +27,6 @@ class scrapping_bot():
             self.password = str(self.config_data['brazzers']['password'])
             self.delete_old_days = str(self.config_data['brazzers']['delete_old_days'])
             self.calculate_old_date(int(old_days))
-            
 
 
 
@@ -285,16 +285,12 @@ class scrapping_bot():
                     return
 
     def find_and_delete_video(self,folder_path, video_title):
-        files = os.listdir(folder_path)
-
-        for file in files:
-            if file.lower().endswith((".mp4", ".avi", ".mkv")):
-                if video_title.lower() in file.lower():
-                    file_path = os.path.join(folder_path, file)
-
-                    os.remove(file_path)
-                    print(f"Deleted: {file_path}")
-                    return
+        for file in os.listdir(folder_path):
+            if file.lower().endswith((".mp4", ".avi", ".mkv")) and video_title.lower() in file.lower():
+                file_path = os.path.join(folder_path, file)
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
+                return
 
     def brazzers_login(self):
         first_time = False
@@ -374,12 +370,13 @@ class scrapping_bot():
         tags = driver_url.split('tags=')[-1]
         found_max_videos = self.download_videos_count * 1.5
         self.random_sleep(6,10)
-        for _ in range(10) :
-            while not self.driver.execute_script("return document.readyState === 'complete'"):pass
+        while True:
             try :
                 for url_idx in range(1,24):
                     print(url_idx,'------------')
                     video_date = self.find_element(f'video : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[2]/div[2]',timeout=3)
+                    self.driver.execute_script("arguments[0].scrollIntoView();", video_date)
+                    time.sleep(0.3)
                     if video_date :
                         if self.date_older_or_not(video_date.text) :
                             video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
@@ -389,18 +386,17 @@ class scrapping_bot():
                                 post_url = post_url.get_attribute('src')
                                 if video_url and post_url and video_url not in df_url:
                                     self.videos_urls.append({"video_url":video_url,'post_url':post_url})
-
             except Exception as e :
                 print(e) 
             if len(self.videos_urls) < found_max_videos :
                 self.driver.get(f'https://site-ma.brazzers.com/scenes?page={page_number}&tags={tags}')
                 page_number +=1
             else : break
-        # 
 
 
     def brazzers_download_video(self):
-        for idx,videoss_urll in enumerate(self.videos_urls) :            
+        for idx,videoss_urll in enumerate(self.videos_urls) : 
+            # if idx == 0: continue          
             master_url = []
             for _ in range(3):
                 self.driver.get(videoss_urll['video_url'])
@@ -420,11 +416,14 @@ class scrapping_bot():
                     "Title" : '',
                     "Discription" : "",
                     "Release-Date" : "",
-                    "Poster-Image_uri" : videoss_urll['video_url'],
+                    "Poster-Image_uri" : videoss_urll['post_url'],
                     "Video-name" : f'{video_name}.mp4',
+                    "Photo-name" : f'{video_name}.jpg',
                     "Pornstarts" : ''
                 }
                 try:
+                    response = requests.get(tmp['Poster-Image_uri'])
+                    with open(f'photos/{video_name}.jpg', 'wb') as f:f.write(response.content)
                     likes_count = self.find_element('Likes count','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[7]/span[1]/strong')
                     if likes_count :
                         tmp['Likes'] = likes_count.text
@@ -470,32 +469,39 @@ class scrapping_bot():
                     seconds = 0
                     while seconds < 20 :
                         time.sleep(1)
-                        new_video_download = next((i_down for i_down in os.listdir('downloads') if i_down not in self.downloaded_videos_list), None)
+                        new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')][0]
                         if new_video_download:
                             print('New video file name -----------------',new_video_download)
                             break
                         else:
                             seconds+=1
 
-                    if len(self.driver.window_handles) == 1:
-                        self.driver.execute_script("window.open()")
-                        self.driver.switch_to.window(self.driver.window_handles[-1])
-                        self.driver.get('chrome://downloads')
-                    else:
-                        self.driver.switch_to.window(self.driver.window_handles[-1])
-                    import sys
-                    while True :
-                        download_progress = self.driver.execute_script('return document.querySelector("body > downloads-manager").shadowRoot.querySelector("#frb0").shadowRoot.querySelector("#description").textContent')
-                        if download_progress == "\n      \n    ":
-                            break
-                        else:
-                            sys.stdout.write("\r" + download_progress.split('-')[-1].strip())
-                            sys.stdout.flush()
-                        time.sleep(0.5)
+                    # if len(self.driver.window_handles) == 1:
+                    #     self.driver.execute_script("window.open()")
+                    #     self.driver.switch_to.window(self.driver.window_handles[-1])
+                    #     self.driver.get('chrome://downloads')
+                    # else:
+                    #     self.driver.switch_to.window(self.driver.window_handles[-1])
+
                     
-                    self.driver.switch_to.window(self.driver.window_handles[0])
+                    while True :
+                        if os.path.isfile(f'downloads/{new_video_download}'):
+                            sys.stdout.write("\rDownloding ...........")
+                            sys.stdout.flush()
+                        else:
+                            sys.stdout.write("\rDownloding Complete...")
+                            sys.stdout.flush()
+                            self.random_sleep(3,5)
+                            break
+                        # download_progress = self.driver.execute_script('return document.querySelector("body > downloads-manager").shadowRoot.querySelector("#frb0").shadowRoot.querySelector("#progress").shadowRoot.querySelector("#primaryProgress")')
+                        # download_progress = self.driver.execute_script('return document.querySelector("body > downloads-manager").shadowRoot.querySelector("#frb0").shadowRoot.querySelector("#description").textContent')
+                        # if download_progress == "\n      \n    ":
+                        #     break
+                        # else:
+                        time.sleep(0.5)
+                    # self.driver.switch_to.window(self.driver.window_handles[0])
                     self.random_sleep(2,3)
-                    os.rename(os.path.join(os.getcwd(),f'downloads/{new_video_download.replace(".crdownload","")}'),os.path.join(os.getcwd(),f'downloads/{video_name}.mp4'))
+                    os.rename(os.path.join(os.getcwd(),f'downloads/{new_video_download.replace(".crdownload","")}'),os.path.join(os.getcwd(),f'downloads/{video_name}.mp4')) 
                     self.videos_collection.append(tmp)
                     self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
                     pd.DataFrame(self.videos_collection).to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'),index=False)
@@ -506,13 +512,14 @@ class scrapping_bot():
     def brazzers_delete_old_videos(self):
         
         if not os.path.exists(os.path.join(os.getcwd(),'downloads')) : os.makedirs(os.path.join(os.getcwd(),'downloads'))
+        if not os.path.exists(os.path.join(os.getcwd(),'photos')) : os.makedirs(os.path.join(os.getcwd(),'photos'))
         if not os.path.exists(os.path.join(os.getcwd(),'brazzers_videos.csv')) :
             column_names = ["Video-title","video_url","downloaded_time"]
             df = pd.DataFrame(columns=column_names)
             df.to_csv('brazzers_videos.csv', index=False)
 
         if not os.path.exists(os.path.join(os.getcwd(),'brazzers_videos_details.csv')) :
-            column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri","Video-name","Pornstarts"]
+            column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri","Video-name","Photo-name","Pornstarts"]
             df = pd.DataFrame(columns=column_names)
             df.to_csv('brazzers_videos_details.csv', index=False)
 

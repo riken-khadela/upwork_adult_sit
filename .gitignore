@@ -14,3 +14,4 @@ downloads/*
 db.sqlite3
 .vscode
 chrome
+photos/*
