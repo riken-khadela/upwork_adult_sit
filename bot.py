@@ -59,11 +59,13 @@ class scrapping_bot():
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--headless')
+        options.add_argument(f'--user-data-dir={os.getcwd()}')
+        options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : f"{os.path.join(os.getcwd(),'downloads')}",
             'download.prompt_for_download': False,  # Optional, suppress download prompt
             'download.directory_upgrade': True,
-            'safebrowsing.enabled': True , # Optional, enable safe browsing,
+            'safebrowsing.enabled': True ,
             "profile.password_manager_enabled": True}
         options.add_experimental_option("prefs", prefs)
         if add_cybeghost :
