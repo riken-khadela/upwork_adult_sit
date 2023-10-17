@@ -16,7 +16,3 @@ for _ in range(500):
 
         bot.CloseDriver()
         if logggg == True:break
-    # except : 
-    #     try:bot.CloseDriver()
-    #     except : ...
-    #     ...
