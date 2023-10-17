@@ -28,7 +28,8 @@ def user_logged_in_callback(sender, request, user, **kwargs):
         video_name = str(video_file).split('/')[-1]
         print(video_name)
         if len(df[df['Video-name'] == video_name]) == 0:
-            os.remove(video_file)
+            if video_file.endswith('.mp4') or video_file.endswith('.jpg'):
+                os.remove(video_file)
         else:
             if not videos_collection.objects.filter(Video_name=video_name):
                 video_data = df[df['Video-name'] == video_name].to_dict(orient='records')[0]
