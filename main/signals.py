@@ -26,7 +26,6 @@ def user_logged_in_callback(sender, request, user, **kwargs):
     df[['Disclike']] = df[['Disclike']].fillna(0)
     for video_file in video_files:
         video_name = str(video_file).split('/')[-1]
-        print(video_name)
         if len(df[df['Video-name'] == video_name]) == 0:
             if video_file.endswith('.mp4') or video_file.endswith('.jpg'):
                 os.remove(video_file)
@@ -44,9 +43,7 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                     'Discription': video_data.get('Discription', None),
                     'Pornstarts': video_data.get('Pornstarts', None),
                 }
-                print(video_data_dict)
                 video_obj = videos_collection.objects.create(**video_data_dict)
-                print(video_obj.Video_name)
     for video_obj in videos_collection.objects.all():
         if video_obj.Video_name not in df['Video-name'].values:
             video_obj.delete()
