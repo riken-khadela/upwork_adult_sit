@@ -22,6 +22,8 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                     video_files.append(os.path.join(root, file))
 
     df = pd.read_csv('brazzers_videos_details.csv')
+    df[['Likes']] = df[['Likes']].fillna(0)
+    df[['Disclike']] = df[['Disclike']].fillna(0)
     for video_file in video_files:
         video_name = str(video_file).split('/')[-1]
         print(video_name)
@@ -33,21 +35,19 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                 video_data_dict = {
                     'Video_name': video_data.get('Video-name', None),
                     'Release_Date': timezone.make_aware(datetime.strptime(video_data['Release-Date'], "%B %d, %Y"),pytz.timezone('Asia/Kolkata')),
-                    'Poster_Image_uri': video_data.get('Poster-Image_uri', None),
+                    'Poster_Image_uri': video_data.get('poster_download_uri', None),
                     'Likes': video_data.get('Likes', 0),
                     'Disclike': video_data.get('Disclike', 0),
-                    'Url': video_data.get('Url', None),
+                    'Url': video_data.get('video_download_url', None),
                     'Title': video_data.get('Title', None),
                     'Discription': video_data.get('Discription', None),
                     'Pornstarts': video_data.get('Pornstarts', None),
                 }
                 print(video_data_dict)
-                # breakpoint()
                 video_obj = videos_collection.objects.create(**video_data_dict)
                 print(video_obj.Video_name)
-
     for video_obj in videos_collection.objects.all():
-        if df[df['Video-name'] == video_obj.Video_name].empty:
+        if video_obj.Video_name not in df['Video-name'].values:
             video_obj.delete()
 
 @receiver(post_delete,sender=videos_collection)
@@ -58,11 +58,15 @@ def videos_collection_post_delete(sender, instance, **kwargs):
     photos = os.listdir('photos')
     video_name = instance.Video_name
     photo_name = str(video_name).replace('.mp4','.jpg')
-    video_name = [i for i in videos if i == video_name][0]
-    photo_name = [i for i in photos if i == photo_name][0]
-    if video_name:os.remove(f'{os.getcwd()}/downloads/{video_name}')
-    if photo_name:os.remove(f'{os.getcwd()}/photos/{photo_name}')
-    df.drop(df[df['Video-name'] == video_name].index, inplace=True)
-    df.to_csv('brazzers_videos_details.csv',index=False)
+    video_name = [i for i in videos if i == video_name]
+    photo_name = [i for i in photos if i == photo_name]
+    if video_name:
+        os.remove(f'{os.getcwd()}/downloads/{video_name[0]}')
+        df.drop(df[df['Video-name'] == video_name].index, inplace=True)
+        df.to_csv('brazzers_videos_details.csv',index=False)
+    if photo_name:
+        os.remove(f'{os.getcwd()}/photos/{photo_name[0]}')
+        df.drop(df[df['Video-name'] == video_name].index, inplace=True)
+        df.to_csv('brazzers_videos_details.csv',index=False)
 
             

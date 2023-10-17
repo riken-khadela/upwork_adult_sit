@@ -16,7 +16,7 @@ def list_files(request):
     # Create an HTML response with links to the files
     file_links = []
     for file in files:
-        if file.endswith('.mp4'):
+        if file.endswith('.mp4') or file.endswith('.jpg') :
             file_path = os.path.join(static_root, file)
             file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
     

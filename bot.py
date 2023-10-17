@@ -290,6 +290,10 @@ class scrapping_bot():
                 file_path = os.path.join(folder_path, file)
                 os.remove(file_path)
                 print(f"Deleted: {file_path}")
+            if file.lower().endswith(".jpg") and video_title.lower() in file.lower():
+                file_path = os.path.join(folder_path, file)
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
                 return
 
     def brazzers_login(self):
@@ -408,22 +412,27 @@ class scrapping_bot():
                 video_name = f"{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
                 if len(master_url) > 0: break
                 else: continue
+                
+            v_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.mp4/'
+            p_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.jpg/'
             if len(master_url) > 0 :
                 tmp = {
                     "Likes" : "",
                     "Disclike" :"",
-                    "Url" : videoss_urll['video_url'],
+                    "Url" : videoss_urll['video_url'] ,
+                    "video_download_url" : f'{v_urllll}',
                     "Title" : '',
                     "Discription" : "",
                     "Release-Date" : "",
                     "Poster-Image_uri" : videoss_urll['post_url'],
+                    "poster_download_uri" : p_urllll,
                     "Video-name" : f'{video_name}.mp4',
                     "Photo-name" : f'{video_name}.jpg',
                     "Pornstarts" : ''
                 }
                 try:
                     response = requests.get(tmp['Poster-Image_uri'])
-                    with open(f'photos/{video_name}.jpg', 'wb') as f:f.write(response.content)
+                    with open(f'downloads/{video_name}.jpg', 'wb') as f:f.write(response.content)
                     likes_count = self.find_element('Likes count','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[7]/span[1]/strong')
                     if likes_count :
                         tmp['Likes'] = likes_count.text
@@ -502,7 +511,7 @@ class scrapping_bot():
                     self.random_sleep(2,3)
                     os.rename(os.path.join(os.getcwd(),f'downloads/{new_video_download.replace(".crdownload","")}'),os.path.join(os.getcwd(),f'downloads/{video_name}.mp4')) 
                     self.videos_collection.append(tmp)
-                    self.videos_data.append({ "Video-title" : video_name,"video_url" : videoss_urll['video_url'],"downloaded_time" : datetime.now()})
+                    self.videos_data.append({ "Video-title" : video_name,"video_url" : v_urllll,"downloaded_time" : datetime.now()})
                     pd.DataFrame(self.videos_collection).to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'),index=False)
                     pd.DataFrame(self.videos_data).to_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'),index=False)
                 except Exception as e :
@@ -518,7 +527,7 @@ class scrapping_bot():
             df.to_csv('brazzers_videos.csv', index=False)
 
         if not os.path.exists(os.path.join(os.getcwd(),'brazzers_videos_details.csv')) :
-            column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri","Video-name","Photo-name","Pornstarts"]
+            column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri",'poster_download_uri',"Video-name",'video_download_uri',"Photo-name","Pornstarts"]
             df = pd.DataFrame(columns=column_names)
             df.to_csv('brazzers_videos_details.csv', index=False)
 
