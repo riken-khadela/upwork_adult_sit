@@ -1,4 +1,3 @@
-from curses.ascii import isdigit
 from django.db import models
 
 # Create your models here.
@@ -17,8 +16,11 @@ class videos_collection(models.Model):
     def __str__(self) -> str:
         video_title = ""
         video_name_li = self.Video_name.split('_')
-        if video_name_li[0] == 'scene' and isdigit(video_name_li[1]) :
-            video_title += 'brazzers'
+        if video_name_li[0] == 'scene' :
+            try: 
+                int(video_name_li[1])
+                video_title += 'brazzers_'
+            except : ...
 
         video_title += self.Video_name
         return video_title
