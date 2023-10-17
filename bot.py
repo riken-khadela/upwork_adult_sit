@@ -229,7 +229,7 @@ class scrapping_bot():
         return self.old_date
 
     def date_older_or_not(self,date_string=''):
-        if date_string :
+        if date_string :  
             date_obj = datetime.strptime(date_string, "%b %d, %Y")
             if date_obj < self.old_date :
                 return True 
@@ -463,9 +463,6 @@ class scrapping_bot():
                     
                     self.click_element('download btn','//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]')
                     self.click_element('download 2160p','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[5]/ul/div/button[1]')
-                    while self.driver.current_url != tmp['Url']:
-                        print(self.driver.current_url)
-                    breakpoint()
                     new_video_download = ''
                     self.random_sleep(2,3)
                     seconds = 0
