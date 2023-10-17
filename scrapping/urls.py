@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.conf import settings
 import os
 from django.contrib import admin
+from django.conf.urls.static import static
 
 
 def list_files(request):
@@ -54,4 +55,4 @@ urlpatterns = [
     path('downloads/<path:file_path>/', download_file, name='download_file'),
     path('list_files/', list_files, name='list_file'),
     path('csv/', csv_file, name='csv_file')
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
