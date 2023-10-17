@@ -11,24 +11,22 @@ from datetime import datetime, timedelta
 from selenium_stealth import stealth
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
+from main.models import configuration
 
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
         with open('configrations.json', 'r') as json_file:    
             self.config_data = json.load(json_file)
-
+        configs = configuration.objects.get(website_name='brazzers')
         if brazzers_bot == True:
-            self.category = str(self.config_data['brazzers']['category'])
-            old_days = str(self.config_data['brazzers']['old_days'])
-            self.download_videos_count = int(self.config_data['brazzers']['download_videos'])
-            self.username = str(self.config_data['brazzers']['username'])
-            self.password = str(self.config_data['brazzers']['password'])
-            self.password = str(self.config_data['brazzers']['password'])
-            self.delete_old_days = str(self.config_data['brazzers']['delete_old_days'])
+            self.category = str(configs.category)
+            old_days = str(configs.more_than_old_days_download)
+            self.download_videos_count = int(configs.numbers_of_download_videos)
+            self.username = str(configs.username)
+            self.password = str(configs.password)
+            self.delete_old_days = str(configs.delete_old_days)
             self.calculate_old_date(int(old_days))
-
-
 
             self.brazzers_delete_old_videos()
             self.downloaded_videos_list = os.listdir('downloads')

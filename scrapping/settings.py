@@ -133,5 +133,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CRONJOBS = [
-    ('*/1 * * * *',f'django.core.management.update_conf >> {os.path.join(BASE_DIR,"log/test.log")} 2>&1')
+    ('*/1 * * * *',f'django.core.management.update_conf,>> {BASE_DIR}/etc/note.log')
 ]
