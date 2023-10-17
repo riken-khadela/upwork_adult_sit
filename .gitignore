@@ -17,4 +17,3 @@ photos/*
 *.sqlite3
 **/__pycache__/**
 *.pyc
-static
