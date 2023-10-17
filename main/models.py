@@ -13,3 +13,5 @@ class videos_collection(models.Model):
     Title = models.CharField(max_length=255)
     Discription = models.TextField(null=True,blank=True)
     Pornstarts = models.CharField(max_length=500,null=True,blank=True)
+    def __str__(self) -> str:
+        return self.Video_name
