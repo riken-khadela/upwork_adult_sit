@@ -454,17 +454,9 @@ class scrapping_bot():
                     if Release :
                         tmp['Release-Date'] = Release.text
 
-                    Discription = self.find_element('Discription','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
+                    Discription = self.find_element('Discription','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[6]/div/section/div/p')
                     if Discription :
-                        tmp['Discription'] = Release.text
-
-                    Release = self.find_element('Release','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
-                    if Release :
-                        tmp['Release-Date'] = Release.text
-
-                    Release = self.find_element('Release','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/h2[1]')
-                    if Release :
-                        tmp['Release-Date'] = Release.text
+                        tmp['Discription'] = Discription.text
 
                     port_starts = self.find_element('pornstars','/html/body/div/div[1]/div[2]/div[3]/div[2]/div[5]/div/section/div/div/div[2]/h2')
                     if port_starts :
