@@ -5,6 +5,7 @@ from django.conf import settings
 import os
 from django.contrib import admin
 from django.conf.urls.static import static
+from main.views import *
 
 
 def list_files(request):
@@ -51,8 +52,10 @@ def csv_file(request):
         return HttpResponse("File not found", status=404)
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('downloads/<path:file_path>/', download_file, name='download_file'),
     path('list_files/', list_files, name='list_file'),
-    path('csv/', csv_file, name='csv_file')
+    path('csv/', csv_file, name='csv_file'),
+    path('', data_flair),
+
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
