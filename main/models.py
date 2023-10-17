@@ -33,3 +33,5 @@ class configuration(models.Model):
     more_than_old_days_download = models.IntegerField(null=True,blank=True)
     numbers_of_download_videos = models.IntegerField(null=True,blank=True)
     delete_old_days = models.IntegerField(null=True,blank=True)
+    def __str__(self) -> str:
+        return website_name
