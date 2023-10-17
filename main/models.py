@@ -1,3 +1,4 @@
+from curses.ascii import isdigit
 from django.db import models
 
 # Create your models here.
@@ -14,4 +15,10 @@ class videos_collection(models.Model):
     Discription = models.TextField(null=True,blank=True)
     Pornstarts = models.CharField(max_length=500,null=True,blank=True)
     def __str__(self) -> str:
-        return self.Video_name
+        video_title = ""
+        video_name_li = self.Video_name.split('_')
+        if video_name_li[0] == 'scene' and isdigit(video_name_li[1]) :
+            video_title += 'brazzers'
+
+        video_title += self.Video_name
+        return video_title
