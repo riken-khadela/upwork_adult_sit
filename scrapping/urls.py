@@ -35,8 +35,23 @@ def download_file(request, file_path):
     else:
         return HttpResponse("File not found", status=404)
 
+def csv_file(request):
+    # Construct the full path to the file using the MEDIA_ROOT setting.
+    media_root = settings.BASE_DIR
+    file = os.path.join(media_root, 'brazzers_videos_details.csv')
+
+    # Check if the file exists.
+    if os.path.isfile(file):
+        with open(file, 'rb') as f:
+            response = HttpResponse(f.read(), content_type="application/octet-stream")
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
+            return response
+    else:
+        return HttpResponse("File not found", status=404)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('downloads/<path:file_path>/', download_file, name='download_file'),
     path('list_files/', list_files, name='list_file'),
+    path('csv/', csv_file, name='csv_file')
 ]
