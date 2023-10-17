@@ -14,3 +14,6 @@ db.sqlite3
 .vscode
 chrome
 photos/*
+*.sqlite3
+**/__pycache__/**
+*.pyc
