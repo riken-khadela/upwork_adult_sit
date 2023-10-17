@@ -59,8 +59,6 @@ class scrapping_bot():
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--headless')
-        options.add_argument(f'--user-data-dir={os.getcwd()}')
-        options.add_argument('--profile-directory=Default')
         prefs = {"credentials_enable_service": True,
                  "download.default_directory" : f"{os.path.join(os.getcwd(),'downloads')}",
             'download.prompt_for_download': False,  # Optional, suppress download prompt
@@ -465,7 +463,9 @@ class scrapping_bot():
                     
                     self.click_element('download btn','//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]')
                     self.click_element('download 2160p','/html/body/div[1]/div[1]/div[2]/div[3]/div[2]/div[1]/div/section/div[3]/div[1]/div[5]/ul/div/button[1]')
-
+                    while self.driver.current_url != tmp['Url']:
+                        print(self.driver.current_url)
+                    breakpoint()
                     new_video_download = ''
                     self.random_sleep(2,3)
                     seconds = 0
