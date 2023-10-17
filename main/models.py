@@ -24,3 +24,12 @@ class videos_collection(models.Model):
 
         video_title += self.Video_name
         return video_title
+    
+class configuration(models.Model):
+    website_name = models.CharField(max_length=255,null=True,blank=True)
+    username = models.CharField(max_length=255,null=True,blank=True)
+    password = models.CharField(max_length=255,null=True,blank=True)
+    category = models.CharField(max_length=255,null=True,blank=True)
+    more_than_old_days_download = models.IntegerField(null=True,blank=True)
+    numbers_of_download_videos = models.IntegerField(null=True,blank=True)
+    delete_old_days = models.IntegerField(null=True,blank=True)

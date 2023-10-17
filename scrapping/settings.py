@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    'django_crontab',
+
 ]
 
 MIDDLEWARE = [
@@ -127,3 +129,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'downloads')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+CRONJOBS = [
+    ('*/1 * * * *',f'django.core.management.update_conf >> {os.path.join(BASE_DIR,"log/test.log")} 2>&1')
+]
