@@ -46,12 +46,11 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                 video_obj = videos_collection.objects.create(**video_data_dict)
     for video_obj in videos_collection.objects.all():
         if video_obj.Video_name not in df['Video-name'].values:
-            video_obj.delete()
+                video_obj.delete()
 
 @receiver(post_delete,sender=videos_collection)
 def videos_collection_post_delete(sender, instance, **kwargs):
     df = pd.read_csv('brazzers_videos_details.csv')
-    df = pd.read_csv('brazzers_videos.csv')
     videos = os.listdir('downloads')
     photos = os.listdir('photos')
     video_name = instance.Video_name
@@ -62,7 +61,8 @@ def videos_collection_post_delete(sender, instance, **kwargs):
         os.remove(f'{os.getcwd()}/downloads/{video_name[0]}')
     if photo_name:
         os.remove(f'{os.getcwd()}/photos/{photo_name[0]}')
-    df.drop(df[df['Video-name'] == video_name].index, inplace=True)
-    df.to_csv('brazzers_videos_details.csv',index=False)
+    if video_name in  df['Video-name'].values:
+        df.drop(df[df['Video-name'] == video_name].index, inplace=True)
+        df.to_csv('brazzers_videos_details.csv',index=False)
 
             
