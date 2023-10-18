@@ -467,8 +467,9 @@ class scrapping_bot():
                     seconds = 0
                     while seconds < 20 :
                         time.sleep(1)
-                        new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')][0]
+                        new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
                         if new_video_download:
+                            new_video_download = new_video_download[0]
                             print('New video file name -----------------',new_video_download)
                             break
                         else:
