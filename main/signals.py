@@ -30,20 +30,20 @@ def user_logged_in_callback(sender, request, user, **kwargs):
             if video_file.endswith('.mp4') or video_file.endswith('.jpg'):
                 os.remove(video_file)
         else:
-            if not videos_collection.objects.filter(Video_name=video_name):
-                video_data = df[df['Video-name'] == video_name].to_dict(orient='records')[0]
-                video_data_dict = {
-                    'Video_name': video_data.get('Video-name', None),
-                    'Release_Date': timezone.make_aware(datetime.strptime(video_data['Release-Date'], "%B %d, %Y"),pytz.timezone('Asia/Kolkata')),
-                    'Poster_Image_uri': video_data.get('poster_download_uri', None),
-                    'Likes': video_data.get('Likes', 0),
-                    'Disclike': video_data.get('Disclike', 0),
-                    'Url': video_data.get('video_download_url', None),
-                    'Title': video_data.get('Title', None),
-                    'Discription': video_data.get('Discription', None),
-                    'Pornstarts': video_data.get('Pornstarts', None),
-                }
-                video_obj = videos_collection.objects.create(**video_data_dict)
+            # if not videos_collection.objects.filter(Video_name=video_name):
+            video_data = df[df['Video-name'] == video_name].to_dict(orient='records')[0]
+            video_data_dict = {
+                'Video_name': video_data.get('Video-name', None),
+                'Release_Date': timezone.make_aware(datetime.strptime(video_data['Release-Date'], "%B %d, %Y"),pytz.timezone('Asia/Kolkata')),
+                'Poster_Image_uri': video_data.get('poster_download_uri', None),
+                'Likes': video_data.get('Likes', 0),
+                'Disclike': video_data.get('Disclike', 0),
+                'Url': video_data.get('video_download_url', None),
+                'Title': video_data.get('Title', None),
+                'Discription': video_data.get('Discription', None),
+                'Pornstarts': video_data.get('Pornstarts', None),
+            }
+            video_obj = videos_collection.objects.update_or_create(**video_data_dict)
     for video_obj in videos_collection.objects.all():
         if video_obj.Video_name not in df['Video-name'].values:
                 video_obj.delete()
