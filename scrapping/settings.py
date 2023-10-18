@@ -131,7 +131,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'downloads')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
-CRONJOBS = [
-    ('*/1 * * * *',f'django.core.management.update_conf,>> {BASE_DIR}/etc/note.log')
-]
