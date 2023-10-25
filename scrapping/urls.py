@@ -18,11 +18,15 @@ def list_files(request):
     # Create an HTML response with links to the files
     file_links = []
     for file in files:
-        if file.endswith('.mp4') or file.endswith('.jpg') :
-            file_path = os.path.join(static_root, file)
+        if file.endswith('.mp4') or file.endswith('.jpg') or 'video' in str(file):
+            # file_path = os.path.join(static_root, file)
             file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
-    
+        elif 'video' in str(file) and not file.endswith('.mp4') or not file.endswith('.jpg') and 'admin' not in str(file):
+            file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
+            # entries = os.listdir(current_folder)
     return HttpResponse("<br>".join(file_links))
+
+
 def download_file(request, file_path):
     # Construct the full path to the file using the MEDIA_ROOT setting.
     media_root = settings.MEDIA_ROOT
@@ -34,8 +38,20 @@ def download_file(request, file_path):
             response = HttpResponse(f.read(), content_type="application/octet-stream")
             response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
             return response
+    elif os.path.isdir(file):
+        file_links = []
+        files = os.listdir(file)
+        if not files: return HttpResponse("Folder is empty",status=200)
+        for file in files:
+            if file.endswith('.mp4') or file.endswith('.jpg') or 'video' in str(file):
+                # file_path = os.path.join(static_root, file)
+                file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
+            elif 'video' in str(file) and not file.endswith('.mp4') or not file.endswith('.jpg') and 'admin' not in str(file):
+                file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
+        return HttpResponse("<br>".join(file_links))
     else:
-        return HttpResponse("File not found", status=404)
+        HttpResponse("Folder not found.", status=404)
+
 
 def csv_file(request):
     # Construct the full path to the file using the MEDIA_ROOT setting.

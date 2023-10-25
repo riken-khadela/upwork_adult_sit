@@ -40,10 +40,8 @@ class scrapping_bot():
 
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
-        
+
     def get_driver(self,add_cybeghost=False):
-        
-        downloads_directory = '/home/sajal/Desktop/upwork/brazzers/downloads'
         """Start webdriver and return state of it."""
         from selenium.webdriver.chrome.options import Options
         options = Options()
@@ -410,7 +408,7 @@ class scrapping_bot():
                 video_name = f"{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
                 if len(master_url) > 0: break
                 else: continue
-                
+
             v_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.mp4/'
             p_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.jpg/'
             if len(master_url) > 0 :
@@ -529,3 +527,9 @@ class scrapping_bot():
         for idx,row in temp_df.iterrows() : 
             print(row['Video-title'])
             self.find_and_delete_video('videos',row['Video-title'])
+        delete_resume_file = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
+        if delete_resume_file:
+            for i in delete_resume_file:
+                file_path = os.path.join(f'{os.getcwd()}/downloads', i)
+                os.remove(file_path)
+            
