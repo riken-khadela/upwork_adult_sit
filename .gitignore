@@ -18,3 +18,4 @@ photos/*
 **/__pycache__/**
 *.pyc
 /*/migrations/
+/*/__pycache__
