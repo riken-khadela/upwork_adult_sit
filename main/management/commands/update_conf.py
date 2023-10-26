@@ -22,6 +22,10 @@ class Command(BaseCommand):
                     bot.brazzers_get_categories()
                     bot.brazzers_get_videos_url()
                     bot.brazzers_download_video()
+                    tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
+                    bot.download_videos(tags_152)
+                    tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
+                    bot.download_videos(tags_162)
                     break
 
                 bot.CloseDriver()
