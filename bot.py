@@ -628,7 +628,10 @@ class scrapping_bot():
                 quality.click()
                 self.wait_for_file_download()
                 self.random_sleep(3,5)
+                
+                file_name = [i for i in os.listdir('downloads')if '-' in i and i.endswith('.mp4')][0]
                 name_of_file = os.path.join(os.getcwd(), f'downloads/{video_name}.mp4')
+                file_name = f'downloads/{file_name}'
                 os.rename(os.path.join(os.getcwd(),file_name), name_of_file)
                 self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.videos_data.append({"Video-title": video_name,"video_url": v_url,"downloaded_time": datetime.now()})
@@ -641,6 +644,7 @@ class scrapping_bot():
 
 
     def wait_for_file_download(self):
+        print('waiting for download')
         seconds = 0
         while seconds < 20 :
             time.sleep(1)
@@ -653,6 +657,7 @@ class scrapping_bot():
         while True:
             new_files = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
             if not new_files:
+                print('download complete')
                 return  # Download completed
             time.sleep(1)
 
