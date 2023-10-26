@@ -13,6 +13,7 @@ class videos_collection(models.Model):
     Title = models.CharField(max_length=255)
     Discription = models.TextField(null=True,blank=True)
     Pornstarts = models.CharField(max_length=500,null=True,blank=True)
+    Category = models.CharField(max_length=500,null=True,blank=True)
     def __str__(self) -> str:
         video_title = ""
         video_name_li = self.Video_name.split('_')
@@ -21,8 +22,15 @@ class videos_collection(models.Model):
                 int(video_name_li[1])
                 video_title += 'brazzers_'
             except : ...
-
-        video_title += self.Video_name
+        elif video_name_li[0] != 'scene' :
+            try: 
+                video_title += self.Category
+            except : ...
+        if 'videos_' in self.Video_name:
+            video_name = self.Video_name.replace('videos_','')
+            video_title += video_name
+        else:
+            video_title += self.Video_name
         return video_title
     
 class configuration(models.Model):

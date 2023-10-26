@@ -413,8 +413,8 @@ class scrapping_bot():
                 if len(master_url) > 0: break
                 else: continue
 
-            v_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.mp4/'
-            p_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.jpg/'
+            v_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.mp4'
+            p_urllll = f'http://159.223.134.27:8000/downloads/{video_name}.jpg'
             if len(master_url) > 0 :
                 tmp = {
                     "Likes" : "",
@@ -576,7 +576,7 @@ class scrapping_bot():
             self.driver.get(video_url['video_url'])
             self.random_sleep(10,15)
             download_video_name = self.driver.current_url.split('/')[-1]
-            video_name = f"{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
+            video_name = f"{collection_name}_{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
             v_url = f'http://159.223.134.27:8000/downloads/{collection_name}/{video_name}.mp4/'
             p_url = f'http://159.223.134.27:8000/downloads/{collection_name}/{video_name}.jpg/'
             tmp = {
@@ -628,9 +628,9 @@ class scrapping_bot():
                 quality.click()
                 self.wait_for_file_download()
                 self.random_sleep(3,5)
-                rename_file = os.path.join(os.getcwd(), f'downloads/{video_name}.mp4')
-                os.rename(os.path.join(os.getcwd(),file_name), rename_file)
-                self.copy_files_in_catagory_folder(rename_file,collection_path)
+                name_of_file = os.path.join(os.getcwd(), f'downloads/{video_name}.mp4')
+                os.rename(os.path.join(os.getcwd(),file_name), name_of_file)
+                self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.videos_data.append({"Video-title": video_name,"video_url": v_url,"downloaded_time": datetime.now()})
                 
                 self.videos_collection.append(tmp)
