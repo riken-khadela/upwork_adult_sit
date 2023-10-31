@@ -697,5 +697,5 @@ class scrapping_bot():
         if delete_resume_file:
             for i in delete_resume_file:
                 file_path = os.path.join(f'{os.getcwd()}/downloads', i)
-                os.remove(file_path)
+                # os.remove(file_path)
             
