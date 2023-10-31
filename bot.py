@@ -288,15 +288,13 @@ class scrapping_bot():
                     return
 
     def find_and_delete_video(self,folder_path, video_title):
-        for file in os.listdir(folder_path):
-            if file.lower().endswith((".mp4", ".avi", ".mkv")) and video_title.lower() in file.lower():
-                file_path = os.path.join(folder_path, file)
-                os.remove(file_path)
-                print(f"Deleted: {file_path}")
-            if file.lower().endswith(".jpg") and video_title.lower() in file.lower():
-                file_path = os.path.join(folder_path, file)
-                os.remove(file_path)
-                print(f"Deleted: {file_path}")
+        for foldername, subfolders, filenames in os.walk(folder_path):
+            for filename in filenames:
+                base_name, extension = os.path.splitext(filename)
+                if base_name == video_title:
+                    file_path = os.path.join(foldername, filename)
+                    os.remove(file_path)
+                    print(f"Deleted: {file_path}")
                 return
 
     def brazzers_login(self):
@@ -690,7 +688,11 @@ class scrapping_bot():
         temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
         for idx,row in temp_df.iterrows() : 
             print(row['Video-title'])
-            self.find_and_delete_video('videos',row['Video-title'])
+            self.find_and_delete_video('downloads',row['Video-title'])
+            df = df.drop(idx)
+        df.to_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
+            
+        
         delete_resume_file = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
         if delete_resume_file:
             for i in delete_resume_file:
