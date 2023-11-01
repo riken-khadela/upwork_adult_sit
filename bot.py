@@ -685,7 +685,6 @@ class scrapping_bot():
         df = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
         df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
         
-        breakpoint()
         temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
         for idx,row in temp_df.iterrows():
             self.find_and_delete_video('downloads',row['Video-title'])
