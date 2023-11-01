@@ -20,3 +20,7 @@ def close_every_chrome():
     if subprocess_object.returncode != 0:
         # Handle the error.
         raise Exception("Failed to close Chrome tab.")
+    
+    
+    
+    
