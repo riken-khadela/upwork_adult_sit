@@ -52,7 +52,6 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 def videos_collection_post_delete(sender, instance, **kwargs):
     df = pd.read_csv('brazzers_videos_details.csv')
     video_name = instance.Video_name
-    videos = os.listdir('downloads')
     
     for foldername, subfolders, filenames in os.walk('downloads'):
             for filename in filenames:
