@@ -51,18 +51,17 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 @receiver(post_delete,sender=videos_collection)
 def videos_collection_post_delete(sender, instance, **kwargs):
     df = pd.read_csv('brazzers_videos_details.csv')
-    videos = os.listdir('downloads')
-    photos = os.listdir('photos')
     video_name = instance.Video_name
-    photo_name = str(video_name).replace('.mp4','.jpg')
-    video_name = [i for i in videos if i == video_name]
-    photo_name = [i for i in photos if i == photo_name]
-    # try:
-    #     if video_name:
-    #         os.remove(f'{os.getcwd()}/downloads/{video_name[0]}')
-    #     if photo_name:
-    #         os.remove(f'{os.getcwd()}/photos/{photo_name[0]}')
-    # except : ...
+    videos = os.listdir('downloads')
+    
+    for foldername, subfolders, filenames in os.walk('downloads'):
+            for filename in filenames:
+                base_name, extension = os.path.splitext(filename)
+                if base_name == video_name:
+                    file_path = os.path.join(foldername, filename)
+                    os.remove(file_path)
+                    print(f"Deleted: {file_path}")
+
     if video_name in  df['Video-name'].values:
         df.drop(df[df['Video-name'] == video_name].index, inplace=True)
         df.to_csv('brazzers_videos_details.csv',index=False)
