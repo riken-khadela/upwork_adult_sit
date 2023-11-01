@@ -295,7 +295,7 @@ class scrapping_bot():
                     file_path = os.path.join(foldername, filename)
                     os.remove(file_path)
                     print(f"Deleted: {file_path}")
-                return
+        return
 
     def brazzers_login(self):
         first_time = False
@@ -686,8 +686,7 @@ class scrapping_bot():
         df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
         
         temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
-        for idx,row in temp_df.iterrows() : 
-            print(row['Video-title'])
+        for idx,row in temp_df.iterrows():
             self.find_and_delete_video('downloads',row['Video-title'])
             df = df.drop(idx)
         df.to_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
@@ -697,5 +696,5 @@ class scrapping_bot():
         if delete_resume_file:
             for i in delete_resume_file:
                 file_path = os.path.join(f'{os.getcwd()}/downloads', i)
-                # os.remove(file_path)
+                os.remove(file_path)
             

@@ -1,7 +1,4 @@
-from operator import index
 from django.core.management.base import BaseCommand, CommandError
-from main.models import configuration as conf
-from scrapping.settings import BASE_DIR
 import pandas as pd, os
 
 class Command(BaseCommand):

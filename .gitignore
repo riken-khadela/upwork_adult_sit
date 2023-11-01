@@ -19,3 +19,4 @@ photos/*
 *.pyc
 /*/migrations/
 /*/__pycache__
+downloads copy
