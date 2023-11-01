@@ -58,9 +58,11 @@ def videos_collection_post_delete(sender, instance, **kwargs):
                 base_name, extension = os.path.splitext(filename)
                 if base_name == video_name:
                     file_path = os.path.join(foldername, filename)
-                    os.remove(file_path)
-                    print(f"Deleted: {file_path}")
-
+                    try :
+                        os.remove(file_path)
+                        print(f"Deleted: {file_path}")
+                    except Exception as e:
+                        print('File not')
     if video_name in  df['Video-name'].values:
         df.drop(df[df['Video-name'] == video_name].index, inplace=True)
         df.to_csv('brazzers_videos_details.csv',index=False)
