@@ -57,12 +57,12 @@ def videos_collection_post_delete(sender, instance, **kwargs):
     photo_name = str(video_name).replace('.mp4','.jpg')
     video_name = [i for i in videos if i == video_name]
     photo_name = [i for i in photos if i == photo_name]
-    try:
-        if video_name:
-            os.remove(f'{os.getcwd()}/downloads/{video_name[0]}')
-        if photo_name:
-            os.remove(f'{os.getcwd()}/photos/{photo_name[0]}')
-    except : ...
+    # try:
+    #     if video_name:
+    #         os.remove(f'{os.getcwd()}/downloads/{video_name[0]}')
+    #     if photo_name:
+    #         os.remove(f'{os.getcwd()}/photos/{photo_name[0]}')
+    # except : ...
     if video_name in  df['Video-name'].values:
         df.drop(df[df['Video-name'] == video_name].index, inplace=True)
         df.to_csv('brazzers_videos_details.csv',index=False)
