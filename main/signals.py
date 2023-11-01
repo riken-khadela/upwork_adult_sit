@@ -56,7 +56,7 @@ def videos_collection_post_delete(sender, instance, **kwargs):
     video_name = instance.Video_name
     photo_name = str(video_name).replace('.mp4','.jpg')
     video_name = [i for i in videos if i == video_name]
-    photo_name = [i for i in photos if i == photo_name]3
+    photo_name = [i for i in photos if i == photo_name]
     try:
         if video_name:
             os.remove(f'{os.getcwd()}/downloads/{video_name[0]}')
