@@ -660,7 +660,7 @@ class scrapping_bot():
             for idx,row in temp_df.iterrows():
                 self.find_and_delete_video('downloads',row['Video-title'])
         df1 = df1[~df1['video_download_url'].isin(matching_titles)]
-        df1.to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'))
+        df1.to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'),index=False)
             
         
         delete_resume_file = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
