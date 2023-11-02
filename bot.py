@@ -69,7 +69,8 @@ class scrapping_bot():
             "profile.password_manager_enabled": True}
         options.add_experimental_option("prefs", prefs)
         if add_cybeghost :
-            options.add_extension('./Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx')#crx file path
+            options.add_extension('./Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx')
+        options.add_extension('./Buster-Captcha-Solver-for-Humans.crx')
         options.add_argument('--no-sandbox')
         options.add_argument('--start-maximized')    
         options.add_argument('--disable-dev-shm-usage')
@@ -464,41 +465,7 @@ class scrapping_bot():
                     self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
                     new_video_download = ''
                     self.random_sleep(2,3)
-                    seconds = 0
-                    while seconds < 20 :
-                        time.sleep(1)
-                        new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
-                        if new_video_download:
-                            new_video_download = new_video_download[0]
-                            print('New video file name -----------------',new_video_download)
-                            break
-                        else:
-                            seconds+=1
-
-                    # if len(self.driver.window_handles) == 1:
-                    #     self.driver.execute_script("window.open()")
-                    #     self.driver.switch_to.window(self.driver.window_handles[-1])
-                    #     self.driver.get('chrome://downloads')
-                    # else:
-                    #     self.driver.switch_to.window(self.driver.window_handles[-1])
-
-                    
-                    while True :
-                        if os.path.isfile(f'downloads/{new_video_download}'):
-                            sys.stdout.write("\rDownloding ...........")
-                            sys.stdout.flush()
-                        else:
-                            sys.stdout.write("\rDownloding Complete...")
-                            sys.stdout.flush()
-                            self.random_sleep(3,5)
-                            break
-                        # download_progress = self.driver.execute_script('return document.querySelector("body > downloads-manager").shadowRoot.querySelector("#frb0").shadowRoot.querySelector("#progress").shadowRoot.querySelector("#primaryProgress")')
-                        # download_progress = self.driver.execute_script('return document.querySelector("body > downloads-manager").shadowRoot.querySelector("#frb0").shadowRoot.querySelector("#description").textContent')
-                        # if download_progress == "\n      \n    ":
-                        #     break
-                        # else:
-                        time.sleep(0.5)
-                    # self.driver.switch_to.window(self.driver.window_handles[0])
+                    new_video_download = self.wait_for_file_download()
                     self.random_sleep(2,3)
                     os.rename(os.path.join(os.getcwd(),f'downloads/{new_video_download.replace(".crdownload","")}'),os.path.join(os.getcwd(),f'downloads/{video_name}.mp4')) 
                     self.videos_collection.append(tmp)
@@ -575,8 +542,8 @@ class scrapping_bot():
             self.random_sleep(10,15)
             download_video_name = self.driver.current_url.split('/')[-1]
             video_name = f"{collection_name}_{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
-            v_url = f'http://159.223.134.27:8000/downloads/{collection_name}/{video_name}.mp4/'
-            p_url = f'http://159.223.134.27:8000/downloads/{collection_name}/{video_name}.jpg/'
+            v_url = f'http://159.223.134.27:8000/downloads/{collection_name}/{video_name}.mp4'
+            p_url = f'http://159.223.134.27:8000/downloads/{collection_name}/{video_name}.jpg'
             tmp = {
                     "Likes" : "",
                     "Disclike" :"",
@@ -644,6 +611,7 @@ class scrapping_bot():
     def wait_for_file_download(self):
         print('waiting for download')
         seconds = 0
+        new_video_download = ''
         while seconds < 20 :
             time.sleep(1)
             new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
@@ -656,7 +624,7 @@ class scrapping_bot():
             new_files = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
             if not new_files:
                 print('download complete')
-                return  # Download completed
+                return  new_video_download
             time.sleep(1)
 
     def create_or_check_path(self,folder_name, main=False):
@@ -684,12 +652,15 @@ class scrapping_bot():
 
         df = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
         df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
-        
+        df1 = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'))
         temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(self.delete_old_days)))]
-        for idx,row in temp_df.iterrows():
-            self.find_and_delete_video('downloads',row['Video-title'])
-            df = df.drop(idx)
-        df.to_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
+        matching_titles = temp_df['Video-title'].unique()
+        matching_url = temp_df['video_url'].unique()
+        if temp_df:
+            for idx,row in temp_df.iterrows():
+                self.find_and_delete_video('downloads',row['Video-title'])
+        df1 = df1[~df1['video_download_url'].isin(matching_titles)]
+        df1.to_csv(os.path.join(os.getcwd(),'brazzers_videos_details.csv'))
             
         
         delete_resume_file = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
