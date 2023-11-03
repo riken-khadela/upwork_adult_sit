@@ -13,3 +13,8 @@ class Command(BaseCommand):
 
         # Save the modified DataFrame back to the CSV file
         df.to_csv(os.path.join(os.getcwd(), 'brazzers_videos_details.csv'), index=False)
+        df = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
+        for i in df.index:
+            df.at[i, 'video_url'] = df.at[i, 'video_url'].rstrip('/')
+        df.to_csv(os.path.join(os.getcwd(), 'brazzers_videos.csv'), index=False)
+
