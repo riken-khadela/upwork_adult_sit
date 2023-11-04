@@ -16,7 +16,6 @@ class Command(BaseCommand):
                 # close_every_chrome()
                 bot = scrapping_bot(brazzers_bot=True)
                 bot.starting_brazzers_bots()
-                # bot.connect_cyberghost_vpn()
                 if bot.brazzers_login() :
                     logggg = True
                     bot.brazzers_get_categories()
@@ -26,7 +25,10 @@ class Command(BaseCommand):
                     bot.download_videos(tags_152)
                     tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
                     bot.download_videos(tags_162)
-                    break
+                    
+                if bot.vip4k_login():
+                    videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
+                    bot.vip4k_download_video(videos_collection_dict)
 
                 bot.CloseDriver()
                 if logggg == True:break
