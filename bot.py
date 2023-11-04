@@ -30,6 +30,7 @@ class scrapping_bot():
             self.downloaded_videos_list = os.listdir('downloads')
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
+        breakpoint()
 
     def get_driver(self,add_cybeghost=False):
         """Start webdriver and return state of it."""
