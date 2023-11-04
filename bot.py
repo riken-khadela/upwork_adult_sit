@@ -19,13 +19,14 @@ from main.models import configuration
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
+        self.base_path = os.getcwd()
+        self.download_path = self.create_or_check_path('downloads',main=True)
         self.brazzers = configuration.objects.get(website_name='brazzers')
         self.vip4k = configuration.objects.get(website_name='vip4k')
         self.make_csv()
         self.delete_old_videos()
 
         if brazzers_bot == True:
-            self.create_or_check_path('downloads',main=True)
             self.downloaded_videos_list = os.listdir('downloads')
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
@@ -46,7 +47,7 @@ class scrapping_bot():
         options.add_argument('--headless')
         prefs = {"credentials_enable_service": True,
                  'profile.default_content_setting_values.automatic_downloads': 1,
-                 "download.default_directory" : f"{os.path.join(os.getcwd(),'downloads')}",
+                 "download.default_directory" : f"{self.download_path}",
             'download.prompt_for_download': False,  # Optional, suppress download prompt
             'download.directory_upgrade': True,
             'safebrowsing.enabled': True ,
@@ -160,7 +161,7 @@ class scrapping_bot():
         
         if ele:
             self.driver.execute_script('arguments[0].scrollIntoViewIfNeeded();',ele)
-            ele.click()
+            self.ensure_click(ele)
             print(f'Clicked the element: {element}')
             return ele
 
@@ -182,8 +183,9 @@ class scrapping_bot():
     def ScrollDown(self,px):
         self.driver.execute_script(f"window.scrollTo(0, {px})")
     
-    def ensure_click(self, element):
+    def ensure_click(self, element, timeout=3):
         try:
+            WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(element))
             element.click()
         except WebDriverException:
             self.driver.execute_script("arguments[0].click();", element)
@@ -349,11 +351,15 @@ class scrapping_bot():
             return True
         else: 
             return False
+    
+    def column_to_list(self,config : object,column_name :str)-> list:
+        df1 = pd.read_csv(f'{config.website_name}_videos_details.csv')
+        list_of_column = df1[f'{column_name}'].values.tolist()
+        return list_of_column
         
     def brazzers_get_videos_url(self):
         self.calculate_old_date(self.brazzers.more_than_old_days_download)
-        df1 = pd.read_csv('brazzers_videos_details.csv')
-        df_url = df1['Url'].values.tolist()
+        df_url = self.column_to_list(self.brazzers,'Url')
         page_number = 2
         driver_url = self.driver.current_url
         tags = driver_url.split('tags=')[-1]
@@ -382,7 +388,7 @@ class scrapping_bot():
                 page_number +=1
             else : break
 
-    def set_data_of_csv(self,config :object, tmp :dict,video_name):
+    def set_data_of_csv(self,config :object, tmp :dict,video_name : str):
         website_name = config.website_name
         videos_collection = pd.read_csv(os.path.join(os.getcwd(),f'{website_name}_videos_details.csv'))
         videos_collection = videos_collection.to_dict(orient='records')
@@ -390,12 +396,11 @@ class scrapping_bot():
         videos_data = videos_data.to_dict(orient='records')
         videos_data.append({"Video-title": video_name,"video_url": tmp['video_download_url'],"downloaded_time": datetime.now()})    
         videos_collection.append(tmp)
-        pd.DataFrame(videos_collection).to_csv(os.path.join(os.getcwd(), 'vip4k_videos_details.csv'), index=False)
-        pd.DataFrame(videos_data).to_csv(os.path.join(os.getcwd(), 'vip4k_videos.csv'), index=False)
+        pd.DataFrame(videos_collection).to_csv(os.path.join(os.getcwd(), f'{website_name}_videos_details.csv'), index=False)
+        pd.DataFrame(videos_data).to_csv(os.path.join(os.getcwd(), f'{website_name}_videos.csv'), index=False)
 
     def brazzers_download_video(self):
         for idx,videoss_urll in enumerate(self.videos_urls) : 
-            # if idx == 0: continue          
             master_url = []
             for _ in range(3):
                 self.driver.get(videoss_urll['video_url'])
@@ -459,11 +464,10 @@ class scrapping_bot():
 
                     self.click_element('download btn','//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]')
                     self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
-                    new_video_download = ''
-                    self.random_sleep(2,3)
-                    new_video_download = self.wait_for_file_download()
-                    self.random_sleep(2,3)
-                    os.rename(os.path.join(os.getcwd(),f'downloads/{new_video_download.replace(".crdownload","")}'),os.path.join(os.getcwd(),f'downloads/{video_name}.mp4')) 
+                    file_name = self.wait_for_file_download()
+                    self.random_sleep(3,5)
+                    name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                    os.rename(os.path.join(self.download_path,file_name), name_of_file)
                     self.set_data_of_csv(self.brazzers,tmp,video_name=video_name)
                 except Exception as e :
                     print('Error :', e)
@@ -481,8 +485,7 @@ class scrapping_bot():
     def get_videos_url(self,url=None):
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
-        df1 = pd.read_csv('brazzers_videos_details.csv')
-        df_url = df1['Url'].values.tolist()
+        df_url = self.column_to_list(self.brazzers,'Url')
         page_number = 2
         if not url:
             tags = driver_url.split('tags=')[-1]
@@ -581,16 +584,11 @@ class scrapping_bot():
                 response = requests.get(video_url['post_url'])
                 with open(f'downloads/{collection_name}/{video_name}.jpg', 'wb') as f:f.write(response.content)
                 self.click_element('download btn', '//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]') 
-                quality = self.find_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
-                file_name = f'downloads/{download_video_name}_{quality.text}.mp4'
-                quality.click()
-                self.wait_for_file_download()
+                quality = self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
+                file_name = self.wait_for_file_download()
                 self.random_sleep(3,5)
-                
-                file_name = [i for i in os.listdir('downloads')if '-' in i and i.endswith('.mp4')][0]
-                name_of_file = os.path.join(os.getcwd(), f'downloads/{video_name}.mp4')
-                file_name = f'downloads/{file_name}'
-                os.rename(os.path.join(os.getcwd(),file_name), name_of_file)
+                name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(self.brazzers,tmp,video_name=video_name)
             except Exception as e:
@@ -613,7 +611,7 @@ class scrapping_bot():
             new_files = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
             if not new_files:
                 print('download complete')
-                return  new_video_download[0]
+                return  new_video_download[0].replace('.crdownload','').split('/')[-1]
             time.sleep(1)
 
     def create_or_check_path(self,folder_name, sub_folder_='',main=False):
@@ -629,12 +627,12 @@ class scrapping_bot():
     def make_csv(self):
         for object in configuration.objects.all():
             website_name = object.website_name
-            if not os.path.exists(os.path.join(os.getcwd(),f'{website_name}_videos.csv')) :
+            if not os.path.exists(os.path.join(self.base_path,f'{website_name}_videos.csv')) :
                 column_names = ["Video-title","video_url","downloaded_time"]
                 df = pd.DataFrame(columns=column_names)
                 df.to_csv(f'{website_name}_videos.csv', index=False)
 
-            if not os.path.exists(os.path.join(os.getcwd(),f'{website_name}_videos_details.csv')) :
+            if not os.path.exists(os.path.join(self.base_path,f'{website_name}_videos_details.csv')) :
                 column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri",'poster_download_uri',"Video-name",'video_download_uri',"Photo-name","Pornstarts","Category"]
                 df = pd.DataFrame(columns=column_names)
                 df.to_csv(f'{website_name}_videos_details.csv', index=False)
@@ -643,9 +641,9 @@ class scrapping_bot():
         self.delete_resume_file()
         for object in configuration.objects.all():
             website_name = object.website_name
-            df = pd.read_csv(os.path.join(os.getcwd(),f'{website_name}_videos.csv'))
+            df = pd.read_csv(os.path.join(self.base_path,f'{website_name}_videos.csv'))
             df['downloaded_time'] = pd.to_datetime(df['downloaded_time'])
-            df1 = pd.read_csv(os.path.join(os.getcwd(),f'{website_name}_videos_details.csv'))
+            df1 = pd.read_csv(os.path.join(self.base_path,f'{website_name}_videos_details.csv'))
             temp_df = df[df['downloaded_time'] < (datetime.now() - timedelta(days=int(object.delete_old_days)))]
             if not temp_df.empty:
                 matching_titles = temp_df['Video-title'].unique()
@@ -654,7 +652,7 @@ class scrapping_bot():
                     for idx,row in temp_df.iterrows():
                         self.find_and_delete_video('downloads',row['Video-title'])
                     df1 = df1[~df1['video_download_url'].isin(matching_url)]
-                    df1.to_csv(os.path.join(os.getcwd(),f'{website_name}_videos_details.csv'),index=False)
+                    df1.to_csv(os.path.join(self.base_path,f'{website_name}_videos_details.csv'),index=False)
         
     def delete_resume_file(self):
         delete_resume_file = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
@@ -663,10 +661,8 @@ class scrapping_bot():
                 file_path = os.path.join(f'{os.getcwd()}/downloads', i)
                 os.remove(file_path)
     
-    
     def vip4k_login(self):
         self.vip4k_download_video_count = int(self.vip4k.numbers_of_download_videos)
-        
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
@@ -708,27 +704,22 @@ class scrapping_bot():
         self.calculate_old_date(self.vip4k.more_than_old_days_download)
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
-        df1 = pd.read_csv('brazzers_videos_details.csv')
-        df_url = df1['Url'].values.tolist()
+        df_url = self.column_to_list(self.vip4k,'Url')
         self.driver.get(url)
         collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]')
         if collection_name: video_detailes['collection_name'] = collection_name.text.lower().replace(' ','_')
         while len(videos_urls) < self.vip4k_download_video_count:
-            all_video = self.driver.find_elements(By.XPATH,'//li[@class="grid__item"]')
-            for i in all_video:
-                video_date = i.find_element(By.XPATH,'//*[@class="item__date"]')
-                if video_date:
-                    self.driver.execute_script("arguments[0].scrollIntoView();", video_date)
-                    time.sleep(0.3)
-                    if self.date_older_or_not(video_date.text) :
-                        video_ele = i.find_element(By.XPATH,'//*[@class="item__main"]')
-                        post_url = i.find_element(By.XPATH,'//picture[@class="item__inner"]/source[2]')
-                        if video_ele and post_url:
-                            video_url = video_ele.get_attribute('href')
-                            post_url = post_url.get_attribute('srcset')
-                            video_urls = [item['video_url'] for item in videos_urls]
-                            if video_url and post_url and video_url not in df_url and video_url not in video_urls:
-                                videos_urls.append({"video_url":video_url,'post_url':"https:"+post_url})
+            ul_tag = self.find_element('ul tag', 'grid.sets_grid', By.CLASS_NAME)
+            li_tags = ul_tag.find_elements(By.TAG_NAME, 'li')
+            for li in li_tags:
+                video_date = li.find_element(By.CLASS_NAME, 'item__date').text
+                if self.date_older_or_not(video_date):
+                    video_url = li.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                    post_url = li.find_element(By.TAG_NAME, 'img').get_attribute('src')
+                    
+                    if video_url and post_url:
+                        if video_url not in df_url and video_url not in [item['video_url'] for item in videos_urls]:
+                            videos_urls.append({"video_url": video_url, 'post_url': post_url})
                 
             show_more = self.find_element('show more','/html/body/div[2]/div/div[1]/div/section/div[5]/a')
             if show_more:
@@ -813,12 +804,10 @@ class scrapping_bot():
                     }
                     """
                 self.driver.execute_script(js_script)
-                file_name = self.wait_for_file_download(timeout=30).replace('.crdownload','')
+                file_name = self.wait_for_file_download(timeout=30)
                 self.random_sleep(3,5)
-                breakpoint()
-                name_of_file = os.path.join(os.getcwd(), f'downloads/{video_name}.mp4')
-                file_name = f'downloads/{file_name}'
-                os.rename(os.path.join(os.getcwd(),file_name), name_of_file)
+                name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(self.vip4k,tmp,video_name)
             except Exception as e:
