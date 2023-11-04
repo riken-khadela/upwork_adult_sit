@@ -61,7 +61,7 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 def videos_collection_post_delete(sender, instance, **kwargs):
     video_name = instance.Video_name
     base_name = str(video_name).split('.')[0]
-    for foldername, subfolders, filenames in os.walk('downloads'):
+    for foldername, subfolders, filenames in os.walk(os.path.join(os.getcwd(),'downloads')):
         for filename in filenames:
             if os.path.splitext(os.path.basename(filename))[0] == base_name:
                 os.remove(os.path.join(foldername, filename))
