@@ -9,7 +9,7 @@ class videos_collection(models.Model):
     Poster_Image_uri = models.URLField(null=True,blank=True)
     Likes = models.IntegerField(null=True,blank=True)
     Disclike = models.IntegerField(null=True,blank=True)
-    Url = models.URLField(null=True,blank=True)
+    Url = models.TextField(null=True,blank=True)
     Title = models.CharField(max_length=255)
     Discription = models.TextField(null=True,blank=True)
     Pornstarts = models.CharField(max_length=500,null=True,blank=True)
