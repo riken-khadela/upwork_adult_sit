@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException,ElementNotInteractableException,NoSuchElementException,WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver  
+from collections import defaultdict
 import requests
 from dateutil import parser
 import json, random, time, pandas as pd, os, sys
@@ -660,7 +661,17 @@ class scrapping_bot():
             for i in delete_resume_file:
                 file_path = os.path.join(f'{os.getcwd()}/downloads', i)
                 os.remove(file_path)
-    
+        base_name_dict = defaultdict(list)
+        for foldername, subfolders, filenames in os.walk(os.path.join(os.getcwd(), 'downloads')):
+            for filename in filenames:
+                base_name = os.path.splitext(os.path.basename(filename))[0]
+                if os.path.basename(filename).endswith('.mp4') or os.path.basename(filename).endswith('.jpg'):
+                    base_name_dict[base_name].append(os.path.join(foldername, filename))
+        for base_name, file_list in base_name_dict.items():
+            if len(file_list) == 1:
+                os.remove(file_list[0])
+                            
+                            
     def vip4k_login(self):
         self.vip4k_download_video_count = int(self.vip4k.numbers_of_download_videos)
         for i in range(3):
