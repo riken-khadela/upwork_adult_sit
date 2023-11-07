@@ -39,36 +39,36 @@ def user_logged_in_callback(sender, request, user, **kwargs):
         if file.endswith('_details.csv'):
             df = pd.read_csv(os.path.join(csv_root,file))
             dfs.append(df)
-
-    df = pd.concat(dfs, ignore_index=True)
-    df[['Likes']] = df[['Likes']].fillna(0)
-    df[['Disclike']] = df[['Disclike']].fillna(0)
-    for video_file in video_files:
-        video_name = str(video_file).split('/')[-1]
-        
-        if len(df[df['Video-name'] == video_name]) == 0:
-            if video_file.endswith('.mp4') or video_file.endswith('.jpg'):
-                os.remove(video_file)
-        else:
-            if not videos_collection.objects.filter(Video_name=video_name):
-                video_data = df[df['Video-name'] == video_name].to_dict(orient='records')
-                if video_data:
-                    video_data_dict = {
-                        'Video_name': video_data[0].get('Video-name', None),
-                        'Release_Date': timezone.make_aware(parser.parse(video_data[0]['Release-Date']),pytz.timezone('Asia/Kolkata')),
-                        'Poster_Image_uri': video_data[0].get('poster_download_uri', None),
-                        'Likes': video_data[0].get('Likes', 0),
-                        'Disclike': video_data[0].get('Disclike', 0),
-                        'Url': video_data[0].get('video_download_url', None),
-                        'Title': video_data[0].get('Title', None),
-                        'Discription': video_data[0].get('Discription', None),
-                        'Pornstarts': video_data[0].get('Pornstarts', None),
-                    }
-                    videos_collection.objects.update_or_create(**video_data_dict)
+    if dfs:
+        df = pd.concat(dfs, ignore_index=True)
+        df[['Likes']] = df[['Likes']].fillna(0)
+        df[['Disclike']] = df[['Disclike']].fillna(0)
+        for video_file in video_files:
+            video_name = str(video_file).split('/')[-1]
             
-        for video_obj in videos_collection.objects.all():
-            if video_obj.Video_name not in df['Video-name'].values:
-                video_obj.delete()
+            if len(df[df['Video-name'] == video_name]) == 0:
+                if video_file.endswith('.mp4') or video_file.endswith('.jpg'):
+                    os.remove(video_file)
+            else:
+                if not videos_collection.objects.filter(Video_name=video_name):
+                    video_data = df[df['Video-name'] == video_name].to_dict(orient='records')
+                    if video_data:
+                        video_data_dict = {
+                            'Video_name': video_data[0].get('Video-name', None),
+                            'Release_Date': timezone.make_aware(parser.parse(video_data[0]['Release-Date']),pytz.timezone('Asia/Kolkata')),
+                            'Poster_Image_uri': video_data[0].get('poster_download_uri', None),
+                            'Likes': video_data[0].get('Likes', 0),
+                            'Disclike': video_data[0].get('Disclike', 0),
+                            'Url': video_data[0].get('video_download_url', None),
+                            'Title': video_data[0].get('Title', None),
+                            'Discription': video_data[0].get('Discription', None),
+                            'Pornstarts': video_data[0].get('Pornstarts', None),
+                        }
+                        videos_collection.objects.update_or_create(**video_data_dict)
+                
+            for video_obj in videos_collection.objects.all():
+                if video_obj.Video_name not in df['Video-name'].values:
+                    video_obj.delete()
 
 @receiver(post_delete,sender=videos_collection)
 def videos_collection_post_delete(sender, instance, **kwargs):
