@@ -16,15 +16,15 @@ class Command(BaseCommand):
                 # close_every_chrome()
                 bot = scrapping_bot(brazzers_bot=True)
                 bot.starting_brazzers_bots()
-                if bot.brazzers_login() :
-                    logggg = True
-                    bot.brazzers_get_categories()
-                    bot.brazzers_get_videos_url()
-                    bot.brazzers_download_video()
-                    tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
-                    bot.download_videos(tags_152)
-                    tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
-                    bot.download_videos(tags_162)
+                # if bot.brazzers_login() :
+                #     logggg = True
+                #     bot.brazzers_get_categories()
+                #     video_dict = bot.brazzers_get_videos_url()
+                #     bot.brazzers_download_video(video_dict)
+                #     tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
+                #     bot.download_videos(tags_152)
+                #     tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
+                #     bot.download_videos(tags_162)
                     
                 if bot.vip4k_login():
                     videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
