@@ -293,7 +293,7 @@ class scrapping_bot():
         if 'vip4k' in website:
                 path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
                 if os.path.isfile(path):
-                    with open('vip4k_cookietest.json','rb') as f:cookies = json.load(f)
+                    with open(path,'rb') as f:cookies = json.load(f)
                     for item in cookies:
                         if item.get("domain") == ".vip4k.com":
                             self.driver.add_cookie(item)
