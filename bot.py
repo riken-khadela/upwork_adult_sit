@@ -743,12 +743,14 @@ class scrapping_bot():
                     self.random_sleep(2,3)
                     iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="recaptcha challenge expires in two minutes"]')))        
                     self.click_element('click extension btn','//*[@id="rc-imageselect"]/div[3]/div[2]/div[1]/div[1]/div[4]')
+                    
                     self.driver.switch_to.default_content()
+                    
                     self.random_sleep(10,15)
                     self.click_element('submit','//input[@type="submit"]')
                     self.random_sleep(5,6)
-                    cookies = self.get_cookies()
             if self.find_element('check login','//div[@class="logout__text"]'):
+                cookies = self.get_cookies(self.vip4k.website_name)
                 member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
                 for item in member_cookies:self.driver.add_cookie(item)
                 return True
