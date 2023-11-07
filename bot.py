@@ -722,7 +722,6 @@ class scrapping_bot():
                 os.remove(file_list[0])
                             
     def vip4k_login(self):
-        self.vip4k_download_video_count = int(self.vip4k.numbers_of_download_videos)
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
@@ -765,7 +764,8 @@ class scrapping_bot():
         collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]')
         if collection_name: video_detailes['collection_name'] = collection_name.text.lower().replace(' ','_')
         df_url = self.column_to_list(self.vip4k.website_name,'Url')
-        while len(videos_urls) < self.vip4k_download_video_count:
+        max_video = self.vip4k.numbers_of_download_videos
+        while len(videos_urls) < max_video:
             ul_tag = self.find_element('ul tag', 'grid.sets_grid', By.CLASS_NAME)
             li_tags = ul_tag.find_elements(By.TAG_NAME, 'li')
             for li in li_tags:
@@ -777,8 +777,9 @@ class scrapping_bot():
                     if video_url and post_url:
                         if video_url not in df_url and video_url not in [item['video_url'] for item in videos_urls]:
                             videos_urls.append({"video_url": video_url, 'post_url': post_url})
-                            if len(videos_urls) >= self.vip4k_download_video_count:break
-                
+                            if len(videos_urls) >= max_video:break
+                    if len(videos_urls) >= max_video:break
+            if len(videos_urls) >= max_video:break
             show_more = self.find_element('show more','/html/body/div[2]/div/div[1]/div/section/div[5]/a')
             if show_more:
                 self.driver.execute_script("arguments[0].scrollIntoView();", show_more)
