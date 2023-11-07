@@ -1,11 +1,16 @@
+import imp
+from multiprocessing.spawn import import_main_path
 from django.urls import path
 from django.views.generic import View
 from django.http import HttpResponse
-from django.conf import settings
+from django.conf import Settings, settings
 import os
 from django.contrib import admin
 from django.conf.urls.static import static
+from main.models import configuration
 from main.views import *
+from io import BytesIO
+import zipfile
 
 
 def list_files(request):
@@ -31,7 +36,7 @@ def download_file(request, file_path):
     # Construct the full path to the file using the MEDIA_ROOT setting.
     media_root = settings.MEDIA_ROOT
     file = os.path.join(media_root, file_path)
-
+    if os.path.basename(file).endswith('.csv'):file = os.path.join(os.getcwd(), file_path)
     # Check if the file exists.
     if os.path.isfile(file):
         with open(file, 'rb') as f:
@@ -53,25 +58,23 @@ def download_file(request, file_path):
         HttpResponse("Folder not found.", status=404)
 
 
-def csv_file(request):
-    # Construct the full path to the file using the MEDIA_ROOT setting.
-    media_root = settings.BASE_DIR
-    file = os.path.join(media_root, 'brazzers_videos_details.csv')
-
-    # Check if the file exists.
-    if os.path.isfile(file):
-        with open(file, 'rb') as f:
-            response = HttpResponse(f.read(), content_type="application/octet-stream")
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
-            return response
-    else:
-        return HttpResponse("File not found", status=404)
+def csv_file(request,file_name):
+    csv_root = settings.CSV_ROOT
+    files = os.listdir(csv_root)
+    file_links = []
+    for file in files:
+        if file.endswith('_details.csv') and file_name in file:
+            with open(file, 'rb') as f:
+                response = HttpResponse(f.read(), content_type="application/octet-stream")
+                response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
+                return response
+    return HttpResponse("csv not found.", status=404)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('downloads/<path:file_path>/', download_file, name='download_file'),
     path('list_files/', list_files, name='list_file'),
-    path('csv/', csv_file, name='csv_file'),
+    path('csv/<str:file_name>', csv_file, name='csv_file'),
     path('', data_flair),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

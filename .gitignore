@@ -20,3 +20,5 @@ photos/*
 downloads copy
 /*/management/commands/test.py
 *.csv
+csv
+cookies
