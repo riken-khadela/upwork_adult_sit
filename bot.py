@@ -309,6 +309,7 @@ class scrapping_bot():
         cookies = self.driver.get_cookies()
         with open(path, 'w', newline='') as outputdata:
             json.dump(cookies, outputdata)
+        return cookies
             
     def brazzers_login(self):
         self.load_cookies(self.brazzers.website_name)
@@ -726,12 +727,7 @@ class scrapping_bot():
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
             if login:
-                path = f"{os.getcwd()}/vip4k_cookietest.json"
-                if os.path.isfile(path):
-                    with open('vip4k_cookietest.json','rb') as f:cookies = json.load(f)
-                    for item in cookies:
-                        if item.get("domain") == ".vip4k.com":
-                            self.driver.add_cookie(item)
+                self.load_cookies(self.vip4k.website_name)
                 self.driver.get('https://vip4k.com/en/login')
                 login = self.find_element('login button','//*[text()="Login"]')
                 if login:
@@ -748,11 +744,10 @@ class scrapping_bot():
                     iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="recaptcha challenge expires in two minutes"]')))        
                     self.click_element('click extension btn','//*[@id="rc-imageselect"]/div[3]/div[2]/div[1]/div[1]/div[4]')
                     self.driver.switch_to.default_content()
-                    self.random_sleep(2,3)
+                    self.random_sleep(10,15)
                     self.click_element('submit','//input[@type="submit"]')
                     self.random_sleep(5,6)
-                    cookies = self.driver.get_cookies()
-                    with open('vip4k_cookietest.json', 'w', newline='') as outputdata:json.dump(cookies, outputdata)
+                    cookies = self.get_cookies()
             if self.find_element('check login','//div[@class="logout__text"]'):
                 member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
                 for item in member_cookies:self.driver.add_cookie(item)
