@@ -2,16 +2,27 @@ from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 import os, pandas as pd
+from django.conf import settings
 from dateutil import parser
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from datetime import datetime
 from numpy import delete
+from collections import defaultdict
 import pytz 
 from .models import videos_collection, configuration
 
 @receiver(user_logged_in)
 def user_logged_in_callback(sender, request, user, **kwargs):
+    base_name_dict = defaultdict(list)
+    for foldername, subfolders, filenames in os.walk(os.path.join(os.getcwd(), 'downloads')):
+        for filename in filenames:
+            base_name = os.path.splitext(os.path.basename(filename))[0]
+            if os.path.basename(filename).endswith('.mp4') or os.path.basename(filename).endswith('.jpg'):
+                base_name_dict[base_name].append(os.path.join(foldername, filename))
+    for base_name, file_list in base_name_dict.items():
+        if len(file_list) == 1:
+            os.remove(file_list[0])
     folder_path = 'downloads'
     video_extensions = ["mp4", "avi", "mkv", "mov", "wmv","webm"]
     video_files = []
@@ -21,11 +32,13 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                 base_name, extension = os.path.splitext(filename)
                 if extension == '.mp4':
                     video_files.append(os.path.join(foldername, filename))
-    dfs = []
-
-    for obj in configuration.objects.all():
-        df = pd.read_csv(os.path.join(os.getcwd(),f'{obj.website_name}_videos_details.csv'))
-        dfs.append(df)
+    dfs = []    
+    csv_root = settings.CSV_ROOT
+    files = os.listdir(csv_root)
+    for file in files:
+        if file.endswith('_details.csv'):
+            df = pd.read_csv(os.path.join(csv_root,file))
+            dfs.append(df)
 
     df = pd.concat(dfs, ignore_index=True)
     df[['Likes']] = df[['Likes']].fillna(0)
@@ -64,12 +77,17 @@ def videos_collection_post_delete(sender, instance, **kwargs):
     for foldername, subfolders, filenames in os.walk(os.path.join(os.getcwd(),'downloads')):
         for filename in filenames:
             if os.path.splitext(os.path.basename(filename))[0] == base_name:
-                os.remove(os.path.join(foldername, filename))
+                try:
+                    os.remove(os.path.join(foldername, filename))
+                except:pass
 
-    for obj in configuration.objects.all():
-        df = pd.read_csv(os.path.join(os.getcwd(),f'{obj.website_name}_videos_details.csv'))
-        if video_name in  df['Video-name'].values:
-            df.drop(df[df['Video-name'] == video_name].index, inplace=True)
-            df.to_csv(os.path.join(os.getcwd(),f'{obj.website_name}_videos_details.csv'),index=False)
+    csv_root = settings.CSV_ROOT
+    files = os.listdir(csv_root)
+    for file in files:
+        if file.endswith('_details.csv'):
+            df = pd.read_csv(os.path.join(csv_root,file))
+            if video_name in  df['Video-name'].values:
+                df.drop(df[df['Video-name'] == video_name].index, inplace=True)
+                df.to_csv(os.path.join(csv_root,file),index=False)
 
             

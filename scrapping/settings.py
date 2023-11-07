@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-mw-03=s9_d8$rytn8zgltk)*fj3op$15kzn9-r+8%x=ba1m+x*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['159.223.134.27','*']
 
@@ -124,6 +124,9 @@ STATIC_ROOT= os.path.join(BASE_DIR,'static')
 
 MEDIA_URL = '/downloads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'downloads')
+
+CSV_ROOT = os.path.join(BASE_DIR, 'csv')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
