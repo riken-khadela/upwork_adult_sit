@@ -28,7 +28,7 @@ def list_files(request):
             file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
         elif 'video' in str(file) and not file.endswith('.mp4') or not file.endswith('.jpg') and 'admin' not in str(file):
             file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
-            # entries = os.listdir(current_folder)
+
     return HttpResponse("<br>".join(file_links))
 
 
@@ -61,10 +61,9 @@ def download_file(request, file_path):
 def csv_file(request,file_name):
     csv_root = settings.CSV_ROOT
     files = os.listdir(csv_root)
-    file_links = []
     for file in files:
         if file.endswith('_details.csv') and file_name in file:
-            with open(file, 'rb') as f:
+            with open(f'{csv_root}/{file}', 'rb') as f:
                 response = HttpResponse(f.read(), content_type="application/octet-stream")
                 response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
                 return response
