@@ -49,7 +49,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         prefs = {"credentials_enable_service": True,
                  'profile.default_content_setting_values.automatic_downloads': 1,
                  "download.default_directory" : f"{self.download_path}",
@@ -743,12 +743,14 @@ class scrapping_bot():
                     self.random_sleep(2,3)
                     iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="recaptcha challenge expires in two minutes"]')))        
                     self.click_element('click extension btn','//*[@id="rc-imageselect"]/div[3]/div[2]/div[1]/div[1]/div[4]')
+                    
                     self.driver.switch_to.default_content()
+                    
                     self.random_sleep(10,15)
                     self.click_element('submit','//input[@type="submit"]')
                     self.random_sleep(5,6)
-                    cookies = self.get_cookies()
             if self.find_element('check login','//div[@class="logout__text"]'):
+                cookies = self.get_cookies(self.vip4k.website_name)
                 member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
                 for item in member_cookies:self.driver.add_cookie(item)
                 return True
