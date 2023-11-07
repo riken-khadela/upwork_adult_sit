@@ -659,7 +659,7 @@ class scrapping_bot():
         delete_resume_file = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
         if delete_resume_file:
             for i in delete_resume_file:
-                file_path = os.path.join(f'{os.getcwd()}/downloads', i)
+                file_path = os.path.join(self.download_path, i)
                 os.remove(file_path)
         base_name_dict = defaultdict(list)
         for foldername, subfolders, filenames in os.walk(os.path.join(os.getcwd(), 'downloads')):
