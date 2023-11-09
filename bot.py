@@ -443,6 +443,7 @@ class scrapping_bot():
                 "Likes" : "",
                 "Disclike" :"",
                 "Url" : videoss_urll['video_url'] ,
+                "Catagory":str(collection_name).replace('_videos',''),
                 "video_download_url" : v_urllll,
                 "Title" : '',
                 "Discription" : "",
@@ -451,7 +452,8 @@ class scrapping_bot():
                 "poster_download_uri" : p_urllll,
                 "Video-name" : f'{video_name}.mp4',
                 "Photo-name" : f'{video_name}.jpg',
-                "Pornstarts" : ''
+                "Pornstarts" : '',
+                "Username" : self.brazzers.website_name,
             }
             try:
                 response = requests.get(tmp['Poster-Image_uri'])
@@ -580,7 +582,8 @@ class scrapping_bot():
                     "poster_download_uri" : p_url,
                     "Video-name" : f'{video_name}.mp4',
                     "Photo-name" : f'{video_name}.jpg',
-                    "Pornstarts" : ''
+                    "Pornstarts" : '',
+                    "Username" : self.brazzers.website_name,
                 }
             try:
                 likes_count = self.find_element('Likes count','//*[text()="Likes:"]/strong')
@@ -664,7 +667,7 @@ class scrapping_bot():
                     df.to_csv(website_video_csv_path, index=False)
 
                 if not os.path.exists(website_video_details_csv_path) :
-                    column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri",'poster_download_uri',"Video-name",'video_download_uri',"Photo-name","Pornstarts","Category"]
+                    column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri",'poster_download_uri',"Video-name",'video_download_uri',"Photo-name","Pornstarts","Category","Username"]
                     df = pd.DataFrame(columns=column_names)
                     df.to_csv(website_video_details_csv_path, index=False)
                     
@@ -678,7 +681,7 @@ class scrapping_bot():
                 df.to_csv(website_video_csv_path, index=False)
 
             if not os.path.exists(website_video_details_csv_path) :
-                column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri",'poster_download_uri',"Video-name",'video_download_uri',"Photo-name","Pornstarts","Category"]
+                column_names = ["Likes","Disclike","Url","Title","Discription","Release-Date","Poster-Image_uri",'poster_download_uri',"Video-name",'video_download_uri',"Photo-name","Pornstarts","Category","Username"]
                 df = pd.DataFrame(columns=column_names)
                 df.to_csv(website_video_details_csv_path, index=False)
 
@@ -812,7 +815,8 @@ class scrapping_bot():
                     "poster_download_uri" : '',
                     "Video-name" : '',
                     "Photo-name" : '',
-                    "Pornstarts" : ''
+                    "Pornstarts" : '',
+                    "Username" : self.vip4k.website_name,
                 }
             try:
                 likes_count = self.find_element('Likes count','//button[@class="player-vote__item player-vote__item--up "]')
