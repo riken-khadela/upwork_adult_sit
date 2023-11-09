@@ -28,7 +28,6 @@ def user_logged_in_callback(sender, request, user, **kwargs):
     video_files = []
     for foldername, subfolders, filenames in os.walk(folder_path):
             for filename in filenames:
-                print(filename)
                 base_name, extension = os.path.splitext(filename)
                 if extension == '.mp4':
                     video_files.append(os.path.join(foldername, filename))
@@ -63,6 +62,7 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                             'Title': video_data[0].get('Title', None),
                             'Discription': video_data[0].get('Discription', None),
                             'Pornstarts': video_data[0].get('Pornstarts', None),
+                            # 'Category': video_data[0].get('Category', None),
                         }
                         videos_collection.objects.update_or_create(**video_data_dict)
                 
