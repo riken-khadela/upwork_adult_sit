@@ -1,8 +1,4 @@
-import collections
-from genericpath import isdir
 import os,shutil, pandas as pd
-from socket import timeout
-from pyclbr import Class
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -223,12 +219,10 @@ class scrapping_bot():
         self.old_date = today - timedelta(days=days)
         return self.old_date
 
-    def date_older_or_not(self,date_string=''):
+    def date_older_or_not(self,date_string='') -> bool:
         if date_string :
             date_obj = parser.parse(date_string)
-            if date_obj < self.old_date :
-                return True
-        return False
+            return date_obj < self.old_date
 
     def starting_brazzers_bots(self):
         self.get_driver(add_cybeghost=True)
