@@ -1,8 +1,4 @@
-import collections
-from genericpath import isdir
 import os,shutil, pandas as pd
-from socket import timeout
-from pyclbr import Class
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
