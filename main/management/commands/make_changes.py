@@ -11,7 +11,7 @@ class Command(BaseCommand):
             df.at[i, 'video_download_url'] = df.at[i, 'video_download_url'].rstrip('/')
             df.at[i, 'poster_download_uri'] = df.at[i, 'poster_download_uri'].rstrip('/')
 
-        # Save the modified DataFrame back to the CSV fileorient
+        # Save the modified DataFrame back to the CSV file
         df.to_csv(os.path.join(os.getcwd(), 'brazzers_videos_details.csv'), index=False)
         df = pd.read_csv(os.path.join(os.getcwd(),'brazzers_videos.csv'))
         for i in df.index:

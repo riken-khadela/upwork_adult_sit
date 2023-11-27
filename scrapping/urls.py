@@ -43,20 +43,20 @@ def download_file(request, file_path):
             response = HttpResponse(f.read(), content_type="application/octet-stream")
             response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
             return response
-
     elif os.path.isdir(file):
         file_links = []
         files = os.listdir(file)
         if not files: return HttpResponse("Folder is empty",status=200)
         for file in files:
-            if file.endswith('.mp4') or file.endswith('.jpg'):
+            if file.endswith('.mp4') or file.endswith('.jpg') or 'video' in str(file):
+                # file_path = os.path.join(static_root, file)
                 file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
-            elif 'video' in str(file) and not file.endswith('.mp4') or not file.endswith('.jpg') :
-                path_ = str(file_path).split('downloads')[-1]
-                file_links.append(f'<a href="/downloads/{path_}/{file}/">{file}</a>')
+            elif 'video' in str(file) and not file.endswith('.mp4') or not file.endswith('.jpg') and 'admin' not in str(file):
+                file_links.append(f'<a href="/downloads/{file}/">{file}</a>')
         return HttpResponse("<br>".join(file_links))
     else:
         HttpResponse("Folder not found.", status=404)
+
 
 def csv_file(request,file_name):
     csv_root = settings.CSV_ROOT

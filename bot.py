@@ -1,4 +1,8 @@
+import collections
+from genericpath import isdir
 import os,shutil, pandas as pd
+from socket import timeout
+from pyclbr import Class
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -45,7 +49,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')
+        # options.add_argument('--headless')
         prefs = {"credentials_enable_service": True,
                  'profile.default_content_setting_values.automatic_downloads': 1,
                  "download.default_directory" : f"{self.download_path}",
@@ -219,10 +223,12 @@ class scrapping_bot():
         self.old_date = today - timedelta(days=days)
         return self.old_date
 
-    def date_older_or_not(self,date_string='') -> bool:
+    def date_older_or_not(self,date_string=''):
         if date_string :
             date_obj = parser.parse(date_string)
-            return date_obj < self.old_date
+            if date_obj < self.old_date :
+                return True
+        return False
 
     def starting_brazzers_bots(self):
         self.get_driver(add_cybeghost=True)
@@ -336,6 +342,7 @@ class scrapping_bot():
             return True
 
     def brazzers_get_categories(self):
+        breakpoint()
         if not self.driver.current_url.lower() == self.brazzers_category_url :
             self.driver.get(self.brazzers_category_url)
         found_category = False
@@ -553,6 +560,7 @@ class scrapping_bot():
         return video_detailes
 
     def download_videos(self, videos_dict):
+        breakpoint()
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
         collection_path = self.create_or_check_path(collection_name)
