@@ -784,7 +784,7 @@ class scrapping_bot():
 
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
-        collection_name = 'vip4k_'+videos_dict['collection_name']
+        collection_name = videos_dict['collection_name']
         collection_path = self.create_or_check_path(self.vip4k_category_path,sub_folder_=collection_name)
         for idx, video_url in enumerate(videos_urls):
             self.driver.get(video_url['video_url'])
