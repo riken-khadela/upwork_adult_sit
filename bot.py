@@ -748,11 +748,11 @@ class scrapping_bot():
         self.calculate_old_date(self.vip4k.more_than_old_days_download)
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
-        if self.vip4k.category: self.driver.get(self.vip4k.category)
+        if self.vip4k.category: self.driver.get(f'https://members.vip4k.com/en/tag{self.vip4k.category}')
         else:self.driver.get(url)
         self.random_sleep(10,15)
         collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]')
-        if collection_name: video_detailes['collection_name'] = collection_name.text.lower().replace(' ','_')
+        if not collection_name: collection_name = self.find_element('collection name','//h1')
         df_url = self.column_to_list(self.vip4k.website_name,'Url')
         max_video = self.vip4k.numbers_of_download_videos
         while len(videos_urls) < max_video:
