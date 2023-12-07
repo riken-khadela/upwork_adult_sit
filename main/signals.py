@@ -24,7 +24,6 @@ def user_logged_in_callback(sender, request, user, **kwargs):
         if len(file_list) == 1:
             os.remove(file_list[0])
     folder_path = 'downloads'
-    video_extensions = ["mp4", "avi", "mkv", "mov", "wmv","webm"]
     video_files = []
     for foldername, subfolders, filenames in os.walk(folder_path):
             for filename in filenames:
@@ -71,9 +70,9 @@ def user_logged_in_callback(sender, request, user, **kwargs):
         video_fil = [str(video).split('/')[-1] for video in video_files]
         for file in files:
             if str(file).endswith('_details.csv'):
-                df = pd.read_csv(os.path.join(csv_root,file))
-                df = df[df['Video-name'].isin(video_fil)]
-                df.to_csv(os.path.join(csv_root,file),index=False)
+                df1 = pd.read_csv(os.path.join(csv_root,file))
+                df1 = df1[df1['Video-name'].isin(video_fil)]
+                df1.to_csv(os.path.join(csv_root,file),index=False)
 
         for video_obj in videos_collection.objects.all():
             if video_obj.Video_name not in df['Video-name'].values:
