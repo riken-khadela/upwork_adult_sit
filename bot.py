@@ -545,7 +545,6 @@ class scrapping_bot():
         return video_detailes
 
     def download_videos(self, videos_dict):
-        breakpoint()
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
         collection_path = self.create_or_check_path(collection_name)
