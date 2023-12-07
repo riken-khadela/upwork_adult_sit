@@ -834,7 +834,7 @@ class scrapping_bot():
                         porn_start_name += f'{i.text},'
                     tmp['Pornstarts'] = porn_start_name.rstrip(',')
 
-                video_name = f"{collection_name.replace('videos', '')}_{tmp['Title'].lower().replace(' ', '_')}"
+                video_name = f"vip4k_{collection_name.replace('videos', '')}_{tmp['Title'].lower().replace(' ', '_')}"
                 v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
                 p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
                 tmp['poster_download_uri'] = p_url
