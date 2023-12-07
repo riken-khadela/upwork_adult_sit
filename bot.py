@@ -14,8 +14,6 @@ import requests
 from dateutil import parser
 import json, random, time, pandas as pd, os, sys
 from datetime import datetime, timedelta
-from selenium_stealth import stealth
-from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 from main.models import configuration
 
@@ -36,12 +34,11 @@ class scrapping_bot():
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
 
-    def get_driver(self,add_cybeghost=False):
+    def get_driver(self):
         """Start webdriver and return state of it."""
         from selenium.webdriver.chrome.options import Options
-        options = Options()
-
-        options = uc.ChromeOptions()
+        from undetected_chromedriver import Chrome, ChromeOptions
+        options = ChromeOptions()
         options.add_argument('--lang=en')  # Set webdriver language to English.
         options.add_argument('log-level=3')  # No logs is printed.
         options.add_argument('--mute-audio')  # Audio is muted.
@@ -58,9 +55,6 @@ class scrapping_bot():
             'safebrowsing.enabled': True ,
             "profile.password_manager_enabled": True}
         options.add_experimental_option("prefs", prefs)
-        if add_cybeghost :
-            options.add_extension('./Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx')
-        options.add_extension('./Buster-Captcha-Solver-for-Humans.crx')
         options.add_argument('--no-sandbox')
         options.add_argument('--start-maximized')    
         options.add_argument('--disable-dev-shm-usage')
@@ -69,19 +63,12 @@ class scrapping_bot():
         options.add_argument("--enable-popup-blocking")
         for _ in range(30):
             try:
-                driver = webdriver.Chrome(options=options)
+                driver = Chrome(options=options)
                 driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
                 print(e)
-        stealth(driver,
-            languages=["en-US", "en"],
-            vendor="Google Inc.",
-            platform="Win32",
-            webgl_vendor="Intel Inc.",
-            renderer="Intel Iris OpenGL Engine",
-            fix_hairline=True,
-            )
+        
         self.driver = driver
         return self.driver
     
@@ -342,7 +329,6 @@ class scrapping_bot():
             return True
 
     def brazzers_get_categories(self):
-        breakpoint()
         if not self.driver.current_url.lower() == self.brazzers_category_url :
             self.driver.get(self.brazzers_category_url)
         found_category = False
