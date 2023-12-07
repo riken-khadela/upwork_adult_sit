@@ -65,10 +65,19 @@ def user_logged_in_callback(sender, request, user, **kwargs):
                             'Category': video_data[0].get('Category', None),
                         }
                         videos_collection.objects.update_or_create(**video_data_dict)
-                
-            for video_obj in videos_collection.objects.all():
-                if video_obj.Video_name not in df['Video-name'].values:
-                    video_obj.delete()
+
+        csv_root = settings.CSV_ROOT
+        files = os.listdir(csv_root)
+        video_fil = [str(video).split('/')[-1] for video in video_files ]
+        for file in files:
+            if file.endswith('_details.csv'):
+                df = pd.read_csv(os.path.join(csv_root,file))
+                df = df[df['Video-name'].isin(video_fil)]
+                df.to_csv(os.path.join(csv_root,file),index=False)
+
+        for video_obj in videos_collection.objects.all():
+            if video_obj.Video_name not in df['Video-name'].values:
+                video_obj.delete()
 
 @receiver(post_delete,sender=videos_collection)
 def videos_collection_post_delete(sender, instance, **kwargs):
