@@ -36,7 +36,6 @@ class scrapping_bot():
 
     def get_driver(self):
         """Start webdriver and return state of it."""
-        from selenium.webdriver.chrome.options import Options
         from undetected_chromedriver import Chrome, ChromeOptions
         options = ChromeOptions()
         options.add_argument('--lang=en')  # Set webdriver language to English.
@@ -46,7 +45,7 @@ class scrapping_bot():
         options.add_argument('--mute-audio')
         options.add_argument("--ignore-gpu-blocklist")
         options.add_argument('--disable-dev-shm-usage')
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         prefs = {"credentials_enable_service": True,
                  'profile.default_content_setting_values.automatic_downloads': 1,
                  "download.default_directory" : f"{self.download_path}",
@@ -63,7 +62,7 @@ class scrapping_bot():
         options.add_argument("--enable-popup-blocking")
         for _ in range(30):
             try:
-                driver = Chrome(options=options)
+                driver = Chrome(options=options,version_main=119)
                 driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
