@@ -430,7 +430,7 @@ class scrapping_bot():
                 "Likes" : "",
                 "Disclike" :"",
                 "Url" : videoss_urll['video_url'] ,
-                "Catagory":str(collection_name).replace('_videos',''),
+                "Category":str(collection_name).replace('_videos',''),
                 "video_download_url" : v_urllll,
                 "Title" : '',
                 "Discription" : "",
