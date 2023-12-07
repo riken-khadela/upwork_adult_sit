@@ -35,32 +35,32 @@ class scrapping_bot():
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
 
     def get_driver(self):
-        """Start webdriver and return state of it."""
-        from undetected_chromedriver import Chrome, ChromeOptions
-        options = ChromeOptions()
-        options.add_argument('--lang=en')  # Set webdriver language to English.
-        options.add_argument('log-level=3')  # No logs is printed.
-        options.add_argument('--mute-audio')  # Audio is muted.
-        options.add_argument("--enable-webgl-draft-extensions")
-        options.add_argument('--mute-audio')
-        options.add_argument("--ignore-gpu-blocklist")
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')
-        prefs = {"credentials_enable_service": True,
-                 'profile.default_content_setting_values.automatic_downloads': 1,
-                 "download.default_directory" : f"{self.download_path}",
-            'download.prompt_for_download': False,  # Optional, suppress download prompt
-            'download.directory_upgrade': True,
-            'safebrowsing.enabled': True ,
-            "profile.password_manager_enabled": True}
-        options.add_experimental_option("prefs", prefs)
-        options.add_argument('--no-sandbox')
-        options.add_argument('--start-maximized')    
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument("--ignore-certificate-errors")
-        options.add_argument("--enable-javascript")
-        options.add_argument("--enable-popup-blocking")
         for _ in range(30):
+            """Start webdriver and return state of it."""
+            from undetected_chromedriver import Chrome, ChromeOptions
+            options = ChromeOptions()
+            options.add_argument('--lang=en')  # Set webdriver language to English.
+            options.add_argument('log-level=3')  # No logs is printed.
+            options.add_argument('--mute-audio')  # Audio is muted.
+            options.add_argument("--enable-webgl-draft-extensions")
+            options.add_argument('--mute-audio')
+            options.add_argument("--ignore-gpu-blocklist")
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--headless')
+            prefs = {"credentials_enable_service": True,
+                    'profile.default_content_setting_values.automatic_downloads': 1,
+                    "download.default_directory" : f"{self.download_path}",
+                'download.prompt_for_download': False,  # Optional, suppress download prompt
+                'download.directory_upgrade': True,
+                'safebrowsing.enabled': True ,
+                "profile.password_manager_enabled": True}
+            options.add_experimental_option("prefs", prefs)
+            options.add_argument('--no-sandbox')
+            options.add_argument('--start-maximized')    
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument("--ignore-certificate-errors")
+            options.add_argument("--enable-javascript")
+            options.add_argument("--enable-popup-blocking")
             try:
                 driver = Chrome(options=options,version_main=119)
                 driver.get('https://site-ma.brazzers.com/store')
@@ -750,7 +750,7 @@ class scrapping_bot():
         if self.vip4k.category: self.driver.get(f'https://members.vip4k.com/en/tag{self.vip4k.category}')
         else:self.driver.get(url)
         self.random_sleep(10,15)
-        collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]')
+        collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]', timeout=5)
         if not collection_name: collection_name = self.find_element('collection name','//h1')
         df_url = self.column_to_list(self.vip4k.website_name,'Url')
         max_video = self.vip4k.numbers_of_download_videos
