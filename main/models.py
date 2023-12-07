@@ -20,7 +20,7 @@ class videos_collection(models.Model):
         if video_name_li[0] == 'scene' :
             video_title += 'brazzers_'
         elif video_name_li[0] != 'scene' :
-            if not self.Video_name.startswith(self.Category):
+            if not self.Video_name.startswith(self.Category) and self.Category not in self.Video_name:
                 video_title += f'{self.Category}_'
         if 'videos_' in self.Video_name:
             video_name = self.Video_name.replace('videos_','')
