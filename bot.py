@@ -218,7 +218,7 @@ class scrapping_bot():
         return False
 
     def starting_brazzers_bots(self):
-        self.get_driver(add_cybeghost=True)
+        self.get_driver()
 
     def connect_cyberghost_vpn(self,vpn_country='Netherlands'):
         vpn_country_list = ['Romania','Netherlands','United States']
