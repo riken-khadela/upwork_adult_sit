@@ -68,9 +68,9 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 
         csv_root = settings.CSV_ROOT
         files = os.listdir(csv_root)
-        video_fil = [str(video).split('/')[-1] for video in video_files ]
+        video_fil = [str(video).split('/')[-1] for video in video_files]
         for file in files:
-            if file.endswith('_details.csv'):
+            if str(file).endswith('_details.csv'):
                 df = pd.read_csv(os.path.join(csv_root,file))
                 df = df[df['Video-name'].isin(video_fil)]
                 df.to_csv(os.path.join(csv_root,file),index=False)
