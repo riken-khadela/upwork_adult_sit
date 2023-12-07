@@ -25,6 +25,7 @@ class scrapping_bot():
         self.csv_path = self.create_or_check_path('csv',main=True)
         self.cookies_path = self.create_or_check_path('cookies',main=True)
         self.brazzers_category_path = self.create_or_check_path('brazzers_category_videos')
+        self.vip4k_category_path = self.create_or_check_path('vip4k_category_videos')
         self.brazzers = configuration.objects.get(website_name='brazzers')
         self.vip4k = configuration.objects.get(website_name='vip4k')
         self.make_csv()
@@ -747,7 +748,7 @@ class scrapping_bot():
         self.calculate_old_date(self.vip4k.more_than_old_days_download)
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
-        if self.vip4k.category: self.driver.get(f'https://members.vip4k.com/en/tag{self.vip4k.category}')
+        if self.vip4k.category: self.driver.get(f'https://members.vip4k.com/en/tag/{self.vip4k.category}')
         else:self.driver.get(url)
         self.random_sleep(10,15)
         collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]', timeout=5)
@@ -759,10 +760,12 @@ class scrapping_bot():
             li_tags = ul_tag.find_elements(By.TAG_NAME, 'li')
             for li in li_tags:
                 video_date = li.find_element(By.CLASS_NAME, 'item__date').text
-                if self.date_older_or_not(video_date):
+                if video_date and self.date_older_or_not(video_date):
                     video_url = li.find_element(By.TAG_NAME, 'a').get_attribute('href')
                     post_url = li.find_element(By.TAG_NAME, 'img').get_attribute('src')
-                    
+                    if video_url and not post_url: 
+                        self.random_sleep(5,7)
+                        post_url = li.find_element(By.TAG_NAME, 'img').get_attribute('src')
                     if video_url and post_url:
                         if video_url not in df_url and video_url not in [item['video_url'] for item in videos_urls]:
                             videos_urls.append({"video_url": video_url, 'post_url': post_url})
@@ -775,16 +778,14 @@ class scrapping_bot():
                 show_more.click()
             else:
                 break
-            
+        video_detailes['collection_name'] = collection_name.text.lower().replace(' ','_')
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
         collection_name = 'vip4k_'+videos_dict['collection_name']
-        collection_folder = str(self.vip4k.website_name).lower()+'_videos'
-        collection_path = self.create_or_check_path(collection_folder)
-
+        collection_path = self.create_or_check_path(self.vip4k_category_path,sub_folder_=collection_name)
         for idx, video_url in enumerate(videos_urls):
             self.driver.get(video_url['video_url'])
             self.random_sleep(10,15)
