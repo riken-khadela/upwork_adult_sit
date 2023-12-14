@@ -1,4 +1,3 @@
-import imp
 from multiprocessing.spawn import import_main_path
 from django.urls import path
 from django.views.generic import View
@@ -9,8 +8,6 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from main.models import configuration
 from main.views import *
-from io import BytesIO
-import zipfile
 
 
 def list_files(request):

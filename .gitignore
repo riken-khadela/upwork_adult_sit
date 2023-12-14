@@ -15,7 +15,11 @@ photos/*
 *.sqlite3
 **/__pycache__/**
 *.pyc
-/*/migrations/
+/*/migrations/*
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+
 /*/__pycache__
 downloads copy
 /*/management/commands/test.py
