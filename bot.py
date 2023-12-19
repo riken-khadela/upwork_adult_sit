@@ -458,7 +458,7 @@ class scrapping_bot():
         for idx,videoss_urll in enumerate(videos_urls) :
             self.driver.get(videoss_urll['video_url'])
             self.random_sleep(10,15)
-            video_name = f"{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
+            video_name = self.sanitize_title(self.driver.current_url.split('https://site-ma.brazzers.com/')[-1])
 
             v_urllll = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
             p_urllll = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
@@ -584,7 +584,7 @@ class scrapping_bot():
         for idx, video_url in enumerate(videos_urls):
             self.driver.get(video_url['video_url'])
             self.random_sleep(10,15)
-            video_name = f"{collection_name}_{self.driver.current_url.split('https://site-ma.brazzers.com/')[-1].replace('/','_').replace('-','_')}"
+            video_name = f"{collection_name}_{self.sanitize_title(self.driver.current_url.split('https://site-ma.brazzers.com/')[-1])}"
             v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
             p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
             tmp = {
@@ -632,7 +632,7 @@ class scrapping_bot():
                 response = requests.get(video_url['post_url'])
                 with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
                 self.click_element('download btn', '//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]') 
-                quality = self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
+                self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
                 file_name = self.wait_for_file_download()
                 self.random_sleep(3,5)
                 name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
@@ -813,6 +813,11 @@ class scrapping_bot():
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
+    def sanitize_title(title : str):
+        formatted_title = ''.join(c.lower() if c.isalnum() else '_' for c in title)
+        formatted_title = '_'.join(filter(None, formatted_title.split('_')))
+        return formatted_title
+    
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
@@ -864,8 +869,7 @@ class scrapping_bot():
                     for i in porn_starts:
                         porn_start_name += f'{i.text},'
                     tmp['Pornstarts'] = porn_start_name.rstrip(',')
-
-                video_name = f"vip4k_{collection_name.replace('videos', '')}_{tmp['Title'].lower().replace(' ', '_')}"
+                video_name = f"vip4k_{collection_name.replace('videos', '')}_{self.sanitize_title(tmp['Title'])}"
                 v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
                 p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
                 tmp['poster_download_uri'] = p_url
