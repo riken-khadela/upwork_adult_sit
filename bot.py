@@ -526,7 +526,7 @@ class scrapping_bot():
             print('No video results found')
             return False
         else:
-            name_of_collection =  self.find_element('catagory name','/html/body/div[1]/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[1]/div/h1')
+            name_of_collection =  self.find_element('catagory name','//h1')
             if name_of_collection:
                 collection_name = name_of_collection.text.replace(' ','_').lower()
                 return collection_name
