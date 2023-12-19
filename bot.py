@@ -522,14 +522,9 @@ class scrapping_bot():
                 print('Error :', e)
 
     def get_collection_name(self: str) -> str:
-        if self.find_element('No results found','//*[text()="No results found"]',timeout=4):
-            print('No video results found')
-            return False
-        else:
-            name_of_collection =  self.find_element('catagory name','//h1')
-            if name_of_collection:
-                collection_name = name_of_collection.text.replace(' ','_').lower()
-                return collection_name
+        name_of_collection = self.find_element('category name', '//h1')
+        return name_of_collection.text.replace(' ', '_').lower() if name_of_collection else False
+
             
     def get_videos_url(self,url=None):
         self.calculate_old_date(self.brazzers.more_than_old_days_download)
