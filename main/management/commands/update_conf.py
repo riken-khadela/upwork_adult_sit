@@ -33,5 +33,9 @@ class Command(BaseCommand):
                     videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
                     bot.vip4k_download_video(videos_collection_dict)
 
+                if bot.login_Handjob_TV():
+                    logggg = True
+                    bot.handjob_get_video()
+                    
                 bot.CloseDriver()
                 if logggg == True:break

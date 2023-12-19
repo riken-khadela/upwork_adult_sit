@@ -1,8 +1,4 @@
-import collections
-from genericpath import isdir
 import os,shutil, pandas as pd
-from socket import timeout
-from pyclbr import Class
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,9 +6,10 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver  
 from collections import defaultdict
+from bs4 import BeautifulSoup
 import requests
 from dateutil import parser
-import json, random, time, pandas as pd, os, sys
+import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
 import undetected_chromedriver as uc
 from main.models import configuration
@@ -26,8 +23,10 @@ class scrapping_bot():
         self.cookies_path = self.create_or_check_path('cookies',main=True)
         self.brazzers_category_path = self.create_or_check_path('brazzers_category_videos')
         self.vip4k_category_path = self.create_or_check_path('vip4k_category_videos')
+        self.handjob_category_path = self.create_or_check_path('handjob_category_videos')
         self.brazzers = configuration.objects.get(website_name='brazzers')
         self.vip4k = configuration.objects.get(website_name='vip4k')
+        self.handjob = configuration.objects.get(website_name='handjob')
         self.make_csv()
         self.delete_old_videos()
         if brazzers_bot == True:
@@ -47,7 +46,7 @@ class scrapping_bot():
             options.add_argument('--mute-audio')
             options.add_argument("--ignore-gpu-blocklist")
             options.add_argument('--disable-dev-shm-usage')
-            options.add_argument('--headless')
+            # options.add_argument('--headless')
             prefs = {"credentials_enable_service": True,
                     'profile.default_content_setting_values.automatic_downloads': 1,
                     "download.default_directory" : f"{self.download_path}",
@@ -64,6 +63,44 @@ class scrapping_bot():
             options.add_argument("--enable-popup-blocking")
             try:
                 driver = Chrome(options=options,version_main=119)
+                driver.get('https://site-ma.brazzers.com/store')
+                break
+            except Exception as e:
+                print(e)
+        
+        self.driver = driver
+        return self.driver
+
+    def get_local_driver(self):
+        """Start webdriver and return state of it."""
+        from selenium import webdriver
+
+        for _ in range(30):
+            options = webdriver.ChromeOptions()
+            options.add_argument('--lang=en')  # Set webdriver language to English.
+            options.add_argument('log-level=3')  # No logs is printed.
+            options.add_argument('--mute-audio')  # Audio is muted.
+            options.add_argument("--enable-webgl-draft-extensions")
+            options.add_argument('--mute-audio')
+            options.add_argument("--ignore-gpu-blocklist")
+            options.add_argument('--disable-dev-shm-usage')
+            # options.add_argument('--headless')
+            prefs = {"credentials_enable_service": True,
+                    'profile.default_content_setting_values.automatic_downloads': 1,
+                    "download.default_directory" : f"{self.download_path}",
+                'download.prompt_for_download': False,  # Optional, suppress download prompt
+                'download.directory_upgrade': True,
+                'safebrowsing.enabled': True ,
+                "profile.password_manager_enabled": True}
+            options.add_experimental_option("prefs", prefs)
+            options.add_argument('--no-sandbox')
+            options.add_argument('--start-maximized')    
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument("--ignore-certificate-errors")
+            options.add_argument("--enable-javascript")
+            options.add_argument("--enable-popup-blocking")
+            try:
+                driver = webdriver.Chrome()
                 driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
@@ -376,27 +413,24 @@ class scrapping_bot():
         self.random_sleep(6,10)
         video_detailes['collection_name'] = self.get_collection_name()
         while len(videos_urls) < found_max_videos:
+            all_thumb = self.driver.find_elements(By.XPATH,"//div[contains(@class, 'one-list-1vyt92m') and contains(@class, 'e1vusg2z1')]" )
             try :
-                for url_idx in range(1,24):
-                    print(url_idx,'------------')
-                    video_date = self.find_element(f'video : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[2]/div[2]',timeout=3)
+                for thumb in all_thumb:
+                    video_date = thumb.find_element(By.XPATH, "//div[contains(@class, 'one-list-1oxbbh0') and contains(@class, 'e1jyqorn24')]")
                     self.driver.execute_script("arguments[0].scrollIntoView();", video_date)
                     time.sleep(0.3)
-                    if video_date :
-                        if self.date_older_or_not(video_date.text) :
-                            video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
-                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a/div[1]/div/picture/img',timeout=0)
-                            if video_ele and post_url:
-                                video_url = video_ele.get_attribute('href')
-                                post_url = post_url.get_attribute('src')
-                                if video_url and post_url and video_url not in df_url:
-                                    videos_urls.append({"video_url":video_url,'post_url':post_url})
-                                    if len(videos_urls) >= found_max_videos:
-                                        break
+                    if video_date and self.date_older_or_not(video_date.text) :                            
+                            video_url = thumb.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                            post_url = thumb.find_element(By.TAG_NAME, 'img').get_attribute('src')
+                            if video_url and post_url and video_url not in df_url:
+                                videos_urls.append({"video_url":video_url,'post_url':post_url})
+                                if len(videos_urls) >= found_max_videos:
+                                    break
             except Exception as e :
                 print(e)
             if len(videos_urls) < found_max_videos:
                 self.driver.get(f'https://site-ma.brazzers.com/scenes?page={page_number}&tags={tags}')
+                self.random_sleep(2,4)
                 page_number +=1
                 
         video_detailes['video_list'] = videos_urls
@@ -862,3 +896,129 @@ class scrapping_bot():
                 self.set_data_of_csv(self.vip4k.website_name,tmp,video_name)
             except Exception as e:
                 print('Error:', e)
+
+
+
+
+    def login_Handjob_TV(self):
+        self.cookies_dict = ''
+        cookies_file = f'{self.cookies_path}/{self.handjob.website_name}_cookietest.json'
+        url = "https://handjob.tv"
+        if os.path.isfile(cookies_file):
+            with open(cookies_file, 'r') as file:
+                self.cookies_dict = json.load(file)
+            response = requests.request("GET", url, cookies=self.cookies_dict)
+            soup = BeautifulSoup(response.content, 'html.parser', cookies=self.cookies_dict)
+            logout = soup.find('a', class_="logout")
+            if logout:
+                return True
+            
+        headers = {'Cookies':'_ga=GA1.1.1004529152.1702469470; PHPSESSID=rugc1hlu0itorhumpom12pk59q; _ga_HK7FVQ1HVZ=GS1.1.1702982456.7.1.1702982470.0.0.0'}
+        response = requests.request("GET", url, headers=headers)
+        hidden_input = soup.find('input', {'name': 'nocsrf_login_popup'})
+        if hidden_input:
+            value = hidden_input.get('value')
+            payload = {'u': 'romeostream', 'p' : 'tub3S3bm1t', 'nocsrf_login_popup' : f'{value}'}
+            print('value found')
+        else:
+            payload = {'u': 'romeostream', 'p' : 'tub3S3bm1t'}
+
+        url = "https://handjob.tv/api/verifying"
+        headers =   {
+                        'Content-Type' :  'application/x-www-form-urlencoded'
+                    }
+        response = requests.request("POST", url, headers=headers, data=payload)
+        if response.status_code == 200:
+            self.cookies_dict = requests.utils.dict_from_cookiejar(response.cookies)
+            with open(cookies_file, 'w') as file:
+                json.dump(self.cookies_dict, file)
+            print("Cookies saved to cookies.json file.")
+            soup = BeautifulSoup(response.content, 'html.parser', cookies=self.cookies_dict)
+            logout = soup.find('a', class_="logout")
+            if logout:
+                return True
+        return False
+
+
+    def handjob_get_video(self,url=None):
+        videos_urls = []
+        df_url = self.column_to_list(self.handjob.website_name,'Url')
+        self.calculate_old_date(self.handjob.more_than_old_days_download)
+        response = requests.request("GET", f'https://handjob.tv/videos/{self.handjob.category}', cookies=self.cookies_dict)
+        if response.status_code != 200:
+            raise Exception('Failed to get the response')
+        soup = BeautifulSoup(response.content, 'html.parser')
+        last_page_div = soup.find('div', class_='pagination-btns').find_all('div')[-1]
+        last_page_number = int(last_page_div.find('a').get('href').split('/')[-1].replace('page', ''))
+        collection_path = self.create_or_check_path(self.handjob_category_path,sub_folder_=self.handjob.category)
+        found_max_videos = self.handjob.numbers_of_download_videos
+        for i in range(last_page_number-1):
+            response = requests.request("GET",f'https://handjob.tv/videos/{self.handjob.category}/page{last_page_number}', cookies=self.cookies_dict)
+            if response.status_code != 200:continue
+            soup = BeautifulSoup(response.content, 'html.parser')
+            all_thimb = soup.find_all('div', class_='thumb-all')
+            for i in all_thimb:
+                video_url = 'https://handjob.tv'+i.find('a').get('href')
+                post_url = i.find('img').get('src')
+                if video_url and post_url and video_url not in df_url:
+                    response = requests.request("GET", video_url, cookies=self.cookies_dict)
+                    if response.status_code ==200:
+                        soup = BeautifulSoup(response.content, 'html.parser')
+                        paragraphs = soup.find_all('p')
+                        date_element = next((p for p in paragraphs if 'Added on' in p.get_text()), None)
+
+                        # Extract the date
+                        if date_element:
+                            date = date_element.get_text(strip=True).split(': ')[1]
+                            if date and self.date_older_or_not(date) :
+                                tmp = {
+                                        "Likes" : "",
+                                        "Disclike" :"",
+                                        "Url" : video_url,
+                                        "Category" : self.handjob.category,
+                                        "video_download_url" : '',
+                                        "Title" : '',
+                                        "Discription" : "",
+                                        "Release-Date" : "",
+                                        "Poster-Image_uri" : post_url,
+                                        "poster_download_uri" : '',
+                                        "Video-name" : '',
+                                        "Photo-name" : '',
+                                        "Pornstarts" : '',
+                                        "Username" : self.handjob.website_name,
+                                    }
+                                video_title = soup.find('h1', class_='video-title').get_text(strip=True)
+                                video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{video_title.lower().replace(' ', '_')}"
+                                v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+                                p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+                                model_tags_div = soup.find('div', class_='model-tags')
+                                if model_tags_div:
+                                    model_name_element = model_tags_div.find('a')
+                                    if model_name_element:
+                                        model_name = model_name_element.get_text(strip=True)
+                                        tmp['Pornstarts'] = model_name                             
+                             
+                                video_link = soup.find('a', text='1080p').get('href')
+                                discribe = soup.find('div', class_='video-text')
+                                discription = ''
+                                for i in discribe.find_all('p')[3:]:
+                                    discription +=i.get_text(strip=True)
+                                tmp['Title'] = video_title
+                                tmp['Discription'] = discription
+                                tmp['Release-Date'] = date
+                                tmp['Video-name'] = f'{video_name}.mp4'
+                                tmp['Photo-name'] = f'{video_name}.jpg'
+                                tmp['poster_download_uri'] = p_url
+                                tmp['video_download_url'] = v_url
+                                response = requests.request("GET", video_link)
+                                if response.status_code == 200:
+                                    with open(f'{collection_path}/{video_name}.mp4', 'wb') as file:
+                                        file.write(response.content)
+                                response = requests.request("GET", post_url)
+                                if response.status_code == 200:
+                                    with open(f'{collection_path}/{video_name}.jpg', 'wb') as file:file.write(response.content)
+                                self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
+                    videos_urls.append({"video_url":video_url,'post_url':post_url})
+                    if len(videos_urls) >= found_max_videos :
+                        break
+            last_page_number-=1
