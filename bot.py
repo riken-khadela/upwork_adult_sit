@@ -423,6 +423,7 @@ class scrapping_bot():
                             video_url = thumb.find_element(By.TAG_NAME, 'a').get_attribute('href')
                             post_url = thumb.find_element(By.TAG_NAME, 'img').get_attribute('src')
                             if video_url and post_url and video_url not in df_url:
+                                print(f'add video url in lists')
                                 videos_urls.append({"video_url":video_url,'post_url':post_url})
                                 if len(videos_urls) >= found_max_videos:
                                     break
