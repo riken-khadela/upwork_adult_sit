@@ -344,8 +344,8 @@ class scrapping_bot():
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
-                if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
-                    self.driver.refresh()
+                while not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
+                    self.random_sleep(2,3)
                 if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.random_sleep(1,1)
                     self.input_text(str(self.brazzers.username),'Username','username',By.NAME)
