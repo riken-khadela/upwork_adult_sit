@@ -75,7 +75,7 @@ class scrapping_bot():
         """Start webdriver and return state of it."""
         from selenium import webdriver
 
-        for _ in range(30):
+        while True :
             options = webdriver.ChromeOptions()
             options.add_argument('--lang=en')  # Set webdriver language to English.
             options.add_argument('log-level=3')  # No logs is printed.
@@ -345,14 +345,10 @@ class scrapping_bot():
             for _ in range(3):
                 time.sleep(1.5)
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
-                    self.driver.refresh()
-                    breakpoint()
+                    self.click_element('try again',"//a[@href='https://site-ma.brazzers.com' and @rel='nofollow']",timeout=5)
                 if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
-                    self.random_sleep(1,1)
                     self.input_text(str(self.brazzers.username),'Username','username',By.NAME)
-                    self.random_sleep(1,1)
                     self.input_text(str(self.brazzers.password),'password','password',By.NAME)
-                    self.random_sleep(1,1)
                     self.click_element('Submit','//button[@type="submit"]')
                     self.random_sleep(2,3)
                     for _ in range(4):
@@ -945,7 +941,7 @@ class scrapping_bot():
         videos_urls = []
         df_url = self.column_to_list(self.handjob.website_name,'Url')
         self.calculate_old_date(self.handjob.more_than_old_days_download)
-        response = requests.request("GET", f'https://handjob.tv/videos/{self.handjob.category}', cookies=self.cookies_dict)
+        response = requests.request("GET", f'https://handjob.tv/videos/{self.handjob.category}/', cookies=self.cookies_dict)
         if response.status_code != 200:
             raise Exception('Failed to get the response')
         soup = BeautifulSoup(response.content, 'html.parser')
