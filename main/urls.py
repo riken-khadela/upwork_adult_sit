@@ -3,6 +3,6 @@ from django.conf.urls import include
 from .views import *
 
 urlpatterns = [
-    # path('blog',blog.as_view(),name='blog'),
+    path('run-script',RunScript.as_view(),name='RunScript'),
 
 ]

@@ -1,5 +1,5 @@
 from multiprocessing.spawn import import_main_path
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import View
 from django.http import HttpResponse
 from django.conf import Settings, settings
@@ -72,5 +72,6 @@ urlpatterns = [
     path('list_files/', list_files, name='list_file'),
     path('csv/<str:file_name>', csv_file, name='csv_file'),
     path('', data_flair),
+    path('API/', include('main.urls')),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
