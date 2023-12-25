@@ -3,6 +3,7 @@ env2
 chrome_profile/*
 profiles/*
 chromeprofile/*
+profiles
 # z.py
 __pycache__
 videos/*

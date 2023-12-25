@@ -13,6 +13,7 @@ import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
 import undetected_chromedriver as uc
 from main.models import configuration
+import urllib.request
 
 class scrapping_bot():
     
@@ -62,8 +63,8 @@ class scrapping_bot():
             options.add_argument("--enable-javascript")
             options.add_argument("--enable-popup-blocking")
             try:
-                driver = Chrome(options=options,version_main=119)
-                driver.get('https://site-ma.brazzers.com/store')
+                driver = Chrome(options=options,version_main=113)
+                # driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
                 print(e)
@@ -99,9 +100,11 @@ class scrapping_bot():
             options.add_argument("--ignore-certificate-errors")
             options.add_argument("--enable-javascript")
             options.add_argument("--enable-popup-blocking")
+            options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
+            options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
             try:
-                driver = webdriver.Chrome()
-                driver.get('https://site-ma.brazzers.com/store')
+                driver = webdriver.Chrome(options=options)
+                # driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
                 print(e)
@@ -250,14 +253,13 @@ class scrapping_bot():
     def date_older_or_not(self,date_string=''):
         if date_string :
             date_obj = parser.parse(date_string)
-            if date_obj < self.old_date :
-                return True
+            return date_obj < self.old_date 
         return False
 
     def starting_brazzers_bots(self):
-        self.get_driver()
+        self.get_local_driver()
 
-    def connect_cyberghost_vpn(self,vpn_country='Netherlands'):
+    def connect_cyberghost_vpn(self):
         vpn_country_list = ['Romania','Netherlands','United States']
         vpn_country = random.choice(vpn_country_list)
         for  _ in range(3):
@@ -279,7 +281,7 @@ class scrapping_bot():
             drop_down_ = self.click_element('country drop down','mat-select-trigger',By.TAG_NAME)       
             if not drop_down_ : 
                 self.CloseDriver()
-                self.get_driver()
+                self.get_local_driver()
                 continue
 
             # selecting the country
@@ -336,16 +338,26 @@ class scrapping_bot():
         return cookies
             
     def brazzers_login(self):
-        self.load_cookies(self.brazzers.website_name)
-        self.driver.get('https://site-ma.brazzers.com/store')
+        # self.load_cookies(self.brazzers.website_name)
+        while True :
+            try:
+                self.driver.get('https://site-ma.brazzers.com/store')
+                break
+            except Exception as  e: 
+                print(e) 
+                self.get_local_driver()
+                self.connect_cyberghost_vpn()
+            
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
         
         self.random_sleep(5,7)
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
+                breakpoint()
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.click_element('try again',"//a[@href='https://site-ma.brazzers.com' and @rel='nofollow']",timeout=5)
+                    return False
                 if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.input_text(str(self.brazzers.username),'Username','username',By.NAME)
                     self.input_text(str(self.brazzers.password),'password','password',By.NAME)
@@ -809,7 +821,7 @@ class scrapping_bot():
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
-    def sanitize_title(title : str):
+    def sanitize_title(self,title : str):
         formatted_title = ''.join(c.lower() if c.isalnum() else '_' for c in title)
         formatted_title = '_'.join(filter(None, formatted_title.split('_')))
         return formatted_title
@@ -817,9 +829,12 @@ class scrapping_bot():
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
+        
         collection_path = self.create_or_check_path(self.vip4k_category_path,sub_folder_=collection_name)
+        
         for idx, video_url in enumerate(videos_urls):
             self.driver.get(video_url['video_url'])
+            # self.find_element()
             self.random_sleep(10,15)
             tmp = {
                     "Likes" : "",
@@ -898,14 +913,31 @@ class scrapping_bot():
 
 
     def login_Handjob_TV(self):
+        url = "https://handjob.tv/login"
+        self.driver.get(url)
+        handjob_obj = configuration.objects.filter(website_name='handjob').first()
+        self.input_text(handjob_obj.username,'username','//input[@id="username"]')
+        self.input_text(handjob_obj.password,'password','//input[@id="password"]')
+        self.click_element('Submit btn','//button[@id="login"]')
+        self.input_text(handjob_obj.category,'password','//input[@id="search"]')
+        # self.driver.get(f'https://handjob.tv/search/{handjob_obj.category}/')
+        if self.find_element('Logout btn','//a[@class="logout"]') :
+            cookies = self.get_cookies(self.vip4k.website_name)
+            member_cookies = [item for item in cookies if item.get("domain") == "handjob.tv"]
+            for item in member_cookies:self.driver.add_cookie(item)
+            
+            return True
+        else : return False
+        breakpoint()
+        
+        
         self.cookies_dict = ''
         cookies_file = f'{self.cookies_path}/{self.handjob.website_name}_cookietest.json'
-        url = "https://handjob.tv"
         if os.path.isfile(cookies_file):
-            with open(cookies_file, 'r') as file:
+            with open(cookies_file, 'r') as file: 
                 self.cookies_dict = json.load(file)
             response = requests.request("GET", url, cookies=self.cookies_dict)
-            soup = BeautifulSoup(response.content, 'html.parser', cookies=self.cookies_dict)
+            soup = BeautifulSoup(response.content, 'html.parser')
             logout = soup.find('a', class_="logout")
             if logout:
                 return True
@@ -930,7 +962,7 @@ class scrapping_bot():
             with open(cookies_file, 'w') as file:
                 json.dump(self.cookies_dict, file)
             print("Cookies saved to cookies.json file.")
-            soup = BeautifulSoup(response.content, 'html.parser', cookies=self.cookies_dict)
+            soup = BeautifulSoup(response.content, 'html.parser')
             logout = soup.find('a', class_="logout")
             if logout:
                 return True
@@ -939,83 +971,145 @@ class scrapping_bot():
 
     def handjob_get_video(self,url=None):
         videos_urls = []
+        VideosNumberDone = 0
+        self.driver.page_source
+        self.driver.get(f'https://handjob.tv/search/{self.handjob.category}/')
         df_url = self.column_to_list(self.handjob.website_name,'Url')
         self.calculate_old_date(self.handjob.more_than_old_days_download)
-        response = requests.request("GET", f'https://handjob.tv/videos/{self.handjob.category}/', cookies=self.cookies_dict)
-        if response.status_code != 200:
-            raise Exception('Failed to get the response')
-        soup = BeautifulSoup(response.content, 'html.parser')
-        last_page_div = soup.find('div', class_='pagination-btns').find_all('div')[-1]
-        last_page_number = int(last_page_div.find('a').get('href').split('/')[-1].replace('page', ''))
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         collection_path = self.create_or_check_path(self.handjob_category_path,sub_folder_=self.handjob.category)
         found_max_videos = self.handjob.numbers_of_download_videos
-        for i in range(last_page_number-1):
-            response = requests.request("GET",f'https://handjob.tv/videos/{self.handjob.category}/page{last_page_number}', cookies=self.cookies_dict)
-            if response.status_code != 200:continue
-            soup = BeautifulSoup(response.content, 'html.parser')
-            all_thimb = soup.find_all('div', class_='thumb-all')
-            for i in all_thimb:
-                video_url = 'https://handjob.tv'+i.find('a').get('href')
-                post_url = i.find('img').get('src')
-                if video_url and post_url and video_url not in df_url:
-                    response = requests.request("GET", video_url, cookies=self.cookies_dict)
-                    if response.status_code ==200:
-                        soup = BeautifulSoup(response.content, 'html.parser')
-                        paragraphs = soup.find_all('p')
-                        date_element = next((p for p in paragraphs if 'Added on' in p.get_text()), None)
+        # all_thimb = soup.find_all('div', class_='thumb-all')
+        # video_links = soup.find_all('a', href=lambda value: value and '/video/' in value)
+        video_links = soup.find_all('a', href=lambda value: value and '/video/' in value)
+        for link in video_links:
+            video_url = link['href']
+            
+            img_tag = link.find('img', alt='', src=True)
+            if not img_tag or not video_url : continue
+            
+            video_date_ele = link.select_one('span.bio-videos-date')
+            if not video_date_ele : continue
+            
+            date_string = video_date_ele.get_text(strip=True)
+            if not self.date_older_or_not(date_string) : continue
 
-                        # Extract the date
-                        if date_element:
-                            date = date_element.get_text(strip=True).split(': ')[1]
-                            if date and self.date_older_or_not(date) :
-                                tmp = {
-                                        "Likes" : "",
-                                        "Disclike" :"",
-                                        "Url" : video_url,
-                                        "Category" : self.handjob.category,
-                                        "video_download_url" : '',
-                                        "Title" : '',
-                                        "Discription" : "",
-                                        "Release-Date" : "",
-                                        "Poster-Image_uri" : post_url,
-                                        "poster_download_uri" : '',
-                                        "Video-name" : '',
-                                        "Photo-name" : '',
-                                        "Pornstarts" : '',
-                                        "Username" : self.handjob.website_name,
-                                    }
-                                video_title = soup.find('h1', class_='video-title').get_text(strip=True)
-                                video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{video_title.lower().replace(' ', '_')}"
-                                v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-                                p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
-                                model_tags_div = soup.find('div', class_='model-tags')
-                                if model_tags_div:
-                                    model_name_element = model_tags_div.find('a')
-                                    if model_name_element:
-                                        model_name = model_name_element.get_text(strip=True)
-                                        tmp['Pornstarts'] = model_name                             
-                             
-                                video_link = soup.find('a', text='1080p').get('href')
-                                discribe = soup.find('div', class_='video-text')
-                                discription = ''
-                                for i in discribe.find_all('p')[3:]:
-                                    discription +=i.get_text(strip=True)
-                                tmp['Title'] = video_title
-                                tmp['Discription'] = discription
-                                tmp['Release-Date'] = date
-                                tmp['Video-name'] = f'{video_name}.mp4'
-                                tmp['Photo-name'] = f'{video_name}.jpg'
-                                tmp['poster_download_uri'] = p_url
-                                tmp['video_download_url'] = v_url
-                                response = requests.request("GET", video_link)
-                                if response.status_code == 200:
-                                    with open(f'{collection_path}/{video_name}.mp4', 'wb') as file:
-                                        file.write(response.content)
-                                response = requests.request("GET", post_url)
-                                if response.status_code == 200:
-                                    with open(f'{collection_path}/{video_name}.jpg', 'wb') as file:file.write(response.content)
-                                self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
-                    videos_urls.append({"video_url":video_url,'post_url':post_url})
-                    if len(videos_urls) >= found_max_videos :
-                        break
-            last_page_number-=1
+            video_url = 'https://handjob.tv' + video_url
+            img_src = 'https:'+img_tag['src']
+            if video_url in df_url : continue
+            print("Video URL:", video_url)
+            print("Image Source:", img_src)
+            self.driver.get(video_url)
+            
+            video_ele = self.find_element('Video Link','video',By.TAG_NAME)
+            video_title_ele = self.find_element('Video Title','h1',By.TAG_NAME)
+            if not video_ele or not video_title_ele: continue
+            
+            video_title = video_title_ele.text
+            video_link = video_ele.get_attribute('src')
+            video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{video_title.lower().replace(' ', '_')}"
+            
+            VideoDdownloaded = False
+            try :VideoDdownloaded = urllib.request.urlretrieve(video_link, f'{collection_path}/{video_name}.mp4')
+            except Exception as e : print('Error : Videos downloading in handjob :',e)
+            
+            try :ImgDownloaded = urllib.request.urlretrieve(img_src, f'{collection_path}/{video_name}.png')
+            except Exception as e : print('Error : image downloading in handjob :',e)
+            if not VideoDdownloaded or not ImgDownloaded : 
+                print('error : Video or Image could not download in hand job')
+                continue
+            
+            tmp = {"Likes" : "","Disclike" :"","Url" : video_url,"Category" : self.handjob.category,"video_download_url" : '',"Title" : '',"Discription" : "","Release-Date" : "","Poster-Image_uri" : img_src,"poster_download_uri" : '',"Video-name" : '',"Photo-name" : '',"Pornstarts" : '',"Username" : self.handjob.website_name}
+            
+            model_name_ele = self.find_element('models name','//div[@class="model-tags"]')
+            if model_name_ele :
+                model_name = model_name_ele.text.replace('Model:','').strip()
+            else : model_name
+
+            
+            v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            
+            discription = ''
+            All_Ptag = self.driver.find_elements(By.TAG_NAME,'p')
+            for Ptag in All_Ptag : 
+                PtagText = Ptag.text.strip()
+                if not PtagText or PtagText.startswith('Lenght') or PtagText.startswith('Photos') or  PtagText.startswith('Added on: '):continue
+                discription += PtagText
+                
+            tmp['Title'] = video_title
+            tmp['Discription'] = discription
+            tmp['Release-Date'] = date_string
+            tmp['Video-name'] = f'{video_name}.mp4'
+            tmp['Photo-name'] = f'{video_name}.jpg'
+            tmp['poster_download_uri'] = v_url
+            tmp['video_download_url'] = p_url
+            tmp['Pornstarts'] = model_name                             
+            self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
+            
+            VideosNumberDone += 1
+            if VideosNumberDone >= found_max_videos :return
+            
+            # breakpoint()
+        # for i in all_thimb:
+            # video_url = 'https://handjob.tv'+link.find('a').get('href')
+            # post_url = i.find('img').get('src')
+            # if video_url and post_url and video_url not in df_url:
+            #     self.driver.get(video_url)
+            #     soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+            #     paragraphs = soup.find_all('p')
+            #     date_element = next((p for p in paragraphs if 'Added on' in p.get_text()), None)
+
+            #     if date_element:
+            #         date = date_element.get_text(strip=True).split(': ')[1]
+            #         if date and self.date_older_or_not(date) :
+            #             tmp = {
+            #                     "Likes" : "",
+            #                     "Disclike" :"",
+            #                     "Url" : video_url,
+            #                     "Category" : self.handjob.category,
+            #                     "video_download_url" : '',
+            #                     "Title" : '',
+            #                     "Discription" : "",
+            #                     "Release-Date" : "",
+            #                     "Poster-Image_uri" : post_url,
+            #                     "poster_download_uri" : '',
+            #                     "Video-name" : '',
+            #                     "Photo-name" : '',
+            #                     "Pornstarts" : '',
+            #                     "Username" : self.handjob.website_name,
+            #                 }
+            #             video_title = soup.find('h1', class_='video-title').get_text(strip=True)
+            #             video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{video_title.lower().replace(' ', '_')}"
+            #             v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            #             p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            #             model_tags_div = soup.find('div', class_='model-tags')
+            #             if model_tags_div:
+            #                 model_name_element = model_tags_div.find('a')
+            #                 if model_name_element:
+            #                     model_name = model_name_element.get_text(strip=True)
+            #                     tmp['Pornstarts'] = model_name                             
+                        
+            #             video_link = soup.find('a', text='1080p').get('href')
+            #             discribe = soup.find('div', class_='video-text')
+            #             discription = ''
+            #             for i in discribe.find_all('p')[3:]:
+            #                 discription +=i.get_text(strip=True)
+            #             tmp['Title'] = video_title
+            #             tmp['Discription'] = discription
+            #             tmp['Release-Date'] = date
+            #             tmp['Video-name'] = f'{video_name}.mp4'
+            #             tmp['Photo-name'] = f'{video_name}.jpg'
+            #             tmp['poster_download_uri'] = p_url
+            #             tmp['video_download_url'] = v_url
+            #             breakpoint()
+            #             response = requests.request("GET", video_link)
+            #             if response.status_code == 200:
+            #                 with open(f'{collection_path}/{video_name}.mp4', 'wb') as file:
+            #                     file.write(response.content)
+            #             response = requests.request("GET", post_url)
+            #             if response.status_code == 200:
+            #                 with open(f'{collection_path}/{video_name}.jpg', 'wb') as file:file.write(response.content)
+            #             self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
+            #     videos_urls.append({"video_url":video_url,'post_url':post_url})
+            #     if len(videos_urls) >= found_max_videos :return
