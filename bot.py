@@ -62,8 +62,10 @@ class scrapping_bot():
             options.add_argument("--ignore-certificate-errors")
             options.add_argument("--enable-javascript")
             options.add_argument("--enable-popup-blocking")
+            options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
+            options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
             try:
-                driver = Chrome(options=options,version_main=113)
+                driver = Chrome(options=options,version_main=119)
                 # driver.get('https://site-ma.brazzers.com/store')
                 break
             except Exception as e:
@@ -257,7 +259,7 @@ class scrapping_bot():
         return False
 
     def starting_brazzers_bots(self):
-        self.get_local_driver()
+        self.get_driver()
 
     def connect_cyberghost_vpn(self):
         vpn_country_list = ['Romania','Netherlands','United States']
@@ -281,7 +283,7 @@ class scrapping_bot():
             drop_down_ = self.click_element('country drop down','mat-select-trigger',By.TAG_NAME)       
             if not drop_down_ : 
                 self.CloseDriver()
-                self.get_local_driver()
+                self.get_driver()
                 continue
 
             # selecting the country
@@ -345,7 +347,7 @@ class scrapping_bot():
                 break
             except Exception as  e: 
                 print(e) 
-                self.get_local_driver()
+                self.get_driver()
                 self.connect_cyberghost_vpn()
             
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
