@@ -356,7 +356,6 @@ class scrapping_bot():
         if self.driver.current_url != "https://site-ma.brazzers.com/store":
             for _ in range(3):
                 time.sleep(1.5)
-                breakpoint()
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.click_element('try again',"//a[@href='https://site-ma.brazzers.com' and @rel='nofollow']",timeout=5)
                     return False
@@ -930,7 +929,6 @@ class scrapping_bot():
             
             return True
         else : return False
-        breakpoint()
         
         
         self.cookies_dict = ''
