@@ -1008,14 +1008,15 @@ class scrapping_bot():
             if not video_ele or not video_title_ele: continue
             
             video_title = video_title_ele.text
+            
             video_link = video_ele.get_attribute('src')
-            video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{video_title.lower().replace(' ', '_')}"
+            video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{self.sanitize_title(video_title)}"
             
             VideoDdownloaded = False
             try :VideoDdownloaded = urllib.request.urlretrieve(video_link, f'{collection_path}/{video_name}.mp4')
             except Exception as e : print('Error : Videos downloading in handjob :',e)
             
-            try :ImgDownloaded = urllib.request.urlretrieve(img_src, f'{collection_path}/{video_name}.png')
+            try :ImgDownloaded = urllib.request.urlretrieve(img_src, f'{collection_path}/{video_name}.jpg')
             except Exception as e : print('Error : image downloading in handjob :',e)
             if not VideoDdownloaded or not ImgDownloaded : 
                 print('error : Video or Image could not download in hand job')
