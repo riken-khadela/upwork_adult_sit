@@ -1045,8 +1045,8 @@ class scrapping_bot():
             tmp['Release-Date'] = date_string
             tmp['Video-name'] = f'{video_name}.mp4'
             tmp['Photo-name'] = f'{video_name}.jpg'
-            tmp['poster_download_uri'] = v_url
-            tmp['video_download_url'] = p_url
+            tmp['poster_download_uri'] = p_url
+            tmp['video_download_url'] = v_url
             tmp['Pornstarts'] = model_name                             
             self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
             
