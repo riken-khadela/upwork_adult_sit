@@ -16,7 +16,7 @@ class Command(BaseCommand):
                 # close_every_chrome()
                 bot = scrapping_bot(brazzers_bot=True)
                 bot.starting_brazzers_bots()
-                if False and bot.brazzers_login() :
+                if bot.brazzers_login() :
                     logggg = True
                     bot.brazzers_get_categories()
                     video_dict = bot.brazzers_get_videos_url()
