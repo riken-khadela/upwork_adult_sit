@@ -317,12 +317,13 @@ class scrapping_bot():
 
     def load_cookies(self,website :str):
         if 'vip4k' in website:
-                path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
-                if os.path.isfile(path):
-                    with open(path,'rb') as f:cookies = json.load(f)
-                    for item in cookies:
-                        if item.get("domain") == ".vip4k.com":
-                            self.driver.add_cookie(item)
+            path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
+            if os.path.isfile(path):
+                with open(path,'rb') as f:cookies = json.load(f)
+                for item in cookies:
+                    if item.get("domain") == ".vip4k.com":
+                        self.driver.add_cookie(item)
+            self.driver.refresh()
         else:
             path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
             if os.path.isfile(path):
@@ -750,6 +751,8 @@ class scrapping_bot():
                 os.remove(file_list[0])
                             
     def vip4k_login(self):
+        self.CloseDriver()
+        self.get_driver()
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
