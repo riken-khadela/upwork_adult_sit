@@ -346,8 +346,9 @@ class scrapping_bot():
                 break
             except Exception as  e: 
                 print(e) 
+                self.CloseDriver()
                 self.get_driver()
-                self.connect_cyberghost_vpn()
+                # self.connect_cyberghost_vpn()
             
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
         
@@ -751,8 +752,8 @@ class scrapping_bot():
                 os.remove(file_list[0])
                             
     def vip4k_login(self):
-        self.CloseDriver()
-        self.get_driver()
+        # self.CloseDriver()
+        # self.get_driver()
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
