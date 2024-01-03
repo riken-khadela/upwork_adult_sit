@@ -257,7 +257,7 @@ class scrapping_bot():
         return False
 
     def starting_brazzers_bots(self):
-        self.get_local_driver()
+        self.get_driver()
 
     def connect_cyberghost_vpn(self):
         vpn_country_list = ['Romania','Netherlands','United States']
@@ -281,7 +281,7 @@ class scrapping_bot():
             drop_down_ = self.click_element('country drop down','mat-select-trigger',By.TAG_NAME)       
             if not drop_down_ : 
                 self.CloseDriver()
-                self.get_local_driver()
+                self.get_driver()
                 continue
 
             # selecting the country
@@ -345,7 +345,7 @@ class scrapping_bot():
                 break
             except Exception as  e: 
                 print(e) 
-                self.get_local_driver()
+                self.get_driver()
                 self.connect_cyberghost_vpn()
             
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
