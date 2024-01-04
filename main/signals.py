@@ -80,6 +80,7 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 
 @receiver(post_delete,sender=videos_collection)
 def videos_collection_post_delete(sender, instance, **kwargs):
+    return
     video_name = instance.Video_name
     base_name = str(video_name).split('.')[0]
     for foldername, subfolders, filenames in os.walk(os.path.join(os.getcwd(),'downloads')):
