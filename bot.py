@@ -36,6 +36,8 @@ class scrapping_bot():
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
 
     def get_driver(self):
+        # self.get_local_driver()
+        # return
         for _ in range(30):
             """Start webdriver and return state of it."""
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -753,6 +755,7 @@ class scrapping_bot():
                             
     def vip4k_login(self):
         # self.CloseDriver()
+        
         # self.get_driver()
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
