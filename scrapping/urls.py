@@ -66,11 +66,21 @@ def csv_file(request,file_name):
                 return response
     return HttpResponse("csv not found.", status=404)
 
+def return_csv_links(requests):
+    csv_root = settings.CSV_ROOT
+    files = os.listdir(csv_root)
+    file_links = []
+    for file in files:
+        if file.endswith('_details.csv') :
+            file_links.append(f'<a href="/csv/{str(file).replace("_details.csv","")}/">{file}</a>')
+    return HttpResponse("<br>".join(file_links))
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('downloads/<path:file_path>/', download_file, name='download_file'),
     path('list_files/', list_files, name='list_file'),
     path('csv/<str:file_name>', csv_file, name='csv_file'),
+    path('csv/', return_csv_links, name='csv_file_list'),
     path('', data_flair),
     path('API/', include('main.urls')),
 
