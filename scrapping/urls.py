@@ -72,7 +72,7 @@ def return_csv_links(requests):
     file_links = []
     for file in files:
         if file.endswith('_details.csv') :
-            file_links.append(f'<a href="/csv/{str(file).replace("_details.csv","")}/">{file}</a>')
+            file_links.append(f'<a href="/csv/{str(file).replace("_videos_details.csv","")}/">{file}</a>')
     return HttpResponse("<br>".join(file_links))
 
 urlpatterns = [
