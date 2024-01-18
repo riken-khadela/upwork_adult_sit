@@ -36,8 +36,8 @@ class scrapping_bot():
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
 
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         for _ in range(30):
             """Start webdriver and return state of it."""
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -105,7 +105,7 @@ class scrapping_bot():
             options.add_argument("--enable-webgl-draft-extensions")
             options.add_argument("--ignore-gpu-blocklist")
             options.add_argument('--disable-dev-shm-usage')
-            # options.add_argument('--headless')
+            options.add_argument('--headless')
 
             prefs = {
                 "credentials_enable_service": True,
