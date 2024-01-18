@@ -394,6 +394,7 @@ class scrapping_bot():
                 time.sleep(1.5)
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.click_element('try again',"//a[@href='https://site-ma.brazzers.com' and @rel='nofollow']",timeout=5)
+                    breakpoint()
                     return False
                 if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.input_text(str(self.brazzers.username),'Username','username',By.NAME)
