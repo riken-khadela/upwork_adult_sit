@@ -42,30 +42,48 @@ class scrapping_bot():
             """Start webdriver and return state of it."""
             from undetected_chromedriver import Chrome, ChromeOptions
             options = ChromeOptions()
+
             options.add_argument('--lang=en')  # Set webdriver language to English.
             options.add_argument('log-level=3')  # No logs is printed.
             options.add_argument('--mute-audio')  # Audio is muted.
             options.add_argument("--enable-webgl-draft-extensions")
-            options.add_argument('--mute-audio')
             options.add_argument("--ignore-gpu-blocklist")
             options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--headless')
-            prefs = {"credentials_enable_service": True,
-                    'profile.default_content_setting_values.automatic_downloads': 1,
-                    "download.default_directory" : f"{self.download_path}",
+
+            prefs = {
+                "credentials_enable_service": True,
+                'profile.default_content_setting_values.automatic_downloads': 1,
+                "download.default_directory": f"{self.download_path}",
                 'download.prompt_for_download': False,  # Optional, suppress download prompt
                 'download.directory_upgrade': True,
-                'safebrowsing.enabled': True ,
-                "profile.password_manager_enabled": True}
+                'safebrowsing.enabled': True,
+                "profile.password_manager_enabled": True
+            }
             options.add_experimental_option("prefs", prefs)
+
             options.add_argument('--no-sandbox')
-            options.add_argument('--start-maximized')    
-            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--start-maximized')
             options.add_argument("--ignore-certificate-errors")
             options.add_argument("--enable-javascript")
             options.add_argument("--enable-popup-blocking")
-            options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
-            options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
+
+            # Extensions
+            options.add_extension(os.path.join(self.base_path, 'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
+            options.add_extension(os.path.join(self.base_path, 'Buster-Captcha-Solver-for-Humans.crx'))
+
+            options.add_argument('--disable-infobars')  # Disable info bars
+            options.add_argument('--disable-extensions')  # Disable extensions
+            options.add_argument('--disable-popup-blocking')  # Disable popup blocking
+
+            options.add_argument(
+                'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            )
+            options.add_argument('--disable-blink-features=AutomationControlled')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--disable-blink-features=IdleDetection')
+            options.add_argument('--lang=en-US')
+
             try:
                 self.driver = Chrome(options=options,version_main=119)
                 # driver.get('https://site-ma.brazzers.com/store')
