@@ -36,30 +36,30 @@ class scrapping_bot():
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
 
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         for _ in range(30):
             """Start webdriver and return state of it."""
             from undetected_chromedriver import Chrome, ChromeOptions
             options = ChromeOptions()
-            options.add_argument('--headless')  # Run in headless mode (no GUI)
-            options.add_argument('--disable-gpu')  # Disable GPU acceleration
-            options.add_argument('--headless')
-            options.add_argument('--disable-gpu')
-            options.add_argument('--disable-software-rasterizer')
-            options.add_argument('--no-sandbox')
-            options.add_argument('--disable-dev-shm-usage')
-            options.add_argument('--disable-browser-side-navigation')
-            options.add_argument('--disable-infobars')
-            options.add_argument('--disable-extensions')
-            options.add_argument('--disable-popup-blocking')
-            options.add_argument('--start-maximized')
-            options.add_argument('--remote-debugging-port=9222')
-            options.add_argument('--disable-blink-features=AutomationControlled')
-            options.add_argument(
-                'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            )
-            options.add_argument('--disable-gpu')
+            # options.add_argument('--headless')  # Run in headless mode (no GUI)
+            # options.add_argument('--disable-gpu')  # Disable GPU acceleration
+            # options.add_argument('--headless')
+            # options.add_argument('--disable-gpu')
+            # options.add_argument('--disable-software-rasterizer')
+            # options.add_argument('--no-sandbox')
+            # options.add_argument('--disable-dev-shm-usage')
+            # options.add_argument('--disable-browser-side-navigation')
+            # options.add_argument('--disable-infobars')
+            # options.add_argument('--disable-extensions')
+            # options.add_argument('--disable-popup-blocking')
+            # options.add_argument('--start-maximized')
+            # options.add_argument('--remote-debugging-port=9222')
+            # options.add_argument('--disable-blink-features=AutomationControlled')
+            # options.add_argument(
+            #     'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            # )
+            # options.add_argument('--disable-gpu')
             # options.add_argument('--lang=en')  # Set webdriver language to English.
             # options.add_argument('log-level=3')  # No logs is printed.
             # options.add_argument('--mute-audio')  # Audio is muted.
@@ -103,6 +103,7 @@ class scrapping_bot():
             try:
                 self.driver = Chrome(options=options,version_main=119,headless=True)
                 # driver.get('https://site-ma.brazzers.com/store')
+                self.driver.save_screenshot('ss.png')
                 break
             except Exception as e:
                 print(e)
