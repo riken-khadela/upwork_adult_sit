@@ -35,75 +35,47 @@ class scrapping_bot():
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
 
+    def driver_arguments(self):
+        self.options.add_argument('--lang=en')  
+        self.options.add_argument('log-level=3')  
+        self.options.add_argument('--mute-audio') 
+        self.options.add_argument("--enable-webgl-draft-extensions")
+        self.options.add_argument('--mute-audio')
+        self.options.add_argument("--ignore-gpu-blocklist")
+        self.options.add_argument('--disable-dev-shm-usage')
+        prefs = {"credentials_enable_service": True,
+                'profile.default_content_setting_values.automatic_downloads': 1,
+                "download.default_directory" : f"{self.download_path}",
+            'download.prompt_for_download': False, 
+            'download.directory_upgrade': True,
+            'safebrowsing.enabled': True ,
+            "profile.password_manager_enabled": True}
+        self.options.add_experimental_option("prefs", prefs)
+        self.options.add_argument('--no-sandbox')
+        self.options.add_argument('--start-maximized')    
+        self.options.add_argument('--disable-dev-shm-usage')
+        self.options.add_argument("--ignore-certificate-errors")
+        self.options.add_argument("--enable-javascript")
+        self.options.add_argument("--enable-popup-blocking")
+        self.options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
+        self.options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
+        self.options.add_argument("download.default_directory=/path/to/your/default/directory")
+        self.options.add_argument(f"user-data-dir={os.path.join(os.getcwd(),'profiles')}")
+        self.options.add_argument("profile-directory=Defualt")
+    
     def get_driver(self):
-        self.get_local_driver()
-        return
+        # self.get_local_driver()
+        # return
+        
         for _ in range(30):
             """Start webdriver and return state of it."""
             from undetected_chromedriver import Chrome, ChromeOptions
-            options = ChromeOptions()
-            # options.add_argument('--headless')  # Run in headless mode (no GUI)
-            # options.add_argument('--disable-gpu')  # Disable GPU acceleration
-            # options.add_argument('--headless')
-            # options.add_argument('--disable-gpu')
-            # options.add_argument('--disable-software-rasterizer')
-            # options.add_argument('--no-sandbox')
-            # options.add_argument('--disable-dev-shm-usage')
-            # options.add_argument('--disable-browser-side-navigation')
-            # options.add_argument('--disable-infobars')
-            # options.add_argument('--disable-extensions')
-            # options.add_argument('--disable-popup-blocking')
-            # options.add_argument('--start-maximized')
-            # options.add_argument('--remote-debugging-port=9222')
-            # options.add_argument('--disable-blink-features=AutomationControlled')
-            # options.add_argument(
-            #     'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            # )
-            # options.add_argument('--disable-gpu')
-            # options.add_argument('--lang=en')  # Set webdriver language to English.
-            # options.add_argument('log-level=3')  # No logs is printed.
-            # options.add_argument('--mute-audio')  # Audio is muted.
-            # options.add_argument("--enable-webgl-draft-extensions")
-            # options.add_argument("--ignore-gpu-blocklist")
-            # options.add_argument('--disable-dev-shm-usage')
-            # # options.add_argument('--headless')
-
-            # prefs = {
-            #     "credentials_enable_service": True,
-            #     'profile.default_content_setting_values.automatic_downloads': 1,
-            #     "download.default_directory": f"{self.download_path}",
-            #     'download.prompt_for_download': False,  # Optional, suppress download prompt
-            #     'download.directory_upgrade': True,
-            #     'safebrowsing.enabled': True,
-            #     "profile.password_manager_enabled": True
-            # }
-            # options.add_experimental_option("prefs", prefs)
-
-            # options.add_argument('--no-sandbox')
-            # options.add_argument('--start-maximized')
-            # options.add_argument("--ignore-certificate-errors")
-            # options.add_argument("--enable-javascript")
-            # options.add_argument("--enable-popup-blocking")
-
-            # # Extensions
-            # options.add_extension(os.path.join(self.base_path, 'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
-            # options.add_extension(os.path.join(self.base_path, 'Buster-Captcha-Solver-for-Humans.crx'))
-
-            # options.add_argument('--disable-infobars')  # Disable info bars
-            # options.add_argument('--disable-extensions')  # Disable extensions
-            # options.add_argument('--disable-popup-blocking')  # Disable popup blocking
-
-            # options.add_argument(
-            #     'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            # )
-            # options.add_argument('--disable-blink-features=AutomationControlled')
-            # options.add_argument('--disable-gpu')
-            # options.add_argument('--disable-blink-features=IdleDetection')
-            # options.add_argument('--lang=en-US')
+            self.options = ChromeOptions()
+            self.driver_arguments()
+            self.options.add_argument('--headless')
+            
             try:
-                self.driver = Chrome(options=options,version_main=119,headless=True)
-                # driver.get('https://site-ma.brazzers.com/store')
-                self.driver.save_screenshot('ss.png')
+                self.driver = Chrome(options=self.options,version_main=119)
                 break
             except Exception as e:
                 print(e)
@@ -113,52 +85,12 @@ class scrapping_bot():
     def get_local_driver(self):
         """Start webdriver and return state of it."""
         from selenium import webdriver
-
-        while True :
-            options = webdriver.ChromeOptions()
-            options.add_argument('--lang=en')  # Set webdriver language to English.
-            options.add_argument('log-level=3')  # No logs is printed.
-            options.add_argument('--mute-audio')  # Audio is muted.
-            options.add_argument("--enable-webgl-draft-extensions")
-            options.add_argument("--ignore-gpu-blocklist")
-            options.add_argument('--disable-dev-shm-usage')
-            options.add_argument('--headless')
-
-            prefs = {
-                "credentials_enable_service": True,
-                'profile.default_content_setting_values.automatic_downloads': 1,
-                "download.default_directory": f"{self.download_path}",
-                'download.prompt_for_download': False,  # Optional, suppress download prompt
-                'download.directory_upgrade': True,
-                'safebrowsing.enabled': True,
-                "profile.password_manager_enabled": True
-            }
-            options.add_experimental_option("prefs", prefs)
-
-            options.add_argument('--no-sandbox')
-            options.add_argument('--start-maximized')
-            options.add_argument("--ignore-certificate-errors")
-            options.add_argument("--enable-javascript")
-            options.add_argument("--enable-popup-blocking")
-
-            # Extensions
-            options.add_extension(os.path.join(self.base_path, 'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
-            options.add_extension(os.path.join(self.base_path, 'Buster-Captcha-Solver-for-Humans.crx'))
-
-            options.add_argument('--disable-infobars')  # Disable info bars
-            options.add_argument('--disable-extensions')  # Disable extensions
-            options.add_argument('--disable-popup-blocking')  # Disable popup blocking
-
-            options.add_argument(
-                'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            )
-            options.add_argument('--disable-blink-features=AutomationControlled')
-            options.add_argument('--disable-gpu')
-            options.add_argument('--disable-blink-features=IdleDetection')
-            options.add_argument('--lang=en-US')
+        for _ in range(30):
+            self.options = webdriver.ChromeOptions()
+            self.driver_arguments()
+            
             try:
-                self.driver = webdriver.Chrome(options=options)
-                # driver.get('https://site-ma.brazzers.com/store')
+                self.driver = webdriver.Chrome(options=self.options)
                 break
             except Exception as e:
                 print(e)
@@ -401,6 +333,7 @@ class scrapping_bot():
                 print(e) 
                 self.CloseDriver()
                 self.get_driver()
+                self.connect_cyberghost_vpn()
                 # self.connect_cyberghost_vpn()
             
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
@@ -411,7 +344,6 @@ class scrapping_bot():
                 time.sleep(1.5)
                 if not self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.click_element('try again',"//a[@href='https://site-ma.brazzers.com' and @rel='nofollow']",timeout=5)
-                    breakpoint()
                     return False
                 if self.find_element('Login form','//*[@id="root"]/div[1]/div[1]/div/div/div/div/form/button') :
                     self.input_text(str(self.brazzers.username),'Username','username',By.NAME)
@@ -807,7 +739,6 @@ class scrapping_bot():
                             
     def vip4k_login(self):
         # self.CloseDriver()
-        
         # self.get_driver()
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
