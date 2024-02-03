@@ -43,6 +43,8 @@ class scrapping_bot():
         self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
+        self.options.add_argument('--headless')
+
         prefs = {"credentials_enable_service": True,
                 'profile.default_content_setting_values.automatic_downloads': 1,
                 "download.default_directory" : f"{self.download_path}",
@@ -64,8 +66,8 @@ class scrapping_bot():
         self.options.add_argument("profile-directory=Defualt")
     
     def get_driver(self):
-        self.get_local_driver()
-        return
+        # self.get_local_driver()
+        # return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
