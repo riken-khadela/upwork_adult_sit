@@ -64,21 +64,22 @@ class scrapping_bot():
         self.options.add_argument("profile-directory=Defualt")
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         
         for _ in range(30):
-            """Start webdriver and return state of it."""
             from undetected_chromedriver import Chrome, ChromeOptions
+
+            """Start webdriver and return state of it."""
             self.options = ChromeOptions()
             self.driver_arguments()
             self.options.add_argument('--headless')
             
             try:
-                self.driver = Chrome(options=self.options,version_main=119)
+                self.driver = Chrome(options=self.options, version_main=119)
                 break
             except Exception as e:
-                print(e)
+                print(f"Error: {e}")
         
         return self.driver
 
