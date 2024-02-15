@@ -5,7 +5,7 @@ for _ in range(500):
     # try:
         # close_every_chrome()
         bot = scrapping_bot(brazzers_bot=True)
-        bot.starting_brazzers_bots()
+        bot.starting_bots()
         # bot.connect_cyberghost_vpn()
         if bot.brazzers_login() :
             logggg = True

@@ -4,5 +4,4 @@ from .views import *
 
 urlpatterns = [
     path('run-script',RunScript.as_view(),name='RunScript'),
-
 ]

@@ -13,10 +13,9 @@ def data_flair(request):
 
 class RunScript(View):
     def get(self, request, *args, **kwargs):
-        # Your logic to generate JSON data here
         call_command('update_conf')
         data = {
-            'message': 'Hello, JSON!',
+            'message': 'Call Api to dowloads the videos!',
             'status': 'success'
         }
         return JsonResponse(data)

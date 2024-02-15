@@ -14,10 +14,12 @@ from datetime import datetime, timedelta
 import undetected_chromedriver as uc
 from main.models import configuration
 import urllib.request
+from anticaptchaofficial.recaptchav2proxyless import *
 
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
+        self.driver = ''
         self.base_path = os.getcwd()
         self.download_path = self.create_or_check_path('downloads',main=True)
         self.csv_path = self.create_or_check_path('csv',main=True)
@@ -28,6 +30,10 @@ class scrapping_bot():
         self.brazzers = configuration.objects.get(website_name='brazzers')
         self.vip4k = configuration.objects.get(website_name='vip4k')
         self.handjob = configuration.objects.get(website_name='handjob')
+        self.naughty = configuration.objects.get(website_name='naughtyamerica')
+        self.solver = recaptchaV2Proxyless()
+        self.solver.set_verbose(1)
+        self.solver.set_key("e49c2cc94651faab912d635baec6741f")
         self.make_csv()
         self.delete_old_videos()
         if brazzers_bot == True:
@@ -43,7 +49,7 @@ class scrapping_bot():
         self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
-        self.options.add_argument('--headless')
+        # self.options.add_argument('--headless')
 
         prefs = {"credentials_enable_service": True,
                 'profile.default_content_setting_values.automatic_downloads': 1,
@@ -91,7 +97,6 @@ class scrapping_bot():
         for _ in range(30):
             self.options = webdriver.ChromeOptions()
             self.driver_arguments()
-            
             try:
                 self.driver = webdriver.Chrome(options=self.options)
                 break
@@ -244,8 +249,9 @@ class scrapping_bot():
             return date_obj < self.old_date 
         return False
 
-    def starting_brazzers_bots(self):
+    def starting_bots(self):
         self.get_driver()
+        return self.driver
 
     def connect_cyberghost_vpn(self):
         vpn_country_list = ['Romania','Netherlands','United States']
@@ -327,7 +333,7 @@ class scrapping_bot():
         return cookies
             
     def brazzers_login(self):
-        # self.load_cookies(self.brazzers.website_name)
+        self.load_cookies(self.brazzers.website_name)
         while True :
             try:
                 self.driver.get('https://site-ma.brazzers.com/store')
@@ -1105,3 +1111,57 @@ class scrapping_bot():
             #             self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
             #     videos_urls.append({"video_url":video_url,'post_url':post_url})
             #     if len(videos_urls) >= found_max_videos :return
+            
+    def naughty_ame_login(self):
+        self.click_element('Login','//a[text()="LOGIN"]')
+        self.input_text(self.naughty.username,'Username','//*[@id="login-top"]/input[1]')
+        self.input_text(self.naughty.password,'Password','//*[@id="login-top"]/input[2]')
+        site_key_ele = self.find_element('SITE-KEY','g-recaptcha',By.CLASS_NAME)
+        
+        if not site_key_ele : return False
+        
+        site_key = site_key_ele.get_attribute('data-sitekey')
+        self.solver.set_website_url("https://members.naughtyamerica.com/login")
+        self.solver.set_website_key(site_key)
+        self.solver.set_soft_id(0)
+        g_response = self.solver.solve_and_return_solution()
+        
+        if g_response == 0:
+            print ("task finished of captcha solver with error "+self.solver.error_code)
+            return False
+        print ("g-response: "+g_response)
+        
+        i_frame = self.find_element('I-frame','//iframe[@title="reCAPTCHA"]')
+        if not i_frame : print('Could not found i-frame'); return False
+        breakpoint()
+        
+        self.driver.switch_to.frame(i_frame)
+        self.driver.switch_to.default_content()
+        captcha_area_ele = self.find_element('Captcha-text-area','g-recaptcha-response',By.ID)
+        captcha_response = self.find_element('Captcha-text-area','g-recaptcha-response',By.ID)
+        
+        self.driver.execute_script("arguments[0].style.display = 'block';", captcha_response)
+        captcha_response = self.driver.find_element(By.ID, 'g-recaptcha-response')
+        captcha_response.send_keys(g_response)
+        login_button = self.driver.find_element(By.ID, 'login')
+        login_button.click()
+
+
+
+        
+        if not captcha_area_ele :print('could not found captcha key text input'); return False
+        captcha_response.send_keys(g_response)
+        self.driver.execute_script("arguments[0].style.display = 'block';", captcha_area_ele)
+        fm = self.find_element('form','/html/body/div[2]/div[1]/form')
+        login_button = self.driver.find_element(By.ID, 'login')
+
+        self.driver.refresh()
+        
+    def naughty_ame(self):
+        self.driver.get('https://www.naughtyamerica.com/')
+        if self.find_element('Login','//a[text()="LOGIN"]'):
+            self.naughty_ame_login()
+            
+        self.load_cookies(self.brazzers.website_name)
+        
+        
