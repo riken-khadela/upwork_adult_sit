@@ -15,7 +15,8 @@ import undetected_chromedriver as uc
 from main.models import configuration
 import urllib.request
 from anticaptchaofficial.recaptchav2proxyless import *
-
+from mail import SendAnEmail
+from main.utils import naughty_convert_relative_time
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
@@ -27,6 +28,7 @@ class scrapping_bot():
         self.brazzers_category_path = self.create_or_check_path('brazzers_category_videos')
         self.vip4k_category_path = self.create_or_check_path('vip4k_category_videos')
         self.handjob_category_path = self.create_or_check_path('handjob_category_videos')
+        self.naughty_america_category_path = self.create_or_check_path('naughty_america')
         self.brazzers = configuration.objects.get(website_name='brazzers')
         self.vip4k = configuration.objects.get(website_name='vip4k')
         self.handjob = configuration.objects.get(website_name='handjob')
@@ -1111,57 +1113,212 @@ class scrapping_bot():
             #             self.set_data_of_csv(self.handjob.website_name,tmp,video_name)
             #     videos_urls.append({"video_url":video_url,'post_url':post_url})
             #     if len(videos_urls) >= found_max_videos :return
+
+    def Sovle_captcha(self):
+        site_key_ele = self.find_element('SITE-KEY','g-recaptcha',By.CLASS_NAME)
+        
+        if site_key_ele : 
+            # to solvee the captcha
+            site_key = site_key_ele.get_attribute('data-sitekey')
+            self.solver.set_website_url(self.driver.current_url)
+            self.solver.set_website_key(site_key)
+            self.solver.set_soft_id(0)
+            g_response = self.solver.solve_and_return_solution()
             
+            if g_response == 0:
+                print ("task finished of captcha solver with error "+self.solver.error_code)
+                return False
+            print ("g-response: "+g_response)
+            
+            captcha_text_area_id = 'g-recaptcha-response'
+            captcha_response = self.find_element('Captcha-text-area',captcha_text_area_id,By.ID,timeout=3)
+            if not captcha_response :
+                captcha_text_area_id = 'g-recaptcha-response-1'
+                captcha_response = self.find_element('captcha 2 text area',captcha_text_area_id,By.ID,timeout=3)
+            
+            if not captcha_response : return False
+            self.driver.execute_script("arguments[0].style.display = 'block';", captcha_response)
+            captcha_response = self.driver.find_element(By.ID, captcha_text_area_id)
+            captcha_response.send_keys(g_response)
+            
+            if g_response : return True
+            
+        return False
+
+    
     def naughty_ame_login(self):
+        self.click_element('Login','//a[text()="LOGIN"]')
+        self.random_sleep(10,15)
+        
+        if self.find_element('user btn','//*[@id="right-side-containter"]/div/div[2]/a/i') : 
+            return True
+        # self.load_cookies(self.naughty.website_name)
+        # self.driver.get('https://members.naughtyamerica.com/postLogin')
         self.click_element('Login','//a[text()="LOGIN"]')
         self.input_text(self.naughty.username,'Username','//*[@id="login-top"]/input[1]')
         self.input_text(self.naughty.password,'Password','//*[@id="login-top"]/input[2]')
-        site_key_ele = self.find_element('SITE-KEY','g-recaptcha',By.CLASS_NAME)
+       
+        if self.Sovle_captcha():
+            login_button = self.driver.find_element(By.ID, 'login')
+            login_button.click()
+            self.random_sleep(10,15)
+            self.driver.refresh()
         
-        if not site_key_ele : return False
         
-        site_key = site_key_ele.get_attribute('data-sitekey')
-        self.solver.set_website_url("https://members.naughtyamerica.com/login")
-        self.solver.set_website_key(site_key)
-        self.solver.set_soft_id(0)
-        g_response = self.solver.solve_and_return_solution()
+            if self.find_element('user btn','//*[@id="right-side-containter"]/div/div[2]/a/i'):
+                cookies = self.get_cookies(self.naughty.website_name)
+                member_cookies = [item for item in cookies if item.get("domain") == ".naughtyamerica.com"]
+                for item in member_cookies:self.driver.add_cookie(item)
+                return True
         
-        if g_response == 0:
-            print ("task finished of captcha solver with error "+self.solver.error_code)
-            return False
-        print ("g-response: "+g_response)
+        return False
+       
+    def Open_new_tab_with_link(self,link): 
+        self.driver.execute_script(f"window.open('{link}')")
         
-        i_frame = self.find_element('I-frame','//iframe[@title="reCAPTCHA"]')
-        if not i_frame : print('Could not found i-frame'); return False
+    def get_naughty_video_links(self):
+        if not os.path.exists(os.path.join(os.getcwd(),'csv','naughty_america_videos_details.csv')) :
+            df = pd.DataFrame(columns= ["Likes","Disclike","Url","Category","video_download_url","Title","Discription","Release-Date","Poster-Image_uri","poster_download_uri","Video-name","Photo-name","Pornstarts","Username"])
+            df.to_csv(os.path.join(os.getcwd(),'csv','naughty_america_videos_details.csv'),index=False)
+        
+        df = pd.read_csv(os.path.join(os.getcwd(),'csv','naughty_america_videos_details.csv'))   
+        downloaded_vd_title = df['Title'].tolist()
+        
+        all_videos_link_li = []
+        for _ in range(100):
+                
+            all_videos = self.driver.find_elements(By.XPATH, '//*[@id="sceneList"]//div[contains(@class, "scene-item") and contains(@class, "countable")]')
+            for videos in all_videos:
+                
+                Video_a_tag = videos.find_elements(By.TAG_NAME,'a')
+                if not Video_a_tag : continue
+                
+                Video_a_tag = Video_a_tag[0]
+                vd_title=  Video_a_tag.get_attribute('title')
+                
+                if not vd_title in  downloaded_vd_title:
+                    url__ = Video_a_tag.get_attribute('href')
+                    if url__ :
+                        all_videos_link_li.append(url__)
+                        continue
+            
+            if len(all_videos_link_li) >= self.naughty.numbers_of_download_videos :
+                return all_videos_link_li
+            
+            if not self.click_element('View more','view-all-button',By.CLASS_NAME):
+                SendAnEmail('Could not find more videos into naughty america cetegories!')
+                return
+            
+            self.random_sleep(10,15)
+        return all_videos_link_li
+        
+    def naughty_video_download(self):
+        """This functions helps to download the video at his place and save the details which is needed to save in csv"""
+        
+        
+        collection_path = self.create_or_check_path(self.naughty_america_category_path,sub_folder_=self.naughty.category)
+        
+        # click on more info
+        self.click_element('more info','more-info',By.ID)
+        
+        # get and store the video details in dict
+        data_dict = {}
+        data_dict['Likes'] = ""
+        data_dict['Disclike'] = ""
+        data_dict['Url'] = self.driver.current_url
+        data_dict['Category'] = self.naughty.category
+        data_dict['video_download_url'] = self.naughty.category
+        
+        pornstar_ele = self.find_element('porn star','//*[@id="more-info-container"]/div[1]/p[2]')
+        data_dict['Pornstarts'] = ""
+        if not pornstar_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        else : data_dict['Pornstarts'] = pornstar_ele.text
+        
+        data_dict['Title'] = ""
+        vd_title_ele = self.find_element('title','//p[@class="new-title"]')
+        if not vd_title_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        else : data_dict['Title'] = vd_title_ele.text
+        
+        data_dict['Title'] = ""
+        vd_title_ele = self.find_element('title','//p[@class="new-title"]')
+        if not vd_title_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        else : data_dict['Title'] = vd_title_ele.text
+        
+        video_name = f"naughty_{self.naughty.category.replace('videos', '')}_{self.sanitize_title(data_dict['Title'])}"
+        data_dict['Video-name'] = f'{video_name}.mp4'
+        data_dict['Photo-name'] = f'{video_name}.jpg'
+        v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+        p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+        data_dict['video_download_url'] = v_url
+        data_dict['poster_download_uri'] = p_url
+        
+        data_dict['Release-Date'] = ""
+        vd_Release_ele = self.find_element('Release date','//*[@id="more-info-container"]/div[1]/p[10]')
+        if not vd_Release_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        else : data_dict['Release-Date'] = naughty_convert_relative_time(vd_Release_ele.text)
+        
+        
+        data_dict['Discription'] = ""
+        vd_Discription_ele = self.find_element('Discription','//*[@id="more-info-container"]/div[1]/p[6]')
+        if not vd_Discription_ele : SendAnEmail('Could not find description into naughty america!')
+        else : data_dict['Discription'] = naughty_convert_relative_time(vd_Discription_ele.text)
+        
+        self.set_data_of_csv(self.naughty.website_name,data_dict,video_name)
         breakpoint()
-        
-        self.driver.switch_to.frame(i_frame)
-        self.driver.switch_to.default_content()
-        captcha_area_ele = self.find_element('Captcha-text-area','g-recaptcha-response',By.ID)
-        captcha_response = self.find_element('Captcha-text-area','g-recaptcha-response',By.ID)
-        
-        self.driver.execute_script("arguments[0].style.display = 'block';", captcha_response)
-        captcha_response = self.driver.find_element(By.ID, 'g-recaptcha-response')
-        captcha_response.send_keys(g_response)
-        login_button = self.driver.find_element(By.ID, 'login')
-        login_button.click()
-
-
-
-        
-        if not captcha_area_ele :print('could not found captcha key text input'); return False
-        captcha_response.send_keys(g_response)
-        self.driver.execute_script("arguments[0].style.display = 'block';", captcha_area_ele)
-        fm = self.find_element('form','/html/body/div[2]/div[1]/form')
-        login_button = self.driver.find_element(By.ID, 'login')
-
-        self.driver.refresh()
+        cur_url = self.driver.current_url
+        self.click_element('4k download btn','//*[@id="download-options-menu"]/table/tbody/tr[3]/td[2]/a')
+        self.Sovle_captcha()
+        self.find_element('captcha form',"//form[contains(@action, 'captcha')]").submit()
+        self.click_element('download btn','//button[@type="submit" and @disabled="disabled" and contains(@class, "btn-download")]')
+        return True
         
     def naughty_ame(self):
+        download_com_videos = 0
+        videos_cat_url = ''
         self.driver.get('https://www.naughtyamerica.com/')
+        if self.click_element('Enter naughty america','//*[@id="banner"]/div/div/div[2]/p[1]/a'):
+            self.random_sleep(10,15)
         if self.find_element('Login','//a[text()="LOGIN"]'):
-            self.naughty_ame_login()
-            
-        self.load_cookies(self.brazzers.website_name)
+            if not self.naughty_ame_login() : 
+                SendAnEmail('Could not login into naughty america!')
+                return
         
+        if not self.find_element('categories','//*[@id="header-tags"]'):
+            SendAnEmail('Could not find cetegories into naughty america!')
+            return
+        
+        categories = []
+        for _ in range(3) :
+            categories = self.driver.find_elements(By.XPATH,'//*[@id="header-tags"]/*')
+            if len(categories) > 5 : break
+            self.random_sleep()
+        else:
+            SendAnEmail('Could not find cetegories into naughty america!')
+            return
+        
+        # [ i.get_attribute('href') for i in categories if  i.text.lower() == "latina"]
+        
+        for cat in categories : 
+            if cat.text.lower() == self.naughty.category.lower():
+                videos_cat_url = cat.get_attribute('href')
+                self.driver.get(videos_cat_url)
+                break
+        else:
+            SendAnEmail('Could not find cetegories Entered and looking for, into naughty america!')
+            return
+        
+        for _ in range(5):
+            all_videos_link_li = self.get_naughty_video_links()
+            for vd_link in all_videos_link_li:
+                self.driver.get(vd_link)
+                if self.naughty_video_download(): download_com_videos+= 1
+                
+                if len(download_com_videos) == self.naughty.numbers_of_download_videos:
+                    return True
+        
+        
+        
+        self.naughty_america_category_path
+        
+        breakpoint()        
         

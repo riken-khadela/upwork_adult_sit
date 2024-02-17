@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options): 
         
-        try:
+        # try:
             bot = scrapping_bot(brazzers_bot=True)
             if bot.starting_bots():
                 bot.naughty_ame()
@@ -20,5 +20,5 @@ class Command(BaseCommand):
             
             
             ...
-        except Exception as e :
-                SendAnEmail(f'Got an error while processing the downloading process the videos of naughty america!\nError : {e}')
+        # except Exception as e :
+        #         SendAnEmail(f'Got an error while processing the downloading process the videos of naughty america!\nError : {e}')
