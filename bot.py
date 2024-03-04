@@ -12,7 +12,7 @@ from dateutil import parser
 import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
 import undetected_chromedriver as uc
-from main.models import configuration
+from main.models import configuration, send_mail
 import urllib.request
 from anticaptchaofficial.recaptchav2proxyless import *
 from mail import SendAnEmail
@@ -20,6 +20,8 @@ from main.utils import naughty_convert_relative_time
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
+        self.emailss = [mail.email for mail in send_mail.objects.all()]
+        
         self.driver = ''
         self.base_path = os.getcwd()
         self.download_path = self.create_or_check_path('downloads',main=True)
@@ -45,7 +47,7 @@ class scrapping_bot():
 
     def driver_arguments(self):
         self.options.add_argument('--lang=en')  
-        self.options.add_argument('log-level=3')  
+        # self.options.add_argument('log-level=3')  
         self.options.add_argument('--mute-audio') 
         self.options.add_argument("--enable-webgl-draft-extensions")
         self.options.add_argument('--mute-audio')
@@ -69,9 +71,9 @@ class scrapping_bot():
         self.options.add_argument("--enable-popup-blocking")
         self.options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
         self.options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
-        self.options.add_argument("download.default_directory=/path/to/your/default/directory")
-        self.options.add_argument(f"user-data-dir={os.path.join(os.getcwd(),'profiles')}")
-        self.options.add_argument("profile-directory=Defualt")
+        # self.options.add_argument("download.default_directory=/path/to/your/default/directory")
+        # self.options.add_argument(f"user-data-dir={os.path.join(os.getcwd(),'profiles')}")
+        # self.options.add_argument("profile-directory=Defualt")
     
     def get_driver(self):
         self.get_local_driver()
@@ -83,10 +85,10 @@ class scrapping_bot():
             """Start webdriver and return state of it."""
             self.options = ChromeOptions()
             self.driver_arguments()
-            self.options.add_argument('--headless')
+            # self.options.add_argument('--headless')
             
             try:
-                self.driver = Chrome(options=self.options, version_main=119)
+                self.driver = Chrome(options=self.options, version_main=121)
                 break
             except Exception as e:
                 print(f"Error: {e}")
@@ -220,9 +222,9 @@ class scrapping_bot():
     def new_tab(self):
         self.driver.find_element(By.XPATH,'/html/body').send_keys(Keys.CONTROL+'t')
 
-    def random_sleep(self,a=3,b=7):
+    def random_sleep(self,a=3,b=7,reson = ""):
         random_time = random.randint(a,b)
-        print('time sleep randomly :',random_time)
+        print('time sleep randomly :',random_time) if not reson else print('time sleep randomly :',random_time,f' for {reson}')
         time.sleep(random_time)
 
     def getvalue_byscript(self,script = '',reason=''):
@@ -376,6 +378,7 @@ class scrapping_bot():
         if not self.driver.current_url.lower() == self.brazzers_category_url :
             self.driver.get(self.brazzers_category_url)
         found_category = False
+        
         for i1 in range(1,6) :
             cate1 = self.find_element('category',f'//*[@id="root"]/div[1]/div[2]/div[3]/div[2]/div[2]/div[{i1}]/div/div/a',timeout= 1)
             if cate1 : 
@@ -384,6 +387,7 @@ class scrapping_bot():
                     cate1.click()
                     found_category = True
                     break 
+        
         
         if found_category == False :
             for i2 in range(4,15):
@@ -397,6 +401,7 @@ class scrapping_bot():
                                 break
                 else : break
                 if found_category == True : break
+        
         if found_category == True : 
             return True
         else: 
@@ -1050,7 +1055,7 @@ class scrapping_bot():
             VideosNumberDone += 1
             if VideosNumberDone >= found_max_videos :return
             
-            # breakpoint()
+            # 
         # for i in all_thimb:
             # video_url = 'https://handjob.tv'+link.find('a').get('href')
             # post_url = i.find('img').get('src')
@@ -1102,7 +1107,7 @@ class scrapping_bot():
             #             tmp['Photo-name'] = f'{video_name}.jpg'
             #             tmp['poster_download_uri'] = p_url
             #             tmp['video_download_url'] = v_url
-            #             breakpoint()
+            #             
             #             response = requests.request("GET", video_link)
             #             if response.status_code == 200:
             #                 with open(f'{collection_path}/{video_name}.mp4', 'wb') as file:
@@ -1126,6 +1131,7 @@ class scrapping_bot():
             g_response = self.solver.solve_and_return_solution()
             
             if g_response == 0:
+                
                 print ("task finished of captcha solver with error "+self.solver.error_code)
                 return False
             print ("g-response: "+g_response)
@@ -1206,7 +1212,7 @@ class scrapping_bot():
                 return all_videos_link_li
             
             if not self.click_element('View more','view-all-button',By.CLASS_NAME):
-                SendAnEmail('Could not find more videos into naughty america cetegories!')
+                SendAnEmail('Could not find more videos into naughty america cetegories!',email=self.emailss)
                 return
             
             self.random_sleep(10,15)
@@ -1231,17 +1237,17 @@ class scrapping_bot():
         
         pornstar_ele = self.find_element('porn star','//*[@id="more-info-container"]/div[1]/p[2]')
         data_dict['Pornstarts'] = ""
-        if not pornstar_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        if not pornstar_ele : SendAnEmail('Could not find pornstars into naughty america!',email=self.emailss)
         else : data_dict['Pornstarts'] = pornstar_ele.text
         
         data_dict['Title'] = ""
         vd_title_ele = self.find_element('title','//p[@class="new-title"]')
-        if not vd_title_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        if not vd_title_ele : SendAnEmail('Could not find pornstars into naughty america!',email=self.emailss)
         else : data_dict['Title'] = vd_title_ele.text
         
         data_dict['Title'] = ""
         vd_title_ele = self.find_element('title','//p[@class="new-title"]')
-        if not vd_title_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        if not vd_title_ele : SendAnEmail('Could not find pornstars into naughty america!',email=self.emailss)
         else : data_dict['Title'] = vd_title_ele.text
         
         video_name = f"naughty_{self.naughty.category.replace('videos', '')}_{self.sanitize_title(data_dict['Title'])}"
@@ -1254,21 +1260,27 @@ class scrapping_bot():
         
         data_dict['Release-Date'] = ""
         vd_Release_ele = self.find_element('Release date','//*[@id="more-info-container"]/div[1]/p[10]')
-        if not vd_Release_ele : SendAnEmail('Could not find pornstars into naughty america!')
+        if not vd_Release_ele : SendAnEmail('Could not find pornstars into naughty america!',email=self.emailss)
         else : data_dict['Release-Date'] = naughty_convert_relative_time(vd_Release_ele.text)
         
         
         data_dict['Discription'] = ""
         vd_Discription_ele = self.find_element('Discription','//*[@id="more-info-container"]/div[1]/p[6]')
-        if not vd_Discription_ele : SendAnEmail('Could not find description into naughty america!')
+        if not vd_Discription_ele : SendAnEmail('Could not find description into naughty america!',email=self.emailss)
         else : data_dict['Discription'] = naughty_convert_relative_time(vd_Discription_ele.text)
         
         self.set_data_of_csv(self.naughty.website_name,data_dict,video_name)
-        breakpoint()
+        
         cur_url = self.driver.current_url
         self.click_element('4k download btn','//*[@id="download-options-menu"]/table/tbody/tr[3]/td[2]/a')
         self.Sovle_captcha()
         self.find_element('captcha form',"//form[contains(@action, 'captcha')]").submit()
+        
+        self.random_sleep(10,15,reson="for downloading naughty america videos")
+        while True :
+            new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
+            if new_video_download:
+                break    
         self.click_element('download btn','//button[@type="submit" and @disabled="disabled" and contains(@class, "btn-download")]')
         return True
         
@@ -1280,11 +1292,11 @@ class scrapping_bot():
             self.random_sleep(10,15)
         if self.find_element('Login','//a[text()="LOGIN"]'):
             if not self.naughty_ame_login() : 
-                SendAnEmail('Could not login into naughty america!')
+                SendAnEmail('Could not login into naughty america!',email=self.emailss)
                 return
         
         if not self.find_element('categories','//*[@id="header-tags"]'):
-            SendAnEmail('Could not find cetegories into naughty america!')
+            SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
             return
         
         categories = []
@@ -1293,7 +1305,7 @@ class scrapping_bot():
             if len(categories) > 5 : break
             self.random_sleep()
         else:
-            SendAnEmail('Could not find cetegories into naughty america!')
+            SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
             return
         
         # [ i.get_attribute('href') for i in categories if  i.text.lower() == "latina"]
@@ -1304,7 +1316,7 @@ class scrapping_bot():
                 self.driver.get(videos_cat_url)
                 break
         else:
-            SendAnEmail('Could not find cetegories Entered and looking for, into naughty america!')
+            SendAnEmail('Could not find cetegories Entered and looking for, into naughty america!',email=self.emailss)
             return
         
         for _ in range(5):
@@ -1320,5 +1332,5 @@ class scrapping_bot():
         
         self.naughty_america_category_path
         
-        breakpoint()        
+                
         

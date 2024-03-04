@@ -53,4 +53,5 @@ class Command(BaseCommand):
                 if logggg == True:break
                 
             except Exception as e :
+                print(e)
                 SendAnEmail(f'Got an error while processing the downloading process the videos!\nError : {e}')

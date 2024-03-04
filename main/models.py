@@ -1,3 +1,5 @@
+from email.policy import default
+from enum import unique
 from django.db import models
 
 # Create your models here.
@@ -39,3 +41,14 @@ class configuration(models.Model):
     delete_old_days = models.IntegerField(null=True,blank=True)
     def __str__(self) -> str:
         return self.website_name
+
+
+class send_mail(models.Model):
+    email = models.EmailField(unique=True)
+    
+class sender_mail(models.Model):
+    email = models.EmailField(unique=True)
+    sender_password = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
+    server = models.CharField(max_length=255)
+    port = models.IntegerField(default=0)
