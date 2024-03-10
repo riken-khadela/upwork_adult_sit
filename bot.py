@@ -91,7 +91,7 @@ class scrapping_bot():
             self.options.add_argument('--headless')
             
             try:
-                self.driver = Chrome(options=self.options)
+                self.driver = Chrome(options=self.options,version_main=119)
                 break
             except Exception as e:
                 print(f"Error: {e}")

@@ -16,7 +16,6 @@ class Command(BaseCommand):
                 # close_every_chrome()
                 bot = scrapping_bot(brazzers_bot=True)
                 driver = bot.starting_bots()
-                breakpoint()
                 if not driver :
                     SendAnEmail('Could not open up the driver')
                     return
