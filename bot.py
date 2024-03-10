@@ -17,9 +17,12 @@ import urllib.request
 from anticaptchaofficial.recaptchav2proxyless import *
 from mail import SendAnEmail
 from main.utils import naughty_convert_relative_time
+from driver import open_vps_driver
+
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
+        
         self.emailss = [mail.email for mail in send_mail.objects.all()]
         
         self.driver = ''
@@ -85,10 +88,10 @@ class scrapping_bot():
             """Start webdriver and return state of it."""
             self.options = ChromeOptions()
             self.driver_arguments()
-            # self.options.add_argument('--headless')
+            self.options.add_argument('--headless')
             
             try:
-                self.driver = Chrome(options=self.options, version_main=121)
+                self.driver = Chrome(options=self.options)
                 break
             except Exception as e:
                 print(f"Error: {e}")
@@ -314,21 +317,24 @@ class scrapping_bot():
         return
 
     def load_cookies(self,website :str):
-        if 'vip4k' in website:
-            path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
-            if os.path.isfile(path):
-                with open(path,'rb') as f:cookies = json.load(f)
-                for item in cookies:
-                    if item.get("domain") == ".vip4k.com":
-                        self.driver.add_cookie(item)
-            self.driver.refresh()
-        else:
-            path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
-            if os.path.isfile(path):
-                with open(path,'rb') as f:cookies = json.load(f)
-                for item in cookies: self.driver.add_cookie(item)
-                self.random_sleep()
-            
+        try:
+            if 'vip4k' in website:
+                path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
+                if os.path.isfile(path):
+                    with open(path,'rb') as f:cookies = json.load(f)
+                    for item in cookies:
+                        if item.get("domain") == ".vip4k.com":
+                            self.driver.add_cookie(item)
+                self.driver.refresh()
+            else:
+                path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
+                if os.path.isfile(path):
+                    with open(path,'rb') as f:cookies = json.load(f)
+                    for item in cookies: self.driver.add_cookie(item)
+                    self.random_sleep()
+        except : 
+            SendAnEmail('The coockies could not be loaded')
+
     def get_cookies(self,website :str):
         path = os.path.join(self.cookies_path,f'{website}_cookietest.json')
         cookies = self.driver.get_cookies()

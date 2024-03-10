@@ -11,11 +11,12 @@ class Command(BaseCommand):
         from bot import scrapping_bot
         from utils import close_every_chrome
         logggg = False
-        for _ in range(500):
+        for _ in range(1):
             try:
                 # close_every_chrome()
                 bot = scrapping_bot(brazzers_bot=True)
                 driver = bot.starting_bots()
+                breakpoint()
                 if not driver :
                     SendAnEmail('Could not open up the driver')
                     return
