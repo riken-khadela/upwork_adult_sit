@@ -83,5 +83,6 @@ urlpatterns = [
     path('csv/', return_csv_links, name='csv_file_list'),
     path('', data_flair),
     path('API/', include('main.urls')),
+    path('run-script',RunScript.as_view(),name='RunScript')
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
