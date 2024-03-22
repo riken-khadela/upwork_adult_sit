@@ -22,33 +22,39 @@ class Command(BaseCommand):
                 # if bot.naughty_ame():
                     ...
                     
-                if bot.brazzers_login() :
-                    logggg = True
-                    bot.brazzers_get_categories()
-                    video_dict = bot.brazzers_get_videos_url()
-                    bot.brazzers_download_video(video_dict)
-                    tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=102')
-                    bot.download_videos(tags_102)
-                    tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
-                    bot.download_videos(tags_152)
-                    tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
-                    bot.download_videos(tags_162)
-                else:
-                    SendAnEmail('Could not logged in into Brazzers')
-                print('Vip 4k process')
-                if bot.vip4k_login():
-                    logggg = True
-                    videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
-                    bot.vip4k_download_video(videos_collection_dict)
-                else :
-                    SendAnEmail('Could not logged in into Vip 4k')
+                # if bot.brazzers_login() :
+                #     logggg = True
+                #     bot.brazzers_get_categories()
+                #     video_dict = bot.brazzers_get_videos_url()
+                #     bot.brazzers_download_video(video_dict)
+                #     tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=102')
+                #     bot.download_videos(tags_102)
+                #     tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
+                #     bot.download_videos(tags_152)
+                #     tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
+                #     bot.download_videos(tags_162)
+                # else:
+                #     SendAnEmail('Could not logged in into Brazzers')
+                # print('Vip 4k process')
+                # if bot.vip4k_login():
+                #     logggg = True
+                #     videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
+                #     bot.vip4k_download_video(videos_collection_dict)
+                # else :
+                #     SendAnEmail('Could not logged in into Vip 4k')
 
                 if bot.login_Handjob_TV():
                     logggg = True
                     bot.handjob_get_video()
                 else:
                     SendAnEmail('Could not logged in into Handjob TV')
-                    
+                
+                try:
+                    bot.naughty_ame()
+                except:
+                    SendAnEmail('Could not Download in into Naughty america')
+                
+                
                 bot.CloseDriver()
                 if logggg == True:break
                 

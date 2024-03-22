@@ -51,9 +51,9 @@ class scrapping_bot():
     def driver_arguments(self):
         self.options.add_argument('--lang=en')  
         # self.options.add_argument('log-level=3')  
-        self.options.add_argument('--mute-audio') 
+        # self.options.add_argument('--mute-audio') 
         self.options.add_argument("--enable-webgl-draft-extensions")
-        self.options.add_argument('--mute-audio')
+        # self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
         # self.options.add_argument('--headless')
@@ -422,14 +422,17 @@ class scrapping_bot():
     def brazzers_get_videos_url(self):
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
+        breakpoint()
         self.calculate_old_date(self.brazzers.more_than_old_days_download)
         df_url = self.column_to_list(self.brazzers.website_name,'Url')
-        page_number = 2
+        page_number = 0
         driver_url = self.driver.current_url
         tags = driver_url.split('tags=')[-1]
         found_max_videos = self.brazzers.numbers_of_download_videos
         self.random_sleep(6,10)
         video_detailes['collection_name'] = self.get_collection_name()
+        breakpoint()
+        
         while len(videos_urls) < found_max_videos:
             all_thumb = self.driver.find_elements(By.XPATH,"//div[contains(@class, 'one-list-1vyt92m') and contains(@class, 'e1vusg2z1')]" )
             try :
@@ -451,7 +454,8 @@ class scrapping_bot():
                 self.driver.get(f'https://site-ma.brazzers.com/scenes?page={page_number}&tags={tags}')
                 self.random_sleep(2,4)
                 page_number +=1
-                
+            breakpoint()
+            
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
@@ -1169,7 +1173,7 @@ class scrapping_bot():
         self.click_element('Login','//a[text()="LOGIN"]')
         self.input_text(self.naughty.username,'Username','//*[@id="login-top"]/input[1]')
         self.input_text(self.naughty.password,'Password','//*[@id="login-top"]/input[2]')
-       
+        breakpoint()
         if self.Sovle_captcha():
             login_button = self.driver.find_element(By.ID, 'login')
             login_button.click()
@@ -1285,7 +1289,7 @@ class scrapping_bot():
         self.random_sleep(10,15,reson="for downloading naughty america videos")
         while True :
             new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
-            if new_video_download:
+            if not new_video_download:
                 break    
         self.click_element('download btn','//button[@type="submit" and @disabled="disabled" and contains(@class, "btn-download")]')
         return True
