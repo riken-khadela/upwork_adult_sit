@@ -35,13 +35,13 @@ class Command(BaseCommand):
                 #     bot.download_videos(tags_162)
                 # else:
                 #     SendAnEmail('Could not logged in into Brazzers')
-                # print('Vip 4k process')
-                # if bot.vip4k_login():
-                #     logggg = True
-                #     videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
-                #     bot.vip4k_download_video(videos_collection_dict)
-                # else :
-                #     SendAnEmail('Could not logged in into Vip 4k')
+                print('Vip 4k process')
+                if bot.vip4k_login():
+                    logggg = True
+                    videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
+                    bot.vip4k_download_video(videos_collection_dict)
+                else :
+                    SendAnEmail('Could not logged in into Vip 4k')
 
                 if bot.login_Handjob_TV():
                     logggg = True
