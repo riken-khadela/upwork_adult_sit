@@ -1305,6 +1305,7 @@ class scrapping_bot():
                 SendAnEmail('Could not login into naughty america!',email=self.emailss)
                 return
         
+        breakpoint()
         if not self.find_element('categories','//*[@id="header-tags"]'):
             SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
             return
