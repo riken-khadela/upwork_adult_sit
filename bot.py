@@ -664,7 +664,7 @@ class scrapping_bot():
             except Exception as e:
                 print('Error:', e)
 
-    def wait_for_file_download(self,timeout=20):
+    def wait_for_file_download(self,timeout=600):
         print('waiting for download')
         seconds = 0
         new_video_download = ''
