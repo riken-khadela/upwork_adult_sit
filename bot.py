@@ -422,7 +422,7 @@ class scrapping_bot():
     def brazzers_get_videos_url(self):
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
-        breakpoint()
+        
         self.calculate_old_date(self.brazzers.more_than_old_days_download)
         df_url = self.column_to_list(self.brazzers.website_name,'Url')
         page_number = 0
@@ -431,7 +431,7 @@ class scrapping_bot():
         found_max_videos = self.brazzers.numbers_of_download_videos
         self.random_sleep(6,10)
         video_detailes['collection_name'] = self.get_collection_name()
-        breakpoint()
+        
         
         while len(videos_urls) < found_max_videos:
             all_thumb = self.driver.find_elements(By.XPATH,"//div[contains(@class, 'one-list-1vyt92m') and contains(@class, 'e1vusg2z1')]" )
@@ -455,7 +455,7 @@ class scrapping_bot():
                 self.driver.get(f'https://site-ma.brazzers.com/scenes?page={page_number}&tags={tags}')
                 self.random_sleep(2,4)
                 page_number +=1
-        breakpoint()
+        
             
         video_detailes['video_list'] = videos_urls
         return video_detailes
@@ -1298,7 +1298,7 @@ class scrapping_bot():
         download_com_videos = 0
         videos_cat_url = ''
         self.driver.get('https://www.naughtyamerica.com/')
-        breakpoint()
+        
         if self.click_element('Enter naughty america','//*[@id="banner"]/div/div/div[2]/p[1]/a'):
             self.random_sleep(10,15)
         if self.find_element('Login','//a[text()="LOGIN"]'):
@@ -1306,7 +1306,7 @@ class scrapping_bot():
                 SendAnEmail('Could not login into naughty america!',email=self.emailss)
                 return
         
-        breakpoint()
+        
         if not self.find_element('categories','//*[@id="header-tags"]'):
             SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
             return
