@@ -20,7 +20,7 @@ photos/*
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-
+*/migrations
 /*/__pycache__
 downloads copy
 /*/management/commands/test.py
