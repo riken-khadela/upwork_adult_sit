@@ -24,9 +24,11 @@ class scrapping_bot():
     def __init__(self,brazzers_bot = False):
         
         self.emailss = [mail.email for mail in send_mail.objects.all()]
-        
-        self.driver = ''
         self.base_path = os.getcwd()
+        [ os.remove(os.path.join(os.getcwd(),'downloads',i)) for i in os.listdir('downloads') if i.endswith('.crdownload')]
+
+            
+        self.driver = ''
         self.download_path = self.create_or_check_path('downloads',main=True)
         self.csv_path = self.create_or_check_path('csv',main=True)
         self.cookies_path = self.create_or_check_path('cookies',main=True)
