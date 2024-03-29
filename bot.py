@@ -484,8 +484,8 @@ class scrapping_bot():
             self.random_sleep(10,15)
             video_name = self.sanitize_title(self.driver.current_url.split('https://site-ma.brazzers.com/')[-1])
 
-            v_urllll = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-            p_urllll = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            v_urllll = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            p_urllll = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
             tmp = {
                 "Likes" : "",
                 "Disclike" :"",
@@ -609,8 +609,8 @@ class scrapping_bot():
             self.driver.get(video_url['video_url'])
             self.random_sleep(10,15)
             video_name = f"{collection_name}_{self.sanitize_title(self.driver.current_url.split('https://site-ma.brazzers.com/')[-1])}"
-            v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-            p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
             tmp = {
                     "Likes" : "",
                     "Disclike" :"",
@@ -899,8 +899,8 @@ class scrapping_bot():
                         porn_start_name += f'{i.text},'
                     tmp['Pornstarts'] = porn_start_name.rstrip(',')
                 video_name = f"vip4k_{collection_name.replace('videos', '')}_{self.sanitize_title(tmp['Title'])}"
-                v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-                p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+                v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+                p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
                 tmp['poster_download_uri'] = p_url
                 tmp['video_download_url'] = v_url
                 tmp['Photo-name'] = f'{video_name}.jpg'
@@ -1045,8 +1045,8 @@ class scrapping_bot():
             else : model_name
 
             
-            v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-            p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
             
             discription = ''
             All_Ptag = self.driver.find_elements(By.TAG_NAME,'p')
@@ -1099,8 +1099,8 @@ class scrapping_bot():
             #                 }
             #             video_title = soup.find('h1', class_='video-title').get_text(strip=True)
             #             video_name = f"handjob_{self.handjob.category.replace('videos', '')}_{video_title.lower().replace(' ', '_')}"
-            #             v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-            #             p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            #             v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            #             p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
             #             model_tags_div = soup.find('div', class_='model-tags')
             #             if model_tags_div:
             #                 model_name_element = model_tags_div.find('a')
@@ -1265,8 +1265,8 @@ class scrapping_bot():
         video_name = f"naughty_{self.naughty.category.replace('videos', '')}_{self.sanitize_title(data_dict['Title'])}"
         data_dict['Video-name'] = f'{video_name}.mp4'
         data_dict['Photo-name'] = f'{video_name}.jpg'
-        v_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-        p_url = f'http://159.223.134.27:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+        v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+        p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
         data_dict['video_download_url'] = v_url
         data_dict['poster_download_uri'] = p_url
         
