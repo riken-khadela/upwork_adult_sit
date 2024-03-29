@@ -24,6 +24,8 @@ photos/*
 /*/__pycache__
 downloads copy
 /*/management/commands/test.py
+*.log
 *.csv
 csv
 static/
+*.png

@@ -29,8 +29,8 @@ def SendAnEmail(body : str,email=[]):
 
             # Establish a connection with the SMTP server and send the email
             try:
-                with smtplib.SMTP_SSL(obj.server, obj.port) as server:
-                # with smtplib.SMTP_SSL("mail.demo.sajaltech.com", 465) as server:
+                # with smtplib.SMTP_SSL(obj.server, obj.port) as server:
+                with smtplib.SMTP_SSL("mail.demo.sajaltech.com", 465) as server:
                     server.login(sender_email, sender_password)
                     server.sendmail(sender_email, mail, message.as_string())
                 print(f"Email sent successfully!\nBody : {body}")

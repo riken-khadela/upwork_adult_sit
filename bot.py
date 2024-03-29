@@ -1299,8 +1299,7 @@ class scrapping_bot():
     def naughty_ame(self):
         download_com_videos = 0
         videos_cat_url = ''
-        self.driver.get('https://www.naughtyamerica.com/')
-        breakpoint()
+        self.driver.get('https://members.naughtyamerica.com/')
         if self.click_element('Enter naughty america','//*[@id="banner"]/div/div/div[2]/p[1]/a'):
             self.random_sleep(10,15)
         if self.find_element('Login','//a[text()="LOGIN"]'):
