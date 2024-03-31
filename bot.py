@@ -81,8 +81,8 @@ class scrapping_bot():
         # self.options.add_argument("profile-directory=Defualt")
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -573,8 +573,7 @@ class scrapping_bot():
             all_thumb = self.driver.find_elements(By.XPATH,"//div[contains(@class, 'one-list-1vyt92m') and contains(@class, 'e1vusg2z1')]" )
             try :
                 for thumb in all_thumb: 
-                    video_date = thumb.find_element(By.XPATH, "//div[2]/div/div[2]/div/div[2]")
-                    video_date = thumb.find_element(By.XPATH, "//div[contains(@class, 'one-list-1oxbbh0') and contains(@class, 'e1jyqorn27')]")
+                    video_date = thumb.find_element(By.XPATH, ".//div/div[2]/div/div[2]")
                     self.driver.execute_script("arguments[0].scrollIntoView();", video_date)
                     time.sleep(0.3)
                     if video_date and self.date_older_or_not(video_date.text) :                            
