@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 if not driver :
                     SendAnEmail('Could not open up the driver')
                     return
-                # bot.naughty_ame()
+                bot.naughty_ame()
                     
                 if bot.brazzers_login() :
                     logggg = True
