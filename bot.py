@@ -1297,54 +1297,56 @@ class scrapping_bot():
         return True
         
     def naughty_ame(self):
-        download_com_videos = 0
-        videos_cat_url = ''
-        self.driver.get('https://members.naughtyamerica.com/')
-        if self.click_element('Enter naughty america','//*[@id="banner"]/div/div/div[2]/p[1]/a'):
-            self.random_sleep(10,15)
-        if self.find_element('Login','//a[text()="LOGIN"]'):
-            if not self.naughty_ame_login() : 
-                SendAnEmail('Could not login into naughty america!',email=self.emailss)
+        try:
+            download_com_videos = 0
+            videos_cat_url = ''
+            self.driver.get('https://members.naughtyamerica.com/')
+            if self.click_element('Enter naughty america','//*[@id="banner"]/div/div/div[2]/p[1]/a'):
+                self.random_sleep(10,15)
+            if self.find_element('Login','//a[text()="LOGIN"]'):
+                if not self.naughty_ame_login() : 
+                    SendAnEmail('Could not login into naughty america!',email=self.emailss)
+                    return
+            
+            
+            if not self.find_element('categories','//*[@id="header-tags"]'):
+                SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
                 return
+            
+            categories = []
+            for _ in range(3) :
+                categories = self.driver.find_elements(By.XPATH,'//*[@id="header-tags"]/*')
+                if len(categories) > 5 : break
+                self.random_sleep()
+            else:
+                SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
+                return
+            
+            # [ i.get_attribute('href') for i in categories if  i.text.lower() == "latina"]
+            
+            for cat in categories : 
+                if cat.text.lower() == self.naughty.category.lower():
+                    videos_cat_url = cat.get_attribute('href')
+                    self.driver.get(videos_cat_url)
+                    break
+            else:
+                SendAnEmail('Could not find cetegories Entered and looking for, into naughty america!',email=self.emailss)
+                return
+            
+            for _ in range(5):
+                all_videos_link_li = self.get_naughty_video_links()
+                for vd_link in all_videos_link_li:
+                    self.driver.get(vd_link)
+                    # if self.naughty_video_download(): download_com_videos+= 1
+                    download_com_videos+= 1
+                    
+                    if download_com_videos == self.naughty.numbers_of_download_videos:
+                        return True
+            
+        except Exception as e :
+                SendAnEmail('Could not complete the naughty america scrapping!'+f'\n{e}',email=self.emailss)
+            
         
-        
-        if not self.find_element('categories','//*[@id="header-tags"]'):
-            SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
-            return
-        
-        categories = []
-        for _ in range(3) :
-            categories = self.driver.find_elements(By.XPATH,'//*[@id="header-tags"]/*')
-            if len(categories) > 5 : break
-            self.random_sleep()
-        else:
-            SendAnEmail('Could not find cetegories into naughty america!',email=self.emailss)
-            return
-        
-        # [ i.get_attribute('href') for i in categories if  i.text.lower() == "latina"]
-        
-        for cat in categories : 
-            if cat.text.lower() == self.naughty.category.lower():
-                videos_cat_url = cat.get_attribute('href')
-                self.driver.get(videos_cat_url)
-                break
-        else:
-            SendAnEmail('Could not find cetegories Entered and looking for, into naughty america!',email=self.emailss)
-            return
-        
-        for _ in range(5):
-            all_videos_link_li = self.get_naughty_video_links()
-            for vd_link in all_videos_link_li:
-                self.driver.get(vd_link)
-                # if self.naughty_video_download(): download_com_videos+= 1
-                download_com_videos+= 1
-                
-                if download_com_videos == self.naughty.numbers_of_download_videos:
-                    return True
-        
-        
-        
-        self.naughty_america_category_path
         
                 
         
