@@ -81,8 +81,8 @@ class scrapping_bot():
         # self.options.add_argument("profile-directory=Defualt")
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -570,24 +570,24 @@ class scrapping_bot():
         self.make_csv(collection_name,new=True)
         df_url = self.column_to_list(collection_name,'Url')
         while len(videos_urls) < found_max_videos:
+            all_thumb = self.driver.find_elements(By.XPATH,"//div[contains(@class, 'one-list-1vyt92m') and contains(@class, 'e1vusg2z1')]" )
             try :
-                for url_idx in range(1,24):
-                    print(url_idx,'------------')
-                    video_date = self.find_element(f'video : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[2]/div[2]',timeout=3)
+                for thumb in all_thumb: 
+                    video_date = thumb.find_element(By.XPATH, "//div[2]/div/div[2]/div/div[2]")
+                    video_date = thumb.find_element(By.XPATH, "//div[contains(@class, 'one-list-1oxbbh0') and contains(@class, 'e1jyqorn27')]")
                     self.driver.execute_script("arguments[0].scrollIntoView();", video_date)
                     time.sleep(0.3)
-                    if video_date :
-                        if self.date_older_or_not(video_date.text) :
-                            video_ele = self.find_element(f'Video number : {url_idx}',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a',timeout=3)
-                            post_url = self.find_element('post url',f'/html/body/div/div[1]/div[2]/div[2]/div[2]/div[3]/div/section/div/div[2]/div/div[{url_idx}]/div/div[1]/a/div[1]/div/picture/img',timeout=0)
-                            if video_ele and post_url:
-                                video_url = video_ele.get_attribute('href')
-                                post_url = post_url.get_attribute('src')
-                                if video_url and post_url and video_url not in df_url:
-                                    videos_urls.append({"video_url":video_url,'post_url':post_url})
-                                    if len(videos_urls) >= found_max_videos :
-                                        break
+                    if video_date and self.date_older_or_not(video_date.text) :                            
+                            video_url = thumb.find_element(By.TAG_NAME, 'a').get_attribute('href')
+                            post_url = thumb.find_element(By.TAG_NAME, 'img').get_attribute('src')
+                            if video_url and post_url and video_url not in df_url:
+                                print(f'add video url in lists')
+                                videos_urls.append({"video_url":video_url,'post_url':post_url})
+                                if len(videos_urls) >= found_max_videos:
+                                    break
             except Exception as e :
+                self.driver.save_screenshot('zz.png')
+                
                 print(e)
             if len(videos_urls) < found_max_videos :
                 if 'tags' in driver_url:

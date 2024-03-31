@@ -19,13 +19,13 @@ class Command(BaseCommand):
                 if not driver :
                     SendAnEmail('Could not open up the driver')
                     return
-                bot.naughty_ame()
+                # bot.naughty_ame()
                     
                 if bot.brazzers_login() :
                     logggg = True
                     bot.brazzers_get_categories()
-                    video_dict = bot.brazzers_get_videos_url()
-                    bot.brazzers_download_video(video_dict)
+                    # video_dict = bot.brazzers_get_videos_url()
+                    # bot.brazzers_download_video(video_dict)
                     tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=102')
                     bot.download_videos(tags_102)
                     tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
