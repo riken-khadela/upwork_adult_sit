@@ -22,12 +22,9 @@ from driver import open_vps_driver
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
-        
         self.emailss = [mail.email for mail in send_mail.objects.all()]
         self.base_path = os.getcwd()
         [ os.remove(os.path.join(os.getcwd(),'downloads',i)) for i in os.listdir('downloads') if i.endswith('.crdownload')]
-
-            
         self.driver = ''
         self.download_path = self.create_or_check_path('downloads',main=True)
         self.csv_path = self.create_or_check_path('csv',main=True)
@@ -43,8 +40,11 @@ class scrapping_bot():
         self.solver = recaptchaV2Proxyless()
         self.solver.set_verbose(1)
         self.solver.set_key("e49c2cc94651faab912d635baec6741f")
-        self.make_csv()
+        self.make_csv(website_name='brazzers_addon_102',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_102')) else None
+        self.make_csv(website_name='brazzers_addon_152',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_152')) else None
+        self.make_csv(website_name='brazzers_addon_162',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_162')) else None
         self.delete_old_videos()
+        
         if brazzers_bot == True:
             self.downloaded_videos_list = os.listdir('downloads')
             self.videos_urls = []
@@ -81,8 +81,8 @@ class scrapping_bot():
         # self.options.add_argument("profile-directory=Defualt")
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -463,7 +463,10 @@ class scrapping_bot():
         return video_detailes
 
     def set_data_of_csv(self,website_name :str, tmp :dict,video_name : str):
+        
         if '_videos' in website_name:website_name =website_name.replace('_videos','')
+        if 'addon' in website_name :
+            website_name = 'brazzers_'+ website_name
         website_video_csv_path = os.path.join(self.csv_path,f'{website_name}_videos.csv')
         website_video_details_csv_path = os.path.join(self.csv_path,f'{website_name}_videos_details.csv')
         videos_collection = pd.read_csv(website_video_details_csv_path)
@@ -570,6 +573,7 @@ class scrapping_bot():
         self.make_csv(collection_name,new=True)
         df_url = self.column_to_list(collection_name,'Url')
         while len(videos_urls) < found_max_videos:
+            self.random_sleep(10,15)
             all_thumb = self.driver.find_elements(By.XPATH,"//div[contains(@class, 'one-list-1vyt92m') and contains(@class, 'e1vusg2z1')]" )
             try :
                 for thumb in all_thumb: 
@@ -585,7 +589,6 @@ class scrapping_bot():
                                 if len(videos_urls) >= found_max_videos:
                                     break
             except Exception as e :
-                self.driver.save_screenshot('zz.png')
                 
                 print(e)
             if len(videos_urls) < found_max_videos :
@@ -599,7 +602,7 @@ class scrapping_bot():
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
-    def download_videos(self, videos_dict):
+    def download_videos(self, videos_dict,Site_name):
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
         collection_path = self.create_or_check_path(collection_name)
@@ -654,15 +657,16 @@ class scrapping_bot():
 
                 response = requests.get(video_url['post_url'])
                 with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
-                self.click_element('download btn', '//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]') 
-                self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
-                file_name = self.wait_for_file_download()
-                self.random_sleep(3,5)
-                name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
-                os.rename(os.path.join(self.download_path,file_name), name_of_file)
-                self.random_sleep(3,5)
-                self.copy_files_in_catagory_folder(name_of_file,collection_path)
-                self.set_data_of_csv(collection_name,tmp,video_name=video_name)
+                # self.click_element('download btn', '//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]') 
+                # self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
+                # file_name = self.wait_for_file_download()
+                # self.random_sleep(3,5)
+                # name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                # os.rename(os.path.join(self.download_path,file_name), name_of_file)
+                # self.random_sleep(3,5)
+                # self.copy_files_in_catagory_folder(name_of_file,collection_path)
+                breakpoint()
+                self.set_data_of_csv(Site_name,tmp,video_name=video_name)
             except Exception as e:
                 print('Error:', e)
 

@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = "Closes the specified poll for voting"
 
 
-    def handle(self, *args, **options): 
+    def handle(self, *args, **options):
         from bot import scrapping_bot
         from utils import close_every_chrome
         logggg = False
@@ -34,6 +34,7 @@ class Command(BaseCommand):
                     bot.download_videos(tags_162)
                 else:
                     SendAnEmail('Could not logged in into Brazzers')
+                    
                 print('Vip 4k process')
                 if bot.vip4k_login():
                     logggg = True
