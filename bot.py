@@ -24,9 +24,9 @@ class scrapping_bot():
     def __init__(self,brazzers_bot = False):
         self.emailss = [mail.email for mail in send_mail.objects.all()]
         self.base_path = os.getcwd()
-        [ os.remove(os.path.join(os.getcwd(),'downloads',i)) for i in os.listdir('downloads') if i.endswith('.crdownload')]
         self.driver = ''
         self.download_path = self.create_or_check_path('downloads',main=True)
+        [ os.remove(os.path.join(os.getcwd(),'downloads',i)) for i in os.listdir('downloads') if i.endswith('.crdownload')]
         self.csv_path = self.create_or_check_path('csv',main=True)
         self.cookies_path = self.create_or_check_path('cookies',main=True)
         self.brazzers_category_path = self.create_or_check_path('brazzers_category_videos')
@@ -74,11 +74,48 @@ class scrapping_bot():
         self.options.add_argument("--ignore-certificate-errors")
         self.options.add_argument("--enable-javascript")
         self.options.add_argument("--enable-popup-blocking")
-        self.options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
-        self.options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
+        # self.options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
+        # self.options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
         # self.options.add_argument("download.default_directory=/path/to/your/default/directory")
-        # self.options.add_argument(f"user-data-dir={os.path.join(os.getcwd(),'profiles')}")
-        # self.options.add_argument("profile-directory=Defualt")
+        self.options.add_argument(f"user-data-dir={os.path.join(os.getcwd(),'profiles')}")
+        self.options.add_argument("profile-directory=Defualt")
+    
+    def connect_touchvpn(self,):
+        """ Will select any counrty from the following 
+            1. US
+            2. Canada
+            3. Russian Federation
+            4. Germany
+            5. Netherland (Removed and will not connect now)
+            6. UK
+        """
+        self.driver.get('chrome-extension://bihmplhobchoageeokmgbdihknkjbknd/panel/index.html')
+        time.sleep(2)
+        time.sleep(3)
+        time.sleep(1)
+        window_handles = self.driver.window_handles
+        time.sleep(1)
+        self.driver.switch_to.window(window_handles[0])
+        time.sleep(1)
+        self.driver.find_element(By.XPATH,'//*[@class="location"]').click()
+        time.sleep(3)
+        locations = self.driver.find_element(By.XPATH,'//*[@class="list"]')
+        time.sleep(1)
+        location = locations.find_elements(By.XPATH,'//*[@class="row"]')
+        # location = [ i for i in location if not "Netherlands" == i.text]
+        location[random.randint(6,6)].click()
+        time.sleep(2)
+        self.driver.find_element(By.XPATH,'//*[@id="ConnectionButton"]').click()
+        wait = WebDriverWait(self.driver, 10)
+        try:
+            wait.until(EC.presence_of_element_located((By.XPATH, '//*[text()="Stop"]')))
+        except Exception as e:
+            print(f"Error: {e}")
+        connected = self.driver.find_element(By.XPATH,'//*[text()="Stop"]')
+        if connected:
+            return True
+        else:
+            return False
     
     def get_driver(self):
         self.get_local_driver()
@@ -115,41 +152,41 @@ class scrapping_bot():
         return self.driver
     
     def connect_vpn(self,vpn_country):
-        
-        self.driver.switch_to.window(self.driver.window_handles[0])
-        self.driver.get('chrome-extension://ffbkglfijbcbgblgflchnbphjdllaogb/index.html')
-        time.sleep(3)
+        self.connect_touchvpn()
+        # self.driver.switch_to.window(self.driver.window_handles[0])
+        # self.driver.get('chrome-extension://ffbkglfijbcbgblgflchnbphjdllaogb/index.html')
+        # time.sleep(3)
 
-        # Disconnect if already connected
-        connected_btn = self.driver.find_elements(By.CLASS_NAME, 'dark outer-circle connected')
-        time.sleep(1)
-        connected_btn[0].click() if connected_btn else None
-        time.sleep(2)
+        # # Disconnect if already connected
+        # connected_btn = self.driver.find_elements(By.CLASS_NAME, 'dark outer-circle connected')
+        # time.sleep(1)
+        # connected_btn[0].click() if connected_btn else None
+        # time.sleep(2)
 
-        # Select country
-        countries_drop_down_btn = self.driver.find_elements(By.TAG_NAME, 'mat-select-trigger')
-        time.sleep(1)
-        countries_drop_down_btn[0].click() if countries_drop_down_btn else None
-        time.sleep(2)
-        total_option_country = self.driver.find_elements(By.TAG_NAME, 'mat-option')
-        for i in total_option_country:
-            i_id = i.get_attribute('id')
-            time.sleep(1)
-            country_text_ele = i.find_element(By.XPATH, f"//*[@id='{i_id}']/span")
+        # # Select country
+        # countries_drop_down_btn = self.driver.find_elements(By.TAG_NAME, 'mat-select-trigger')
+        # time.sleep(1)
+        # countries_drop_down_btn[0].click() if countries_drop_down_btn else None
+        # time.sleep(2)
+        # total_option_country = self.driver.find_elements(By.TAG_NAME, 'mat-option')
+        # for i in total_option_country:
+        #     i_id = i.get_attribute('id')
+        #     time.sleep(1)
+        #     country_text_ele = i.find_element(By.XPATH, f"//*[@id='{i_id}']/span")
             
-            country_text = country_text_ele.text
-            time.sleep(1)
-            # checking if the country is whether same or not and click on it
-            if vpn_country == country_text:
-                time.sleep(1)
-                print('connected country is :',vpn_country)
-                country_text_ele.click()
-                break
-        time.sleep(3)
-        # Checking is the VPN connected or not
-        connect_btn = self.driver.find_element(By.XPATH, '//div[@class="dark disconnected outer-circle"]')
-        connect_btn.click()
-        time.sleep(4)
+        #     country_text = country_text_ele.text
+        #     time.sleep(1)
+        #     # checking if the country is whether same or not and click on it
+        #     if vpn_country == country_text:
+        #         time.sleep(1)
+        #         print('connected country is :',vpn_country)
+        #         country_text_ele.click()
+        #         break
+        # time.sleep(3)
+        # # Checking is the VPN connected or not
+        # connect_btn = self.driver.find_element(By.XPATH, '//div[@class="dark disconnected outer-circle"]')
+        # connect_btn.click()
+        # time.sleep(4)
       
     def delete_cache_folder(self,folder_path):
         if os.path.exists(folder_path):
@@ -266,6 +303,7 @@ class scrapping_bot():
         vpn_country_list = ['Romania','Netherlands','United States']
         vpn_country = random.choice(vpn_country_list)
         for  _ in range(3):
+            # breakpoint()
             self.driver.get('chrome-extension://ffbkglfijbcbgblgflchnbphjdllaogb/index.html')
             self.random_sleep()
 
@@ -354,7 +392,8 @@ class scrapping_bot():
                 print(e) 
                 self.CloseDriver()
                 self.get_driver()
-                self.connect_cyberghost_vpn()
+                self.connect_touchvpn()
+                # self.connect_cyberghost_vpn()
                 # self.connect_cyberghost_vpn()
             
         while not self.driver.execute_script("return document.readyState === 'complete'"):pass
@@ -392,7 +431,7 @@ class scrapping_bot():
             if cate1 : 
                 if cate1.text.lower() == self.brazzers.category.lower() :
                     time.sleep(1)
-                    cate1.click()
+                    self.click_element('category', f'//*[@id="root"]/div[1]/div[2]/div[3]/div[2]/div[2]/div[{i1}]/div/div/a',timeout=1)
                     found_category = True
                     break 
         
@@ -405,7 +444,7 @@ class scrapping_bot():
                         if cate1:
                             if cate1.text.lower() == self.brazzers.category.lower() :
                                 found_category = True
-                                cate1.click()
+                                self.click_element('category', f'//*[@id="root"]/div[1]/div[2]/div[3]/div[2]/div[{i2}]/div[{i3}]/div/div/a',timeout=1)
                                 break
                 else : break
                 if found_category == True : break
@@ -463,7 +502,6 @@ class scrapping_bot():
         return video_detailes
 
     def set_data_of_csv(self,website_name :str, tmp :dict,video_name : str):
-        
         if '_videos' in website_name:website_name =website_name.replace('_videos','')
         if 'addon' in website_name :
             website_name = 'brazzers_'+ website_name
@@ -602,9 +640,9 @@ class scrapping_bot():
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
-    def download_videos(self, videos_dict,Site_name):
+    def download_videos(self, videos_dict,Site_name=''):
         videos_urls = videos_dict['video_list']
-        collection_name = videos_dict['collection_name']
+        collection_name = Site_name if 'addon' in Site_name else videos_dict['collection_name']
         collection_path = self.create_or_check_path(collection_name)
 
         for idx, video_url in enumerate(videos_urls):
@@ -657,15 +695,14 @@ class scrapping_bot():
 
                 response = requests.get(video_url['post_url'])
                 with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
-                # self.click_element('download btn', '//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]') 
-                # self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
-                # file_name = self.wait_for_file_download()
-                # self.random_sleep(3,5)
-                # name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
-                # os.rename(os.path.join(self.download_path,file_name), name_of_file)
-                # self.random_sleep(3,5)
-                # self.copy_files_in_catagory_folder(name_of_file,collection_path)
-                breakpoint()
+                self.click_element('download btn', '//button[@class="sc-yox8zw-1 VZGJD sc-rco9ie-0 jnUyEX"]') 
+                self.click_element('download high_quality','//div[@class="sc-yox8zw-0 cQnfGv"]/ul/div/button[1]')
+                file_name = self.wait_for_file_download()
+                self.random_sleep(3,5)
+                name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                os.rename(os.path.join(self.download_path,file_name), name_of_file)
+                self.random_sleep(3,5)
+                self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(Site_name,tmp,video_name=video_name)
             except Exception as e:
                 print('Error:', e)
@@ -1348,8 +1385,6 @@ class scrapping_bot():
             
         except Exception as e :
                 SendAnEmail('Could not complete the naughty america scrapping!'+f'\n{e}',email=self.emailss)
-            
-        
         
                 
         

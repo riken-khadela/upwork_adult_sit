@@ -27,7 +27,7 @@ class Command(BaseCommand):
                     bot.brazzers_get_categories()
                     # video_dict = bot.brazzers_get_videos_url()
                     # bot.brazzers_download_video(video_dict)
-                    tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes.?addon=102')
+                    tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=102')
                     bot.download_videos(tags_102,'addon_102')
                     tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
                     bot.download_videos(tags_152,'addon_152')
