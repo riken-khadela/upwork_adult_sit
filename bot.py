@@ -18,10 +18,12 @@ from anticaptchaofficial.recaptchav2proxyless import *
 from mail import SendAnEmail
 from main.utils import naughty_convert_relative_time
 from driver import open_vps_driver
+from utils import list_files_in_folder, check_csv_with_columns, add_data_in_csv, move_downloading_video_to_destination_after_download
 
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
+        self.server_link = 'http://159.223.134.27:8000/'
         self.emailss = [mail.email for mail in send_mail.objects.all()]
         self.base_path = os.getcwd()
         self.driver = ''
@@ -49,13 +51,14 @@ class scrapping_bot():
             self.downloaded_videos_list = os.listdir('downloads')
             self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
+            
+            
+        self.all_csv_files = list_files_in_folder(os.path.join(os.getcwd(),'csv'))
 
     def driver_arguments(self):
         self.options.add_argument('--lang=en')  
-        # self.options.add_argument('log-level=3')  
-        # self.options.add_argument('--mute-audio') 
         self.options.add_argument("--enable-webgl-draft-extensions")
-        # self.options.add_argument('--mute-audio')
+        self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
         # self.options.add_argument('--headless')
@@ -74,11 +77,7 @@ class scrapping_bot():
         self.options.add_argument("--ignore-certificate-errors")
         self.options.add_argument("--enable-javascript")
         self.options.add_argument("--enable-popup-blocking")
-        # self.options.add_extension(os.path.join(self.base_path,'Stay-secure-with-CyberGhost-VPN-Free-Proxy.crx'))
-        # self.options.add_extension(os.path.join(self.base_path,'Buster-Captcha-Solver-for-Humans.crx'))
-        # self.options.add_argument("download.default_directory=/path/to/your/default/directory")
-        self.options.add_argument(f"user-data-dir={os.path.join(os.getcwd(),'profiles')}")
-        self.options.add_argument("profile-directory=Defualt")
+        self.options.add_argument(f"download.default_directory={self.base_path}/downloads")
     
     def connect_touchvpn(self,):
         """ Will select any counrty from the following 
@@ -1026,9 +1025,97 @@ class scrapping_bot():
         return False
 
 
+    def genrate_handjob_a_data_dict(self,video_li : list,hand_job_category_name : str):
+        
+        video_info = self.find_element('Video0info','video-info',By.CLASS_NAME)
+        vd_title = self.find_element('Video title','video-title',By.CLASS_NAME).text if self.find_element('Video title','video-title',By.CLASS_NAME) else None
+
+        video_name = f"{self.handjob.website_name}_{hand_job_category_name}_{self.sanitize_title(vd_title)}"
+        
+        data = {       
+        "Likes" : "Not available",
+        "Disclike" : "Not available",
+        "Url" : self.driver.current_url,
+        "Title" : self.find_element('Video title','video-title',By.CLASS_NAME).text if self.find_element('Video title','video-title',By.CLASS_NAME) else "could not found the title" ,
+        "Discription" : self.find_element('Video title','//div[@style="color: white;"]',By.XPATH).text if self.find_element('Video title','//div[@style="color: white;"]',By.XPATH) else "could not found the description" , #color: white;
+        "Release-Date" : video_info.find_element(By.TAG_NAME,'div').find_elements(By.TAG_NAME,'p')[-1] if video_info else "could not found the added date time", #/html/body/div[4]/div[1]/div
+        "Poster-Image_uri" : video_li[-1] if video_li[-1] else "video post img link could not found",
+        "poster_download_uri" : f'{self.server_link}downloads/handjob_category_videos/{hand_job_category_name}/{video_name}.jpg',
+        "Video-name" : video_name+".mp4",
+        "video_download_uri" : f'{self.server_link}downloads/handjob_category_videos/{hand_job_category_name}/{video_name}.mp4',
+        "Photo-name" : f"{self.handjob.website_name}_{hand_job_category_name}_{vd_title}.jpg",
+        "Pornstarts" : self.find_element('Pornstar name','model-tags',By.CLASS_NAME).text.replace("Model: ",'') if self.find_element('Pornstar name','model-tags',By.CLASS_NAME) else "Not found porn star",
+        "Category" : hand_job_category_name,
+        "Usernam" : self.handjob.username,
+        }
+                
+        return data
+    
+    def other_sites_of_handjob(self):
+        from utils import list_files_in_folder
+        other_sites_cetegory = [
+            "https://handjob.tv/videos/strokies/",
+            "https://handjob.tv/videos/tugcasting/",
+            "https://handjob.tv/videos/publichandjobs/",
+            "https://handjob.tv/videos/strictlyhands/"
+            ]
+        
+        
+        df = pd.DataFrame()
+        
+        for link in other_sites_cetegory: 
+            handjob_not_used_links = []
+            hand_job_category_name = link.split('https://handjob.tv/videos/')[-1].replace('/','')
+            details_csv_path = 'handjob_addon_'+link.split('https://handjob.tv/videos/')[-1].replace('/','')+'_videos_details.csv'
+            details_csv_path = os.path.join(os.getcwd(),'csv',details_csv_path)
+            if details_csv_path in self.all_csv_files :
+                try :df = pd.read_csv(details_csv_path)
+                except : ...
+            
+            if df.empty : 
+                df = check_csv_with_columns(details_csv_path)
+            
+            
+            self.driver.get(link)
+            find_last_pag_num = 0
+            
+            last_page_ele = self.driver.find_elements(By.XPATH,'//*[@id="pagination"]/div/*')[-1]
+            if last_page_ele.find_elements(By.TAG_NAME,'a'):
+                find_last_pag_num = last_page_ele.find_elements(By.TAG_NAME,'a')[0].get_attribute('href').split('/')[-1].replace('page','')
+            
+            if not find_last_pag_num :
+                print("cound not found the find_last_pag_num for hand job other sites of category")
+                continue
+            all_used_link = pd.read_csv(details_csv_path)['Url'].tolist()
+            
+            for pages in range(int(find_last_pag_num)): 
+                
+                if pages == 0:
+                    self.driver.get(link)
+                else:
+                    self.driver.get(link+'page'+str(pages))
+                    
+                all_videos_thumbs = self.driver.find_elements(By.CLASS_NAME,'thumb-all')
+                for i in all_videos_thumbs : 
+                    vd_link = i.find_element(By.TAG_NAME,'a').get_attribute('href')
+                    if not vd_link in all_used_link :
+                        handjob_not_used_links.append([vd_link,i.find_element(By.TAG_NAME,'img').get_attribute('src')])
+                        
+                    if len(handjob_not_used_links) > self.handjob.numbers_of_download_videos : break
+                if len(handjob_not_used_links) > self.handjob.numbers_of_download_videos : break
+            
+            for vd_link in handjob_not_used_links:
+                self.driver.get(vd_link[0])
+                self.driver.find_elements(By.XPATH,'//*[@class="download-full-movie"]/div/*')[-1].click()
+                move_downloading_video_to_destination_after_download()
+                add_data_in_csv(self.genrate_handjob_a_data_dict(vd_link,hand_job_category_name),details_csv_path)
+            
+                
+                
     def handjob_get_video(self,url=None):
         videos_urls = []
         VideosNumberDone = 0
+        self.other_sites_of_handjob()
         self.driver.page_source
         self.driver.get(f'https://handjob.tv/search/{self.handjob.category}/')
         df_url = self.column_to_list(self.handjob.website_name,'Url')
@@ -1039,6 +1126,10 @@ class scrapping_bot():
         # all_thimb = soup.find_all('div', class_='thumb-all')
         # video_links = soup.find_all('a', href=lambda value: value and '/video/' in value)
         video_links = soup.find_all('a', href=lambda value: value and '/video/' in value)
+        
+               
+        
+        breakpoint()
         for link in video_links:
             video_url = link['href']
             

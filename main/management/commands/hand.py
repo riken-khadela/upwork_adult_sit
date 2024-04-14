@@ -42,10 +42,10 @@ class Command(BaseCommand):
                 #     bot.vip4k_download_video(videos_collection_dict)
                 # else :
                 #     SendAnEmail('Could not logged in into Vip 4k')
-
                 if bot.login_Handjob_TV():
                     logggg = True
                     bot.handjob_get_video()
+                    
                 else:
                     SendAnEmail('Could not logged in into Handjob TV')
                 
