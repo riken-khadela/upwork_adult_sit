@@ -117,8 +117,8 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        self.get_local_driver()
-        return
+        # self.get_local_driver()
+        # return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -1047,6 +1047,7 @@ class scrapping_bot():
         "Pornstarts" : self.find_element('Pornstar name','model-tags',By.CLASS_NAME).text.replace("Model: ",'') if self.find_element('Pornstar name','model-tags',By.CLASS_NAME) else "Not found porn star",
         "Category" : hand_job_category_name,
         "Usernam" : self.handjob.username,
+        "downloaded_time" : datetime.now()
         }
                 
         return data
