@@ -1,6 +1,11 @@
-import pandas as pd, os, shutil
-from mail import SendAnEmail
+import pandas as pd, os, shutil, random, time
+# from mail import SendAnEmail
 from datetime import datetime, timedelta
+
+def random_sleep(a=3,b=7,reson = ""):
+    random_time = random.randint(a,b)
+    print('time sleep randomly :',random_time) if not reson else print('time sleep randomly :',random_time,f' for {reson}')
+    time.sleep(random_time)
 
 def close_every_chrome():
     import subprocess
@@ -123,7 +128,32 @@ def check_csv_with_columns(path):
         df.to_csv(path, index=False)
         print(f"CSV file with columns {columns} created at {path}")
         
+import os
 
+def rename_file_with_description(file_path, new_path, new_name):
+    """
+    Rename a Python file with a given description.
+
+    Args:
+        file_path (str): Path to the Python file.
+        description (str): Description to append to the filename.
+
+    Returns:
+        str: New filename with the description appended.
+    """
+    if not os.path.exists(file_path):
+        print(f"Source file '{file_path}' does not exist.")
+        return
+    
+    # Rename the file
+    os.rename(file_path, new_path+'/'+ new_name)
+
+    return new_name
+
+# Example usage:
+file_path = "example.py"  # Path to your Python file
+description = "with_description"  # Description to append
+new_file_path = ''
 
 def move_file(source_path, destination_path):
     """
@@ -165,16 +195,20 @@ def move_downloading_video_to_destination_after_download(error_emails: list, des
     """
     # Get the names of all downloading video files with the '.crdownload' extension
     downloading_videos = [i for i in os.listdir('downloads') if i.endswith('.crdownload')]
+    # Check if there are more than one downloading video files
+    
+    # if len(downloading_videos) > 1:
+    #     print('There are more downloading videos than expected.')
+    #     SendAnEmail('There are more downloading videos than expected.', error_emails)
+    #     return
+
     while True :
+        time.sleep(1)
         new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
         if not new_video_download:
             break  
-    # Check if there are more than one downloading video files
-    if len(downloading_videos) > 1:
-        print('There are more downloading videos than expected.')
-        SendAnEmail('There are more downloading videos than expected.', error_emails)
-        return
-
+    
+    random_sleep(5,10)
     # If there is exactly one downloading video file
     if downloading_videos:
         video_name = downloading_videos[0].replace('.crdownload', '')
