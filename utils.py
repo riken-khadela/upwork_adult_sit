@@ -219,5 +219,10 @@ def move_downloading_video_to_destination_after_download(error_emails: list, des
         move_file(os.path.join(os.getcwd(), 'downloads', video_name), os.path.join(destination_path, video_name))
 
         
-    
+def wait_for_video_download():
+    while True :
+        time.sleep(1)
+        new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
+        if not new_video_download:
+            break 
     
