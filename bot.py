@@ -1061,19 +1061,13 @@ class scrapping_bot():
             ]
         
         
-        df = pd.DataFrame()
         
         for link in other_sites_cetegory: 
             handjob_not_used_links = []
             hand_job_category_name = link.split('https://handjob.tv/videos/')[-1].replace('/','')
             details_csv_path = 'handjob_addon_'+link.split('https://handjob.tv/videos/')[-1].replace('/','')+'_videos_details.csv'
             details_csv_path = os.path.join(os.getcwd(),'csv',details_csv_path)
-            if details_csv_path in self.all_csv_files :
-                try :df = pd.read_csv(details_csv_path)
-                except : ...
-            
-            if df.empty : 
-                df = check_csv_with_columns(details_csv_path)
+            check_csv_with_columns(details_csv_path)
             
             
             self.driver.get(link)
