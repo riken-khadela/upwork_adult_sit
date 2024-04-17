@@ -1106,10 +1106,9 @@ class scrapping_bot():
             
             for vd_link in handjob_not_used_links:
                 self.driver.get(vd_link[0])
-                breakpoint()
-                # self.random_sleep(10,15)
-                # self.driver.find_elements(By.XPATH,'//*[@class="download-full-movie"]/div/*')[-1].click()
-                # self.random_sleep(3,5)
+                self.random_sleep(10,15)
+                self.driver.find_elements(By.XPATH,'//*[@class="download-full-movie"]/div/*')[-1].click()
+                self.random_sleep(3,5)
                 file_name = self.wait_for_file_download()
                 self.random_sleep(3,5)
                 video_infor = self.genrate_handjob_a_data_dict(vd_link,hand_job_category_name)
@@ -1117,8 +1116,10 @@ class scrapping_bot():
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 self.random_sleep(3,5)
                 
-                move_downloading_video_to_destination_after_download(self.emailss,os.path.join(os.getcwd(),f'handjon_{hand_job_category_name}'))
-                add_data_in_csv(,details_csv_path)
+                if not os.path.exists(os.path.join(os.getcwd(),'downloads',f'handjon_{hand_job_category_name}')):
+                    os.mkdir(os.path.join(os.getcwd(),'downloads',f'handjon_{hand_job_category_name}'))
+                shutil.move(name_of_file,os.path.join(os.getcwd(),'downloads',f'handjon_{hand_job_category_name}',video_infor['Video-name']))
+                add_data_in_csv(video_infor,details_csv_path)
             
                 
                 
