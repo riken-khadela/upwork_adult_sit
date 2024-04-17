@@ -165,7 +165,10 @@ def move_downloading_video_to_destination_after_download(error_emails: list, des
     """
     # Get the names of all downloading video files with the '.crdownload' extension
     downloading_videos = [i for i in os.listdir('downloads') if i.endswith('.crdownload')]
-
+    while True :
+        new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
+        if not new_video_download:
+            break  
     # Check if there are more than one downloading video files
     if len(downloading_videos) > 1:
         print('There are more downloading videos than expected.')

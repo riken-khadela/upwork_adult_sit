@@ -1107,10 +1107,7 @@ class scrapping_bot():
             for vd_link in handjob_not_used_links:
                 self.driver.get(vd_link[0])
                 self.random_sleep(10,15)
-                while True :
-                    new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
-                    if not new_video_download:
-                        break  
+                
                 self.driver.find_elements(By.XPATH,'//*[@class="download-full-movie"]/div/*')[-1].click()
                 move_downloading_video_to_destination_after_download(self.emailss,os.path.join(os.getcwd(),f'handjon_{hand_job_category_name}'))
                 add_data_in_csv(self.genrate_handjob_a_data_dict(vd_link,hand_job_category_name),details_csv_path)
