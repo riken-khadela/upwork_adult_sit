@@ -208,10 +208,13 @@ def move_downloading_video_to_destination_after_download(error_emails: list, des
         if not new_video_download:
             break  
     
-    random_sleep(5,10)
     # If there is exactly one downloading video file
     if downloading_videos:
         video_name = downloading_videos[0].replace('.crdownload', '')
+        
+        random_sleep(5,10)
+        rename_file_with_description(os.path.join(os.getcwd(), 'downloads', video_name),destination_path,video_name)
+        random_sleep(5,10)
         # Move the downloading video file to the destination directory
         move_file(os.path.join(os.getcwd(), 'downloads', video_name), os.path.join(destination_path, video_name))
 
