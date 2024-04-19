@@ -117,8 +117,8 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -501,8 +501,12 @@ class scrapping_bot():
 
     def set_data_of_csv(self,website_name :str, tmp :dict,video_name : str):
         if '_videos' in website_name:website_name =website_name.replace('_videos','')
-        if 'addon' in website_name :
-            website_name = 'brazzers_'+ website_name
+        if 'addon_102' in website_name :
+            website_name = 'brazzers_'+ 'mofos'
+        if 'addon_152' in website_name :
+            website_name = 'brazzers_'+ 'reality_kings'
+        if 'addon_162' in website_name :
+            website_name = 'brazzers_'+ 'brazzers_main'
         website_video_csv_path = os.path.join(self.csv_path,f'{website_name}_videos.csv')
         website_video_details_csv_path = os.path.join(self.csv_path,f'{website_name}_videos_details.csv')
         videos_collection = pd.read_csv(website_video_details_csv_path)
@@ -640,6 +644,8 @@ class scrapping_bot():
 
     def download_videos(self, videos_dict,Site_name=''):
         videos_urls = videos_dict['video_list']
+        
+        
         collection_name = Site_name if 'addon' in Site_name else videos_dict['collection_name']
         collection_path = self.create_or_check_path(collection_name)
 
@@ -1065,7 +1071,7 @@ class scrapping_bot():
         for link in other_sites_cetegory: 
             handjob_not_used_links = []
             hand_job_category_name = link.split('https://handjob.tv/videos/')[-1].replace('/','')
-            details_csv_path = 'handjob_addon_'+link.split('https://handjob.tv/videos/')[-1].replace('/','')+'_videos_details.csv'
+            details_csv_path = 'handjob_'+link.split('https://handjob.tv/videos/')[-1].replace('/','')+'_videos_details.csv'
             details_csv_path = os.path.join(os.getcwd(),'csv',details_csv_path)
             check_csv_with_columns(details_csv_path)
             

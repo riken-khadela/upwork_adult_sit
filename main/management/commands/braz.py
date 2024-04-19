@@ -25,14 +25,15 @@ class Command(BaseCommand):
                 if bot.brazzers_login() :
                     logggg = True
                     bot.brazzers_get_categories()
+                    breakpoint()
                     video_dict = bot.brazzers_get_videos_url()
                     bot.brazzers_download_video(video_dict)
                     tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=102')
-                    bot.download_videos(tags_102,'addon_102')
+                    bot.download_videos(tags_102,'addon_102') # mofos
                     tags_152 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=152')
-                    bot.download_videos(tags_152,'addon_152')
+                    bot.download_videos(tags_152,'addon_152') # reality kings
                     tags_162 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=162')
-                    bot.download_videos(tags_162,'addon_162')
+                    bot.download_videos(tags_162,'addon_162') # brazzers_main
                 else:
                     SendAnEmail('Could not logged in into Brazzers')
                 # print('Vip 4k process')

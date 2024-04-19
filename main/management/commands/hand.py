@@ -43,6 +43,7 @@ class Command(BaseCommand):
                 # else :
                 #     SendAnEmail('Could not logged in into Vip 4k')
                 if bot.login_Handjob_TV():
+                    breakpoint()
                     logggg = True
                     bot.handjob_get_video()
                     
