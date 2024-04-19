@@ -117,8 +117,8 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        self.get_local_driver()
-        return
+        # self.get_local_driver()
+        # return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
