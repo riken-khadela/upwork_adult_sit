@@ -722,20 +722,20 @@ class scrapping_bot():
             except Exception as e:
                 print('Error:', e)
 
-    def wait_for_file_download(self,timeout=600):
+    def wait_for_file_download(self,timeout=600,download_dir="downloads"):
         print('waiting for download')
         seconds = 0
         new_video_download = ''
         while seconds < timeout :
             time.sleep(1)
-            new_video_download = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
+            new_video_download = [i for i in os.listdir(download_dir)if i.endswith('.crdownload')]
             if new_video_download:
                 break
             else:
                 seconds+=1
                 
         while True:
-            new_files = [i for i in os.listdir('downloads')if i.endswith('.crdownload')]
+            new_files = [i for i in os.listdir(download_dir)if i.endswith('.crdownload')]
             if not new_files:
                 print('download complete')
                 return  new_video_download[0].replace('.crdownload','').split('/')[-1]
@@ -989,7 +989,8 @@ class scrapping_bot():
                     }
                     """
                 self.driver.execute_script(js_script)
-                file_name = self.wait_for_file_download()
+                
+                file_name = self.wait_for_file_download(download_dir='downloaded_files')
                 self.random_sleep(3,5)
                 name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
