@@ -43,6 +43,7 @@ class scrapping_bot():
         self.solver = recaptchaV2Proxyless()
         self.solver.set_verbose(1)
         self.solver.set_key("e49c2cc94651faab912d635baec6741f")
+        self.make_csv()
         self.make_csv(website_name='brazzers_addon_102',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_102')) else None
         self.make_csv(website_name='brazzers_addon_152',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_152')) else None
         self.make_csv(website_name='brazzers_addon_162',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_162')) else None
@@ -875,6 +876,11 @@ class scrapping_bot():
         self.random_sleep(10,15)
         collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]', timeout=5)
         if not collection_name: collection_name = self.find_element('collection name','//h1')
+        video_detailes['collection_name'] = collection_name.text.lower().replace(' ','_')
+        new_csv= True if '4k' in video_detailes['collection_name'] or 'sis_videos' in video_detailes['collection_name'] else False
+        website_name = f"vip4k_{video_detailes['collection_name']}" if new_csv else self.vip4k.website_name
+        self.make_csv(website_name, new=new_csv)
+        # if new_csv:
         df_url = self.column_to_list(self.vip4k.website_name,'Url')
         max_video = self.vip4k.numbers_of_download_videos
         while len(videos_urls) < max_video:
@@ -900,7 +906,6 @@ class scrapping_bot():
                 show_more.click()
             else:
                 break
-        video_detailes['collection_name'] = collection_name.text.lower().replace(' ','_')
         video_detailes['video_list'] = videos_urls
         return video_detailes
 
@@ -912,12 +917,10 @@ class scrapping_bot():
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
+        collection_path = self.create_or_check_path(self.vip4k_category_path,sub_folder_=collection_name)
         new_csv= True if '4k' in collection_name or 'sis_videos' in collection_name else False
         website_name = f'vip4k_{collection_name}' if new_csv else self.vip4k.website_name
-        if new_csv:
-                self.make_csv(website_name, new=True)
-        collection_path = self.create_or_check_path(self.vip4k_category_path,sub_folder_=collection_name)
-        
+
         for idx, video_url in enumerate(videos_urls):
             self.driver.get(video_url['video_url'])
             # self.find_element()
@@ -986,7 +989,7 @@ class scrapping_bot():
                     }
                     """
                 self.driver.execute_script(js_script)
-                file_name = self.wait_for_file_download(timeout=30)
+                file_name = self.wait_for_file_download()
                 self.random_sleep(3,5)
                 name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
