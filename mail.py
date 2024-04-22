@@ -5,6 +5,7 @@ from main.models import sender_mail
 
 def SendAnEmail(body : str,email=[]):
     obj = sender_mail.objects.first()
+    if not obj : return
     sender_email = obj.email
     sender_password = obj.sender_password
     # receiver_email = "rikenkhadela777@gmail.com"  # Replace with the recipient's email address

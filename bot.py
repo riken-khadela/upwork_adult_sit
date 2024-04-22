@@ -1,4 +1,5 @@
 import os,shutil, pandas as pd
+from seleniumbase import Driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -38,7 +39,7 @@ class scrapping_bot():
         self.brazzers = configuration.objects.get(website_name='brazzers')
         self.vip4k = configuration.objects.get(website_name='vip4k')
         self.handjob = configuration.objects.get(website_name='handjob')
-        self.naughty = configuration.objects.get(website_name='naughtyamerica')
+        # self.naughty = configuration.objects.get(website_name='naughtyamerica')
         self.solver = recaptchaV2Proxyless()
         self.solver.set_verbose(1)
         self.solver.set_key("e49c2cc94651faab912d635baec6741f")
@@ -61,6 +62,14 @@ class scrapping_bot():
         self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
+        self.options.add_argument("--disable-blink-features=AutomationControlled") 
+ 
+        # Exclude the collection of enable-automation switches 
+        self.options.add_experimental_option("excludeSwitches", ["enable-automation"]) 
+        
+        # Turn-off userAutomationExtension 
+        self.options.add_experimental_option("useAutomationExtension", False) 
+
         # self.options.add_argument('--headless')
 
         prefs = {"credentials_enable_service": True,
@@ -143,6 +152,7 @@ class scrapping_bot():
             self.options = webdriver.ChromeOptions()
             self.driver_arguments()
             try:
+                # self.driver = uc.Chrome()
                 self.driver = webdriver.Chrome(options=self.options)
                 break
             except Exception as e:
@@ -813,6 +823,7 @@ class scrapping_bot():
     def vip4k_login(self):
         # self.CloseDriver()
         # self.get_driver()
+        self.driver = Driver(uc=True, headless=True)
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
@@ -827,16 +838,16 @@ class scrapping_bot():
                     self.random_sleep(2,3)
                     self.input_text(self.vip4k.password,'password','login-password',By.ID)
                     self.random_sleep(2,3)
-                    iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="reCAPTCHA"]')))
-                    self.driver.execute_script('document.querySelector("#recaptcha-token").click()')
-                    self.driver.switch_to.default_content()
-                    self.random_sleep(2,3)
-                    iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="recaptcha challenge expires in two minutes"]')))        
-                    self.click_element('click extension btn','//*[@id="rc-imageselect"]/div[3]/div[2]/div[1]/div[1]/div[4]')
+                    # iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="reCAPTCHA"]')))
+                    # self.driver.execute_script('document.querySelector("#recaptcha-token").click()')
+                    # self.driver.switch_to.default_content()
+                    # self.random_sleep(2,3)
+                    # iframe = WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, f'//iframe[@title="recaptcha challenge expires in two minutes"]')))        
+                    # self.click_element('click extension btn','//*[@id="rc-imageselect"]/div[3]/div[2]/div[1]/div[1]/div[4]')
                     
-                    self.driver.switch_to.default_content()
+                    # self.driver.switch_to.default_content()
                     
-                    self.random_sleep(10,15)
+                    # self.random_sleep(10,15)
                     self.click_element('submit','//input[@type="submit"]')
                     self.random_sleep(5,6)
             if self.find_element('check login','//div[@class="logout__text"]'):
@@ -844,13 +855,23 @@ class scrapping_bot():
                 member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
                 for item in member_cookies:self.driver.add_cookie(item)
                 return True
+            
+    def download_all_vip_channels_video(self):
+        self.driver.get('https://members.vip4k.com/en/channels')
+        all_li = self.driver.find_elements(By.XPATH, '//li[@class="grid__item"]')
+        if all_li:
+            all_channel_url = [li.find_element(By.TAG_NAME, 'a').get_attribute('href') for li in all_li]
+            for channel in all_channel_url:
+                video_dict = self.vip4k_get_video(channel, True)
+                self.vip4k_download_video(video_dict)
+
         
-    def vip4k_get_video(self,url :str):
+    def vip4k_get_video(self,url :str, channel: bool= False):
         self.calculate_old_date(self.vip4k.more_than_old_days_download)
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
-        if self.vip4k.category: self.driver.get(f'https://members.vip4k.com/en/tag/{self.vip4k.category}')
-        else:self.driver.get(url)
+        if channel: self.driver.get(url)
+        else:self.driver.get(f'https://members.vip4k.com/en/tag/{self.vip4k.category}')
         self.random_sleep(10,15)
         collection_name = self.find_element('collection name','//h1[@class="section__title title title--sm"]', timeout=5)
         if not collection_name: collection_name = self.find_element('collection name','//h1')
@@ -891,7 +912,10 @@ class scrapping_bot():
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
-        
+        new_csv= True if '4k' in collection_name or 'sis_videos' in collection_name else False
+        website_name = f'vip4k_{collection_name}' if new_csv else self.vip4k.website_name
+        if new_csv:
+                self.make_csv(website_name, new=True)
         collection_path = self.create_or_check_path(self.vip4k_category_path,sub_folder_=collection_name)
         
         for idx, video_url in enumerate(videos_urls):
@@ -967,7 +991,7 @@ class scrapping_bot():
                 name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 self.copy_files_in_catagory_folder(name_of_file,collection_path)
-                self.set_data_of_csv(self.vip4k.website_name,tmp,video_name)
+                self.set_data_of_csv(website_name,tmp,video_name)
             except Exception as e:
                 print('Error:', e)
 
@@ -1361,6 +1385,7 @@ class scrapping_bot():
                         all_videos_link_li.append(url__)
                         continue
             
+        
             if len(all_videos_link_li) >= self.naughty.numbers_of_download_videos :
                 return all_videos_link_li
             

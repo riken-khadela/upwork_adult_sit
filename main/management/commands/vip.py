@@ -14,14 +14,13 @@ class Command(BaseCommand):
         for _ in range(1):
             try:
                 # close_every_chrome()
-                bot = scrapping_bot(brazzers_bot=True)
-                driver = bot.starting_bots()
-                if not driver :
-                    SendAnEmail('Could not open up the driver')
-                    return
+                bot = scrapping_bot(brazzers_bot=False)
+                # driver = bot.starting_bots()
+                # if not driver :
+                    # SendAnEmail('Could not open up the driver')
+                    # return
                 # if bot.naughty_ame():
-                    ...
-                    
+                    # ...
                 # if bot.brazzers_login() :
                 #     logggg = True
                 #     bot.brazzers_get_categories()
@@ -35,11 +34,14 @@ class Command(BaseCommand):
                 #     bot.download_videos(tags_162)
                 # else:
                 #     SendAnEmail('Could not logged in into Brazzers')
+
                 print('Vip 4k process')
                 if bot.vip4k_login():
                     logggg = True
-                    videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
-                    bot.vip4k_download_video(videos_collection_dict)
+                    # all_channel = ["Black4k", "Bride4k", "Cuck4k", "Daddy4k","Debt4k", "Dyke4k", "Fist4k", "Loan4k", "Mature4k", "Old4k", "Pie4k", "Rim4k", "Shame4k", "Sis","Stuck4k", "Tutor4k", "Vip4k"]
+                    bot.download_all_vip_channels_video()
+                    # videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
+                    # bot.vip4k_download_video(videos_collection_dict)
                 else :
                     SendAnEmail('Could not logged in into Vip 4k')
 
