@@ -8,10 +8,13 @@ from selenium.webdriver.common.keys import Keys
 from selenium import webdriver  
 from collections import defaultdict
 from bs4 import BeautifulSoup
+import json
+from urllib.parse import unquote
 import requests
 from dateutil import parser
 import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
+import tqdm
 import undetected_chromedriver as uc
 from main.models import configuration, send_mail
 import urllib.request
@@ -71,7 +74,7 @@ class scrapping_bot():
         # Turn-off userAutomationExtension 
         self.options.add_experimental_option("useAutomationExtension", False) 
 
-        self.options.add_argument('--headless')
+        # self.options.add_argument('--headless')
 
         prefs = {"credentials_enable_service": True,
                 'profile.default_content_setting_values.automatic_downloads': 1,
@@ -127,8 +130,8 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        self.get_local_driver()
-        return
+        # self.get_local_driver()
+        # return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -918,6 +921,23 @@ class scrapping_bot():
         formatted_title = '_'.join(filter(None, formatted_title.split('_')))
         return formatted_title
     
+    def download_video_from_request(self, url, local_filename):
+        response = requests.get(url, stream=True)
+        # Total size in bytes, may be None if content-length header is not set
+        total_size = int(response.headers.get('content-length', 0))
+        
+        # Open a local file for writing the binary stream
+        with open(local_filename, 'wb') as f, tqdm(
+            desc=local_filename,
+            total=total_size,
+            unit='iB',
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as bar:
+            for data in response.iter_content(chunk_size=1024):
+                size = f.write(data)
+                bar.update(size)
+
     def vip4k_download_video(self,videos_dict : dict):
         videos_urls = videos_dict['video_list']
         collection_name = videos_dict['collection_name']
@@ -982,25 +1002,38 @@ class scrapping_bot():
                 tmp['Video-name'] = f'{video_name}.mp4'
                 response = requests.get(video_url['post_url'])
                 with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
-                js_script = """
-                    var downloadLinks = document.querySelectorAll('.download__item');
-                    for (var i = 0; i < downloadLinks.length; i++) {
-                        var link = downloadLinks[i];
-                        if (link.getAttribute('download').includes('FullHD.mp4')) {
-                            link.click();
-                            break;
-                        }
-                    }
-                    """
-                self.driver.execute_script(js_script)
-                file_name = self.wait_for_file_download(timeout=30)
-                if not file_name: 
-                    print('file downloading not started')
-                    continue
-                self.random_sleep(3,5)
-                name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
-                os.rename(os.path.join(self.download_path,file_name), name_of_file)
-                self.copy_files_in_catagory_folder(name_of_file,collection_path)
+                local_filename = f'{collection_path}/{video_name}.mp4'
+                FullHD_link = self.driver.find_element(By.XPATH, '//a[contains(@download, "FullHD.mp4")]').get_attribute('data-download')
+                if FullHD_link:
+                    self.driver.get(f'https://members.vip4k.com{FullHD_link}')
+                    self.random_sleep(2,3)
+                    page_source = self.driver.page_source
+                    start = page_source.find('<pre>') + 5
+                    end = page_source.find('</pre>', start)
+                    json_data = page_source[start:end]
+                    data = json.loads(json_data)
+                    decoded_url = unquote(data['url']).replace('\\/', '/')
+                    self.download_video_from_request(decoded_url, local_filename)
+
+                # js_script = """
+                #     var downloadLinks = document.querySelectorAll('.download__item');
+                #     for (var i = 0; i < downloadLinks.length; i++) {
+                #         var link = downloadLinks[i];
+                #         if (link.getAttribute('download').includes('FullHD.mp4')) {
+                #             link.click();
+                #             break;
+                #         }
+                #     }
+                #     """
+                # self.driver.execute_script(js_script)
+                # file_name = self.wait_for_file_download(timeout=30)
+                # if not file_name: 
+                #     print('file downloading not started')
+                #     continue
+                # self.random_sleep(3,5)
+                # name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                # os.rename(os.path.join(self.download_path,file_name), name_of_file)
+                # self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(website_name,tmp,video_name)
             except Exception as e:
                 print('Error:', e)
