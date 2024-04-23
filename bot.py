@@ -1002,7 +1002,7 @@ class scrapping_bot():
                 tmp['Video-name'] = f'{video_name}.mp4'
                 response = requests.get(video_url['post_url'])
                 with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
-                local_filename = f'{collection_path}/{video_name}.mp4'
+                local_filename =  os.path.join(collection_path, f'{video_name}.mp4')
                 FullHD_link = self.driver.find_element(By.XPATH, '//a[contains(@download, "FullHD.mp4")]').get_attribute('data-download')
                 if FullHD_link:
                     self.driver.get(f'https://members.vip4k.com{FullHD_link}')
@@ -1014,6 +1014,7 @@ class scrapping_bot():
                     data = json.loads(json_data)
                     decoded_url = unquote(data['url']).replace('\\/', '/')
                     self.download_video_from_request(decoded_url, local_filename)
+                else:continue
 
                 # js_script = """
                 #     var downloadLinks = document.querySelectorAll('.download__item');
