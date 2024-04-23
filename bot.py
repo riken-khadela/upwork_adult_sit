@@ -966,55 +966,55 @@ class scrapping_bot():
                     "Username" : self.vip4k.website_name,
                 }
             # try:
-                likes_count = self.find_element('Likes count','//button[@class="player-vote__item player-vote__item--up "]')
-                if likes_count :
-                    tmp['Likes'] = likes_count.text
+            likes_count = self.find_element('Likes count','//button[@class="player-vote__item player-vote__item--up "]')
+            if likes_count :
+                tmp['Likes'] = likes_count.text
 
-                # self.getvalue_byscript('document.querySelector("#root > div.sc-yo7o1v-0.hlvViO > div.sc-yo7o1v-0.hlvViO > div.sc-1fep8qc-0.ekNhDD > div.sc-1deoyo3-0.iejyDN > div:nth-child(1) > div > section > div.sc-1wa37oa-0.irrdH > div.sc-bfcq3s-0.ePiyNl > div.sc-k44n71-0.gbGmcO > span:nth-child(1) > strong").textContent')
-                Disclike_count = self.find_element('Disclike count','//button[@class="player-vote__item player-vote__item--down "]')
-                if Disclike_count :
-                    tmp['Disclike'] = Disclike_count.text
+            # self.getvalue_byscript('document.querySelector("#root > div.sc-yo7o1v-0.hlvViO > div.sc-yo7o1v-0.hlvViO > div.sc-1fep8qc-0.ekNhDD > div.sc-1deoyo3-0.iejyDN > div:nth-child(1) > div > section > div.sc-1wa37oa-0.irrdH > div.sc-bfcq3s-0.ePiyNl > div.sc-k44n71-0.gbGmcO > span:nth-child(1) > strong").textContent')
+            Disclike_count = self.find_element('Disclike count','//button[@class="player-vote__item player-vote__item--down "]')
+            if Disclike_count :
+                tmp['Disclike'] = Disclike_count.text
 
-                Title = self.find_element('Title','//h1[@class="player-description__title"]')
-                if Title :
-                    tmp['Title'] = Title.text
+            Title = self.find_element('Title','//h1[@class="player-description__title"]')
+            if Title :
+                tmp['Title'] = Title.text
 
-                Release = self.find_element('Release',"//li[@class='player-additional__item'][2]")
-                if Release :
-                    tmp['Release-Date'] = Release.text
+            Release = self.find_element('Release',"//li[@class='player-additional__item'][2]")
+            if Release :
+                tmp['Release-Date'] = Release.text
 
-                Discription = self.find_element('Discription','//div[@class="player-description__text"]')
-                if Discription :
-                    tmp['Discription'] = Discription.text
+            Discription = self.find_element('Discription','//div[@class="player-description__text"]')
+            if Discription :
+                tmp['Discription'] = Discription.text
 
-                porn_starts = self.driver.find_elements(By.XPATH,'//div[@class="model__name"]')
-                if porn_starts:
-                    porn_start_name = ''
-                    for i in porn_starts:
-                        porn_start_name += f'{i.text},'
-                    tmp['Pornstarts'] = porn_start_name.rstrip(',')
-                video_name = f"vip4k_{collection_name.replace('_videos', '')}_{self.sanitize_title(tmp['Title'])}"
-                v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-                p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
-                tmp['poster_download_uri'] = p_url
-                tmp['video_download_url'] = v_url
-                tmp['Photo-name'] = f'{video_name}.jpg'
-                tmp['Video-name'] = f'{video_name}.mp4'
-                response = requests.get(video_url['post_url'])
-                with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
-                local_filename =  os.path.join(collection_path, f'{video_name}.mp4')
-                FullHD_link = self.driver.find_element(By.XPATH, '//a[contains(@download, "FullHD.mp4")]').get_attribute('data-download')
-                if FullHD_link:
-                    self.driver.get(f'https://members.vip4k.com{FullHD_link}')
-                    self.random_sleep(2,3)
-                    page_source = self.driver.page_source
-                    start = page_source.find('<pre>') + 5
-                    end = page_source.find('</pre>', start)
-                    json_data = page_source[start:end]
-                    data = json.loads(json_data)
-                    decoded_url = unquote(data['url']).replace('\\/', '/')
-                    self.download_video_from_request(decoded_url, local_filename)
-                else:continue
+            porn_starts = self.driver.find_elements(By.XPATH,'//div[@class="model__name"]')
+            if porn_starts:
+                porn_start_name = ''
+                for i in porn_starts:
+                    porn_start_name += f'{i.text},'
+                tmp['Pornstarts'] = porn_start_name.rstrip(',')
+            video_name = f"vip4k_{collection_name.replace('_videos', '')}_{self.sanitize_title(tmp['Title'])}"
+            v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
+            p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+            tmp['poster_download_uri'] = p_url
+            tmp['video_download_url'] = v_url
+            tmp['Photo-name'] = f'{video_name}.jpg'
+            tmp['Video-name'] = f'{video_name}.mp4'
+            response = requests.get(video_url['post_url'])
+            with open(f'{collection_path}/{video_name}.jpg', 'wb') as f:f.write(response.content)
+            local_filename =  os.path.join(collection_path, f'{video_name}.mp4')
+            FullHD_link = self.driver.find_element(By.XPATH, '//a[contains(@download, "FullHD.mp4")]').get_attribute('data-download')
+            if FullHD_link:
+                self.driver.get(f'https://members.vip4k.com{FullHD_link}')
+                self.random_sleep(2,3)
+                page_source = self.driver.page_source
+                start = page_source.find('<pre>') + 5
+                end = page_source.find('</pre>', start)
+                json_data = page_source[start:end]
+                data = json.loads(json_data)
+                decoded_url = unquote(data['url']).replace('\\/', '/')
+                self.download_video_from_request(decoded_url, local_filename)
+            else:continue
 
                 # js_script = """
                 #     var downloadLinks = document.querySelectorAll('.download__item');
@@ -1035,7 +1035,7 @@ class scrapping_bot():
                 # name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
                 # os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 # self.copy_files_in_catagory_folder(name_of_file,collection_path)
-                self.set_data_of_csv(website_name,tmp,video_name)
+            self.set_data_of_csv(website_name,tmp,video_name)
             # except Exception as e:
             #     print('Error:', e)
 
