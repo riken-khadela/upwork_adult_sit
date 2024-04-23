@@ -134,12 +134,12 @@ class scrapping_bot():
             from undetected_chromedriver import Chrome, ChromeOptions
 
             """Start webdriver and return state of it."""
-            self.options = ChromeOptions()
-            # self.driver_arguments()
-            self.options.add_argument('--headless')
+            # self.options = ChromeOptions()
+            # # self.driver_arguments()
+            # self.options.add_argument('--headless')
             
             try:
-                self.driver = Chrome(options=self.options,version_main=123)
+                self.driver = Chrome(headless=True)
                 break
             except Exception as e:
                 print(f"Error: {e}")
