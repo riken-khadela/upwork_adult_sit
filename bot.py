@@ -71,7 +71,7 @@ class scrapping_bot():
         # Turn-off userAutomationExtension 
         self.options.add_experimental_option("useAutomationExtension", False) 
 
-        # self.options.add_argument('--headless')
+        self.options.add_argument('--headless')
 
         prefs = {"credentials_enable_service": True,
                 'profile.default_content_setting_values.automatic_downloads': 1,
