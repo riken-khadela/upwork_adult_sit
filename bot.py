@@ -135,7 +135,7 @@ class scrapping_bot():
 
             """Start webdriver and return state of it."""
             self.options = ChromeOptions()
-            self.driver_arguments()
+            # self.driver_arguments()
             self.options.add_argument('--headless')
             
             try:
