@@ -928,7 +928,6 @@ class scrapping_bot():
         
         # Open a local file for writing the binary stream
         with open(filename, 'wb') as f, tqdm(
-            desc=filename,
             total=total_size,
             unit='iB',
             unit_scale=True,

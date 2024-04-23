@@ -40,8 +40,8 @@ class Command(BaseCommand):
                     logggg = True
                     # all_channel = ["Black4k", "Bride4k", "Cuck4k", "Daddy4k","Debt4k", "Dyke4k", "Fist4k", "Loan4k", "Mature4k", "Old4k", "Pie4k", "Rim4k", "Shame4k", "Sis","Stuck4k", "Tutor4k", "Vip4k"]
                     bot.download_all_vip_channels_video()
-                    # videos_collection_dict = bot.vip4k_get_video(url='https://members.vip4k.com/en/channels/black4k')
-                    # bot.vip4k_download_video(videos_collection_dict)
+                    videos_collection_dict = bot.vip4k_get_video()
+                    bot.vip4k_download_video(videos_collection_dict)
                 else :
                     SendAnEmail('Could not logged in into Vip 4k')
 
