@@ -640,8 +640,8 @@ class scrapping_bot():
                                 if len(videos_urls) >= found_max_videos:
                                     break
             except Exception as e :
-                
                 print(e)
+
             if len(videos_urls) < found_max_videos :
                 if 'tags' in driver_url:
                     self.driver.get(f'https://site-ma.brazzers.com/scenes?page={page_number}&tags={tags}')
@@ -733,7 +733,7 @@ class scrapping_bot():
                 break
             else:
                 seconds+=1
-                
+        if not new_video_download: return None
         while True:
             new_files = [i for i in os.listdir(download_dir)if i.endswith('.crdownload')]
             if not new_files:
@@ -855,6 +855,10 @@ class scrapping_bot():
                 cookies = self.get_cookies(self.vip4k.website_name)
                 member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
                 for item in member_cookies:self.driver.add_cookie(item)
+                self.driver.quit()
+                self.get_driver()
+                self.driver.get('https://vip4k.com/en/login')
+                self.load_cookies(self.vip4k.website_name)
                 return True
             
     def download_all_vip_channels_video(self):
@@ -969,7 +973,7 @@ class scrapping_bot():
                     for i in porn_starts:
                         porn_start_name += f'{i.text},'
                     tmp['Pornstarts'] = porn_start_name.rstrip(',')
-                video_name = f"vip4k_{collection_name.replace('videos', '')}_{self.sanitize_title(tmp['Title'])}"
+                video_name = f"vip4k_{collection_name.replace('_videos', '')}_{self.sanitize_title(tmp['Title'])}"
                 v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
                 p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
                 tmp['poster_download_uri'] = p_url
@@ -989,8 +993,10 @@ class scrapping_bot():
                     }
                     """
                 self.driver.execute_script(js_script)
-                
-                file_name = self.wait_for_file_download(download_dir='downloaded_files')
+                file_name = self.wait_for_file_download(timeout=30)
+                if not file_name: 
+                    print('file downloading not started')
+                    continue
                 self.random_sleep(3,5)
                 name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
