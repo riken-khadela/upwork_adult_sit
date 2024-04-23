@@ -921,14 +921,14 @@ class scrapping_bot():
         formatted_title = '_'.join(filter(None, formatted_title.split('_')))
         return formatted_title
     
-    def download_video_from_request(self, url, local_filename):
+    def download_video_from_request(self, url, filename):
         response = requests.get(url, stream=True)
         # Total size in bytes, may be None if content-length header is not set
         total_size = int(response.headers.get('content-length', 0))
         
         # Open a local file for writing the binary stream
-        with open(local_filename, 'wb') as f, tqdm(
-            desc=local_filename,
+        with open(filename, 'wb') as f, tqdm(
+            desc=filename,
             total=total_size,
             unit='iB',
             unit_scale=True,
