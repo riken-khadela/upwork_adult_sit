@@ -14,7 +14,7 @@ import requests
 from dateutil import parser
 import json, random, time, pandas as pd, os
 from datetime import datetime, timedelta
-import tqdm
+from tqdm import tqdm
 import undetected_chromedriver as uc
 from main.models import configuration, send_mail
 import urllib.request
