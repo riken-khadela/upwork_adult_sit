@@ -965,7 +965,7 @@ class scrapping_bot():
                     "Pornstarts" : '',
                     "Username" : self.vip4k.website_name,
                 }
-            try:
+            # try:
                 likes_count = self.find_element('Likes count','//button[@class="player-vote__item player-vote__item--up "]')
                 if likes_count :
                     tmp['Likes'] = likes_count.text
@@ -1036,8 +1036,8 @@ class scrapping_bot():
                 # os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 # self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(website_name,tmp,video_name)
-            except Exception as e:
-                print('Error:', e)
+            # except Exception as e:
+            #     print('Error:', e)
 
 
 
