@@ -823,8 +823,8 @@ class scrapping_bot():
                             
     def vip4k_login(self):
         # self.CloseDriver()
-        # self.get_driver()
-        self.driver = Driver(uc=True, headless=True)
+        self.get_driver()
+        # self.driver = Driver(uc=True, headless=True)
         for i in range(3):
             self.driver.get('https://vip4k.com/en/login')
             login = self.find_element('login button','//*[text()="Login"]')
@@ -852,13 +852,13 @@ class scrapping_bot():
                     self.click_element('submit','//input[@type="submit"]')
                     self.random_sleep(5,6)
             if self.find_element('check login','//div[@class="logout__text"]'):
-                cookies = self.get_cookies(self.vip4k.website_name)
-                member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
-                for item in member_cookies:self.driver.add_cookie(item)
-                self.driver.quit()
-                self.get_driver()
-                self.driver.get('https://vip4k.com/en/login')
-                self.load_cookies(self.vip4k.website_name)
+                # cookies = self.get_cookies(self.vip4k.website_name)
+                # member_cookies = [item for item in cookies if item.get("domain") != ".vip4k.com"]
+                # for item in member_cookies:self.driver.add_cookie(item)
+                # self.driver.quit()
+                # self.get_driver()
+                # self.driver.get('https://vip4k.com/en/login')
+                # self.load_cookies(self.vip4k.website_name)
                 return True
             
     def download_all_vip_channels_video(self):
