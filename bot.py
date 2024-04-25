@@ -15,7 +15,7 @@ from collections import defaultdict
 from driver import open_vps_driver
 from urllib.parse import unquote
 from seleniumbase import Driver
-from selenium import webdriver  
+from selenium import webdriver
 from bs4 import BeautifulSoup
 from mail import SendAnEmail
 from dateutil import parser
@@ -40,19 +40,22 @@ class scrapping_bot():
         self.driver = ''
         self.download_path = self.create_or_check_path('downloads',main=True)
         [ os.remove(os.path.join(os.getcwd(),'downloads',i)) for i in os.listdir('downloads') if i.endswith('.crdownload')]
+
         self.csv_path = self.create_or_check_path('csv',main=True)
         self.cookies_path = self.create_or_check_path('cookies',main=True)
-        self.brazzers_category_path = self.create_or_check_path('brazzers_category_videos')
-        self.vip4k_category_path = self.create_or_check_path('vip4k_category_videos')
-        self.handjob_category_path = self.create_or_check_path('handjob_category_videos')
-        self.naughty_america_category_path = self.create_or_check_path('naughty_america')
+        
         self.brazzers = configuration.objects.get(website_name='brazzers')
+        self.brazzers_category_path = self.create_or_check_path('brazzers_category_videos')
+
         self.vip4k = configuration.objects.get(website_name='vip4k')
+        self.vip4k_category_path = self.create_or_check_path('vip4k_category_videos')
+
         self.handjob = configuration.objects.get(website_name='handjob')
-        # self.naughty = configuration.objects.get(website_name='naughtyamerica')
-        self.solver = recaptchaV2Proxyless()
-        self.solver.set_verbose(1)
-        self.solver.set_key("e49c2cc94651faab912d635baec6741f")
+        self.handjob_category_path = self.create_or_check_path('handjob_category_videos')
+
+        self.naughty = configuration.objects.get(website_name='naughtyamerica')
+        self.naughty_america_category_path = self.create_or_check_path('naughty_america')
+
         self.make_csv()
         self.make_csv(website_name='brazzers_addon_102',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_102')) else None
         self.make_csv(website_name='brazzers_addon_152',new=True) if not os.path.exists(os.path.join(os.getcwd(),'csv','brazzers_addon_152')) else None
@@ -60,10 +63,7 @@ class scrapping_bot():
         self.delete_old_videos()
         
         if brazzers_bot == True:
-            self.downloaded_videos_list = os.listdir('downloads')
-            self.videos_urls = []
             self.brazzers_category_url = 'https://site-ma.brazzers.com/categories'
-            
             
         self.all_csv_files = list_files_in_folder(os.path.join(os.getcwd(),'csv'))
 
@@ -1348,19 +1348,22 @@ class scrapping_bot():
             #     if len(videos_urls) >= found_max_videos :return
 
     def Sovle_captcha(self):
+        solver = recaptchaV2Proxyless()
+        solver.set_verbose(1)
+        solver.set_key("e49c2cc94651faab912d635baec6741f")
         site_key_ele = self.find_element('SITE-KEY','g-recaptcha',By.CLASS_NAME)
         
         if site_key_ele : 
             # to solvee the captcha
             site_key = site_key_ele.get_attribute('data-sitekey')
-            self.solver.set_website_url(self.driver.current_url)
-            self.solver.set_website_key(site_key)
-            self.solver.set_soft_id(0)
-            g_response = self.solver.solve_and_return_solution()
+            solver.set_website_url(self.driver.current_url)
+            solver.set_website_key(site_key)
+            solver.set_soft_id(0)
+            g_response = solver.solve_and_return_solution()
             
             if g_response == 0:
                 
-                print ("task finished of captcha solver with error "+self.solver.error_code)
+                print ("task finished of captcha solver with error "+solver.error_code)
                 return False
             print ("g-response: "+g_response)
             

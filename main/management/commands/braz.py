@@ -25,7 +25,6 @@ class Command(BaseCommand):
                 if bot.brazzers_login() :
                     logggg = True
                     bot.brazzers_get_categories()
-                    breakpoint()
                     video_dict = bot.brazzers_get_videos_url()
                     bot.brazzers_download_video(video_dict)
                     tags_102 = bot.get_videos_url(url='https://site-ma.brazzers.com/scenes?addon=102')
