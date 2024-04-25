@@ -137,8 +137,8 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        self.get_local_driver()
-        return
+        # self.get_local_driver()
+        # return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -1632,7 +1632,7 @@ class scrapping_bot():
         video_detailes['collection_name'] = url.split('=')[-1].lower() if new_csv else self.adultprime.website_name + '_videos'
         website_name = f"adultprime_{video_detailes['collection_name']}" if new_csv else self.adultprime.website_name
         self.make_csv(website_name, new=new_csv)
-        df_url = self.column_to_list(self.adultprime.website_name,'Url')
+        df_url = self.column_to_list(website_name,'Url')
         max_video = self.adultprime.numbers_of_download_videos
         while len(videos_urls) < max_video:
             row_element = self.find_element('row', "//div[@class='row portal-grid']")
@@ -1720,14 +1720,14 @@ class scrapping_bot():
                         porn_start_name += f'{i.text},'
                     tmp['Pornstarts'] = porn_start_name.rstrip(',')
 
-                video_name = f"adultprime_{collection_name.replace('_videos', '')}_{self.sanitize_title(tmp['Title'])}"
+                video_name = f"adultprime_{collection_name.replace('_videos', '')}_{self.sanitize_title(tmp['Title'])}".replace('adultprime_adultprime','adultprime')
                 tmp['Photo-name'] = f'{video_name}.jpg'
                 tmp['Video-name'] = f'{video_name}.mp4'
 
                 v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
                 p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
-                tmp['poster_download_uri'] = p_url
-                tmp['video_download_url'] = v_url
+                tmp['poster_download_uri'] = p_url.replace('\\', '/')
+                tmp['video_download_url'] = v_url.replace('\\', '/')
 
                 response = requests.get(video_url['post_url'])
                 with open(os.path.join(collection_path, f'{video_name}.jpg'), 'wb') as f:f.write(response.content)

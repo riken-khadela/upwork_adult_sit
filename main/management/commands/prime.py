@@ -9,7 +9,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options): 
         from bot import scrapping_bot
-        from utils import close_every_chrome
         logggg = False
         for _ in range(1):
             try:
