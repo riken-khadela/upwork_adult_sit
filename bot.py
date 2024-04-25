@@ -881,7 +881,7 @@ class scrapping_bot():
                 self.vip4k_download_video(video_dict)
 
         
-    def vip4k_get_video(self,url :str, channel: bool= False):
+    def vip4k_get_video(self,url :str='', channel: bool= False):
         self.calculate_old_date(self.vip4k.more_than_old_days_download)
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
@@ -1650,8 +1650,6 @@ class scrapping_bot():
             else:
                 break
         return False
-            
-        
 
     
     def download_all_adultprime_channels_video(self):
@@ -1664,13 +1662,11 @@ class scrapping_bot():
             url = f'https://adultprime.com/studios/videos?website={website}'
             videos_dict = self.adultprime_get_video(url, True)
             self.adultprime_download_video(videos_dict)
-    
 
-    
-    def adultprime_get_video(self, url:str, channel:bool=False):
+    def adultprime_get_video(self, url:str='', channel:bool=False):
         '''
         Parameter :
-        url:str = channel's url or anyother url of aultprime website
+        url:str = channel's url or anyother url of aDultprime website
         channel: bool = Default is False, if url is channels url than make this True
         '''
         self.calculate_old_date(self.adultprime.more_than_old_days_download)
@@ -1678,10 +1674,11 @@ class scrapping_bot():
         videos_urls = []
         if channel: self.driver.get(url)
         else:
-            if not self.get_adultprime_category(): return
+            if not self.get_adultprime_category(): 
+                return None
         self.random_sleep(3,5)
         new_csv = 'website' in url
-        video_detailes['collection_name'] = url.split('=')[-1].lower() if new_csv else self.adultprime.website_name + '_videos'
+        video_detailes['collection_name'] = url.split('=')[-1].lower()+ '_videos' if new_csv else self.adultprime.website_name + '_videos'
         website_name = f"adultprime_{video_detailes['collection_name']}" if new_csv else self.adultprime.website_name
         self.make_csv(website_name, new=new_csv)
         df_url = self.column_to_list(website_name,'Url')
@@ -1778,7 +1775,7 @@ class scrapping_bot():
 
                 v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'.replace('\\', '/')
                 p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'.replace('\\', '/')
-                tmp['poster_download_uri'] = p_url
+                tmp['poster_download_uri'] = p_url  
                 tmp['video_download_url'] = v_url
 
                 response = requests.get(video_url['post_url'])
@@ -1801,5 +1798,6 @@ class scrapping_bot():
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(website_name,tmp,video_name)
+                breakpoint()
             except Exception as e:
                 print('Error:', e)
