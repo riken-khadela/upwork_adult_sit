@@ -137,8 +137,8 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
+        self.get_local_driver()
+        return
         
         for _ in range(30):
             from undetected_chromedriver import Chrome, ChromeOptions
@@ -1000,8 +1000,9 @@ class scrapping_bot():
                         porn_start_name += f'{i.text},'
                     tmp['Pornstarts'] = porn_start_name.rstrip(',')
                 video_name = f"vip4k_{collection_name.replace('_videos', '')}_{self.sanitize_title(tmp['Title'])}"
-                v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-                p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
+
+                v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'.replace('\\', '/')
+                p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'.replace('\\', '/')
                 tmp['poster_download_uri'] = p_url
                 tmp['video_download_url'] = v_url
                 tmp['Photo-name'] = f'{video_name}.jpg'
@@ -1566,22 +1567,30 @@ class scrapping_bot():
                 SendAnEmail('Could not complete the naughty america scrapping!'+f'\n{e}',email=self.emailss)
     
     def adultprime_login(self):
-        # captcha's config
+        '''
+        This function automates the login process for the AdultPrime website.
+
+        Returns:
+            bool: True if login is successful, False otherwise.
+        '''
+
+        # Captcha configuration
         solver = imagecaptcha()
         solver.set_verbose(1)
         solver.set_key("e49c2cc94651faab912d635baec6741f")
         solver.set_soft_id(0)
 
-        # configrations
+        # Configurations
         self.adultprime = configuration.objects.get(website_name='adultprime')
         self.adultprime_category_path = self.create_or_check_path('adultprime_category_videos')
 
-        # login process
+        # Login process
         self.get_driver()
         for i in range(2):
             self.driver.get('https://adultprime.com/')
             self.load_cookies(self.adultprime.website_name)
-            if self.find_element('Sign Out', '//*[text()="Sign Out"]'): return True
+            if self.find_element('Sign Out', '//*[text()="Sign Out"]'):
+                return True
             # self.click_element('confirm', "confirm-btn", By.ID)
             self.click_element('login btn', '//*[@class="login-menu-btn"]')
             self.input_text(self.adultprime.username, 'username_input', '//*[@id="login-form-main"]//*[@id="LoginForm_username"]')
@@ -1598,13 +1607,14 @@ class scrapping_bot():
                 captcha = img.screenshot_as_png
                 self.random_sleep(2,3)
                 self.driver.switch_to.window(tabs[0])
-                with open('captcha.png', 'wb') as file: file.write(captcha)
+                with open('captcha.png', 'wb') as file:
+                    file.write(captcha)
                 captcha_text = solver.solve_and_return_solution('captcha.png')
                 if captcha_text != 0:
                     self.input_text(captcha_text, 'captcha_input','//*[@id="login-form-main"]//*[@id="LoginForm_verifyCode"]', timeout=5)
                     print("captcha text :"+captcha_text)
                     self.click_element('login_btn','//*[@value="Login"]')
-                    if not self.find_element('login_btn','//*[@value="Login"]'):
+                    if self.find_element('Sign Out', '//*[text()="Sign Out"]'):
                         self.get_cookies(self.adultprime.website_name)
                         return True
                 else:
@@ -1612,7 +1622,43 @@ class scrapping_bot():
                     print("task finished with error "+solver.error_code)
         return False
     
+    def get_adultprime_category(self):
+        self.driver.get('https://adultprime.com/categories')
+        self.random_sleep(2,3)
+        while True:    
+            all_a_tags = self.driver.find_elements(By.CLASS_NAME, "studio-link")
+            for i in all_a_tags:
+                if self.adultprime.category.lower() in i.text.lower():
+                    self.ensure_click(i)
+                    self.random_sleep(2,3)
+                    if self.driver.current_url != 'https://adultprime.com/categories':
+                        link_element = self.find_element('view all', '//*[@class="pull-right link-all"]/a[contains(@href, "videos")]')
+                        link = link_element.get_attribute('href')
+                        if link: self.driver.get(link)
+                        else:
+                            self.driver.get(f'https://adultprime.com/studios/search?q={self.adultprime.category}')
+                            link_element = self.find_element('view all', '//*[@class="pull-right link-all"]/a[contains(@href, "videos")]')
+                            link = link_element.get_attribute('href')
+                            if link: self.driver.get(link)
+                            else:
+                                SendAnEmail(f"We don't find this {self.adultprime.category} category")
+                                return False
+                        return True
+            next_page = self.find_element('next_page', "a.page-link.next", By.CSS_SELECTOR)
+            if next_page:
+                self.click_element('next_page', "a.page-link.next", By.CSS_SELECTOR)
+            else:
+                break
+        return False
+            
+        
+
+    
     def download_all_adultprime_channels_video(self):
+        '''
+        This function is responsible for downloading videos from various channels on the AdultPrime website.
+        It iterates over a list of channel names and retrieves videos from each channel using the adultprime_get_video and adultprime_download_video functions.
+        '''
         website_name = ['Clubsweethearts','Distorded','SinfulXXX','Youngbusty','Industryinvaders','Manupfilms','Sweetfemdom']
         for website in website_name:
             url = f'https://adultprime.com/studios/videos?website={website}'
@@ -1622,11 +1668,17 @@ class scrapping_bot():
 
     
     def adultprime_get_video(self, url:str, channel:bool=False):
+        '''
+        Parameter :
+        url:str = channel's url or anyother url of aultprime website
+        channel: bool = Default is False, if url is channels url than make this True
+        '''
         self.calculate_old_date(self.adultprime.more_than_old_days_download)
         video_detailes = {'collection_name':'','video_list':[]}
         videos_urls = []
         if channel: self.driver.get(url)
-        else:self.driver.get(f'https://members.vip4k.com/en/tag/{self.vip4k.category}')
+        else:
+            if not self.get_adultprime_category(): return
         self.random_sleep(3,5)
         new_csv = 'website' in url
         video_detailes['collection_name'] = url.split('=')[-1].lower() if new_csv else self.adultprime.website_name + '_videos'
@@ -1724,10 +1776,10 @@ class scrapping_bot():
                 tmp['Photo-name'] = f'{video_name}.jpg'
                 tmp['Video-name'] = f'{video_name}.mp4'
 
-                v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'
-                p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'
-                tmp['poster_download_uri'] = p_url.replace('\\', '/')
-                tmp['video_download_url'] = v_url.replace('\\', '/')
+                v_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.mp4'.replace('\\', '/')
+                p_url = f'http://208.122.217.49:8000{collection_path.replace(self.base_path,"")}/{video_name}.jpg'.replace('\\', '/')
+                tmp['poster_download_uri'] = p_url
+                tmp['video_download_url'] = v_url
 
                 response = requests.get(video_url['post_url'])
                 with open(os.path.join(collection_path, f'{video_name}.jpg'), 'wb') as f:f.write(response.content)
