@@ -1613,6 +1613,7 @@ class scrapping_bot():
                 if captcha_text != 0:
                     self.input_text(captcha_text, 'captcha_input','//*[@id="login-form-main"]//*[@id="LoginForm_verifyCode"]', timeout=5)
                     print("captcha text :"+captcha_text)
+                    os.remove('captcha.png')
                     self.click_element('login_btn','//*[@value="Login"]')
                     if self.find_element('Sign Out', '//*[text()="Sign Out"]'):
                         self.get_cookies(self.adultprime.website_name)
@@ -1798,6 +1799,5 @@ class scrapping_bot():
                 os.rename(os.path.join(self.download_path,file_name), name_of_file)
                 self.copy_files_in_catagory_folder(name_of_file,collection_path)
                 self.set_data_of_csv(website_name,tmp,video_name)
-                breakpoint()
             except Exception as e:
                 print('Error:', e)
