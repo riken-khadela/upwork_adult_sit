@@ -153,7 +153,7 @@ class scrapping_bot():
                 """Start webdriver and return state of it."""
                 # self.options = ChromeOptions()
                 # # self.driver_arguments()
-                # self.options.add_argument('--headless')
+                # self.options.add_argument('--headles  s')
                 
                 try:
                     self.driver = Chrome(headless=headless)
@@ -1794,21 +1794,19 @@ class scrapping_bot():
 
                 response = requests.get(video_url['post_url'])
                 with open(os.path.join(collection_path, f'{video_name}.jpg'), 'wb') as f:f.write(response.content)
-
+ 
+                local_filename =  os.path.join(collection_path, f'{video_name}.mp4')
                 FullHD_link = self.driver.find_elements(By.XPATH, '//a[@class="stream-quality-selection download-link"]')
                 if len(FullHD_link) > 2:
-                    self.ensure_click(FullHD_link[2])
+                    decoded_url = FullHD_link[2].get_attribute('href')
+                    self.random_sleep(2,3)
+                    self.download_video_from_request(decoded_url, local_filename)
                 else:continue
 
-                file_name = self.wait_for_file_download(timeout=30)
-                if not file_name: 
-                    print('file downloading not started')
-                    continue
-
-                self.random_sleep(3,5)
-                name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
-                os.rename(os.path.join(self.download_path,file_name), name_of_file)
-                self.copy_files_in_catagory_folder(name_of_file,collection_path)
+                # self.random_sleep(3,5)
+                # name_of_file = os.path.join(self.download_path, f'{video_name}.mp4')
+                # os.rename(os.path.join(self.download_path,file_name), name_of_file)
+                # self.copy_files_in_catagory_folder(name_of_file,collection_path)    
                 self.set_data_of_csv(website_name,tmp,video_name)
             except Exception as e:
                 print('Error:', e)
