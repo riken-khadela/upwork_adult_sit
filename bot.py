@@ -151,12 +151,18 @@ class scrapping_bot():
                 from undetected_chromedriver import Chrome, ChromeOptions
 
                 """Start webdriver and return state of it."""
-                # self.options = ChromeOptions()
-                # # self.driver_arguments()
-                # self.options.add_argument('--headles  s')
-                
+                # self.driver_arguments()                
                 try:
-                    self.driver = Chrome(headless=headless)
+                    self.options = ChromeOptions()
+                    prefs = {"credentials_enable_service": True,
+                            'profile.default_content_setting_values.automatic_downloads': 1,
+                            "download.default_directory" : f"{self.download_path}",
+                        'download.prompt_for_download': False, 
+                        'download.directory_upgrade': True,
+                        'safebrowsing.enabled': True ,
+                        "profile.password_manager_enabled": True}
+                    self.options.add_experimental_option("prefs", prefs)
+                    self.driver = Chrome(headless=headless, options=self.options)
                     break
                 except Exception as e:
                     print(f"Error: {e}")
