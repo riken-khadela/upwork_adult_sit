@@ -29,7 +29,15 @@ import time
 import json
 import os
 
+with open("config.json", "r") as file:
+    config = json.load(file)
 
+headless_config = config.get("headless")
+if headless_config == 'True':
+    headless = True
+else: False
+
+breakpoint()
 
 class scrapping_bot():
     
@@ -137,24 +145,25 @@ class scrapping_bot():
             return False
     
     def get_driver(self):
-        # self.get_local_driver()
-        # return
-        
-        for _ in range(30):
-            from undetected_chromedriver import Chrome, ChromeOptions
+        if not headless:
+            self.get_local_driver()
+            return
+        else:
+            for _ in range(30):
+                from undetected_chromedriver import Chrome, ChromeOptions
 
-            """Start webdriver and return state of it."""
-            # self.options = ChromeOptions()
-            # # self.driver_arguments()
-            # self.options.add_argument('--headless')
-            
-            try:
-                self.driver = Chrome(headless=True)
-                break
-            except Exception as e:
-                print(f"Error: {e}")
+                """Start webdriver and return state of it."""
+                # self.options = ChromeOptions()
+                # # self.driver_arguments()
+                # self.options.add_argument('--headless')
+                
+                try:
+                    self.driver = Chrome(headless=headless)
+                    break
+                except Exception as e:
+                    print(f"Error: {e}")
         
-        return self.driver
+            return self.driver
 
     def get_local_driver(self):
         """Start webdriver and return state of it."""
@@ -1585,7 +1594,7 @@ class scrapping_bot():
         self.adultprime_category_path = self.create_or_check_path('adultprime_category_videos')
 
         # Login process
-        self.driver = Driver(uc=True, headless=False)
+        self.driver = Driver(uc=True, headless=headless)
         for i in range(2):
             self.driver.get('https://adultprime.com/')
             self.load_cookies(self.adultprime.website_name)
