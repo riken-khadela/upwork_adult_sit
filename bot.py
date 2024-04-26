@@ -1585,7 +1585,7 @@ class scrapping_bot():
         self.adultprime_category_path = self.create_or_check_path('adultprime_category_videos')
 
         # Login process
-        self.get_driver()
+        self.driver = Driver(uc=True, headless=True)
         for i in range(2):
             self.driver.get('https://adultprime.com/')
             self.load_cookies(self.adultprime.website_name)
