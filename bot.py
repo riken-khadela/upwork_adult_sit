@@ -37,8 +37,6 @@ if headless_config == 'True':
     headless = True
 else: False
 
-breakpoint()
-
 class scrapping_bot():
     
     def __init__(self,brazzers_bot = False):
