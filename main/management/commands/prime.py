@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import configuration as conf
-from scrapping.settings import BASE_DIR
 from mail import SendAnEmail
 
 class Command(BaseCommand):
@@ -12,7 +11,7 @@ class Command(BaseCommand):
         logggg = False
         for _ in range(1):
             try:
-                bot = scrapping_bot(brazzers_bot=False)
+                bot = scrapping_bot()
                 print('adultprime process starting')
                 if bot.adultprime_login():
                     logggg = True
