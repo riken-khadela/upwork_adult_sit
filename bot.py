@@ -1667,7 +1667,7 @@ class scrapping_bot():
     def adultprime_get_video(self, url:str='', channel:bool=False):
         '''
         Parameter :
-        url:str = channel's url or anyother url of aDultprime website
+        url:str = Default is empty str, channel's url or anyother url of aDultprime website
         channel: bool = Default is False, if url is channels url than make this True
         '''
         self.calculate_old_date(self.adultprime.more_than_old_days_download)
@@ -1731,7 +1731,7 @@ class scrapping_bot():
             tmp = {
                     "Likes" : "",
                     "Disclike" :"",
-                    "Url" : video_url['video_url'],
+                    "Url" : video_url['video_url'], 
                     "Category" : videos_dict['collection_name'],
                     "video_download_url" : '',
                     "Title" : '',
