@@ -1592,7 +1592,8 @@ class scrapping_bot():
         self.adultprime_category_path = self.create_or_check_path('adultprime_category_videos')
 
         # Login process
-        self.driver = Driver(uc=True, headless=headless)
+        # self.driver = Driver(uc=True, headless=headless)
+        self.get_driver()
         for i in range(2):
             self.driver.get('https://adultprime.com/')
             self.load_cookies(self.adultprime.website_name)
@@ -1799,7 +1800,7 @@ class scrapping_bot():
                     self.ensure_click(FullHD_link[2])
                 else:continue
 
-                file_name = self.wait_for_file_download(timeout=30, download_dir='downloaded_files')
+                file_name = self.wait_for_file_download(timeout=30)
                 if not file_name: 
                     print('file downloading not started')
                     continue
