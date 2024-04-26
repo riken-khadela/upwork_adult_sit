@@ -19,7 +19,7 @@ class Command(BaseCommand):
                     video_dict = bot.adultprime_get_video()
                     bot.adultprime_download_video(video_dict)
                 else :
-                    SendAnEmail('Could not logged in into Vip 4k')
+                    SendAnEmail('Could not logged in into Adult prime', attachments=["driver.png"])
 
                 bot.CloseDriver()
                 if logggg == True:break

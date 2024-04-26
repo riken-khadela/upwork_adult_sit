@@ -1591,7 +1591,9 @@ class scrapping_bot():
             self.load_cookies(self.adultprime.website_name)
             if self.find_element('Sign Out', '//*[text()="Sign Out"]'):
                 return True
-            # self.click_element('confirm', "confirm-btn", By.ID)
+
+            self.driver.save_screenshot('driver.png')
+            self.click_element('confirm', "confirm-btn", By.ID)
             self.click_element('login btn', '//*[@class="login-menu-btn"]')
             self.input_text(self.adultprime.username, 'username_input', '//*[@id="login-form-main"]//*[@id="LoginForm_username"]')
             self.input_text(self.adultprime.password, 'password_input','//*[@id="login-form-main"]//*[@id="LoginForm_password"]')
@@ -1600,9 +1602,10 @@ class scrapping_bot():
                 self.click_element('refresh captcha', '//*[@id="yw0_button"]')
                 self.random_sleep(1,2)
                 captcha_link = self.find_element('links','//*[@id="yw0"]').get_attribute('src')
-                self.driver.execute_script(f'window.open("{captcha_link}","_blank");')
+                self.driver.switch_to.new_window('tab')
                 tabs = self.driver.window_handles
                 self.driver.switch_to.window(tabs[-1])
+                self.driver.get(captcha_link)
                 img = self.find_element('img', 'img', By.TAG_NAME)
                 captcha = img.screenshot_as_png
                 self.random_sleep(2,3)
@@ -1618,6 +1621,8 @@ class scrapping_bot():
                     if self.find_element('Sign Out', '//*[text()="Sign Out"]'):
                         self.get_cookies(self.adultprime.website_name)
                         return True
+                    if self.find_element('ip change', '//*[text()="Ip Change Detected"]'):
+                        return False
                 else:
                     self.click_element('refresh captcha', '//*[@id="yw0_button"]')
                     print("task finished with error "+solver.error_code)

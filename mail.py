@@ -1,9 +1,10 @@
-import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.text import MIMEText
 from main.models import sender_mail
+import smtplib
 
-def SendAnEmail(body : str,email=[]):
+def SendAnEmail(body: str, email=[], attachments=[]):
     obj = sender_mail.objects.first()
     if not obj : return
     sender_email = obj.email
@@ -27,6 +28,11 @@ def SendAnEmail(body : str,email=[]):
             message["To"] = mail
             message["Subject"] = subject
             message.attach(MIMEText(body, "plain"))
+            for attachment in attachments:
+                with open(attachment, "rb") as f:
+                    img = MIMEImage(f.read())
+                    img.add_header("Content-Disposition", "attachment", filename=attachment)
+                    message.attach(img)
 
             # Establish a connection with the SMTP server and send the email
             try:
@@ -35,6 +41,5 @@ def SendAnEmail(body : str,email=[]):
                     server.login(sender_email, sender_password)
                     server.sendmail(sender_email, mail, message.as_string())
                 print(f"Email sent successfully!\nBody : {body}")
-                
             except Exception as e:
                 print(f"Error: {e}")
