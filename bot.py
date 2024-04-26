@@ -35,7 +35,7 @@ with open("config.json", "r") as file:
 headless_config = config.get("headless")
 if headless_config == 'True':
     headless = True
-else: False
+else: headless = False
 
 class scrapping_bot():
     
@@ -1799,7 +1799,7 @@ class scrapping_bot():
                     self.ensure_click(FullHD_link[2])
                 else:continue
 
-                file_name = self.wait_for_file_download(timeout=30)
+                file_name = self.wait_for_file_download(timeout=30, download_dir='downloaded_files')
                 if not file_name: 
                     print('file downloading not started')
                     continue
