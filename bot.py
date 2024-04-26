@@ -1760,14 +1760,14 @@ class scrapping_bot():
                 if Title :
                     tmp['Title'] = Title.text
 
-                Release = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#theatre-row > div.col-xs-12.col-md-8 > div.update-info-container > div > div.update-info-site > div.vote-container.pull-right.mt-25 > p > b:nth-child(2)")))
+                Release = self.find_element('release date', "#theatre-row > div.col-xs-12.col-md-8 > div.update-info-container > div > div.update-info-site > div.vote-container.pull-right.mt-25 > p > b:nth-child(2)", By.CSS_SELECTOR)
                 if Release :
                     tmp['Release-Date'] = Release.text
 
                 Discription = self.find_element('Discription','//p[@class="update-info-line ap-limited-description-text regular hidden-xs"]')
                 if Discription :
                     tmp['Discription'] = Discription.text
-
+                
                 porn_starts = self.driver.find_elements(By.XPATH,'//*[@id="theatre-row"]/div[1]/div[2]/div/p[3]/a')
                 if porn_starts:
                     porn_start_name = ''
